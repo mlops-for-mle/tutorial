@@ -9,7 +9,7 @@ const config = {
   title: 'ML Engineer를 위한 MLOps',
   tagline: 'MLops is cool',
   url: 'https://ml-growth.github.io/',
-  baseUrl: '/',
+  baseUrl: '/mlops-for-mle/',
   trailingSlash: false,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
