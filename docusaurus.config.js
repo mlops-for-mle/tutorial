@@ -8,8 +8,8 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 const config = {
   title: 'ML Engineer를 위한 MLOps',
   tagline: 'MLops is cool',
-  url: 'https://ml-growth.github.io/',
-  baseUrl: '/mlops-for-mle/',
+  url: 'https://mlops-for-mle.github.io/',
+  baseUrl: '/tutorial/',
   trailingSlash: false,
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -17,8 +17,8 @@ const config = {
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'ml-growth', // Usually your GitHub org/user name.
-  projectName: 'mlops-for-mle', // Usually your repo name.
+  organizationName: 'mlops-for-mle', // Usually your GitHub org/user name.
+  projectName: 'tutorial', // Usually your repo name.
 
   // Even if you don't use internalization, you can use this field to set useful
   // metadata like html lang. For example, if your site is Chinese, you may want
