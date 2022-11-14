@@ -21,7 +21,7 @@ sidebar_position: 2
 
 ---
 
-## 0. 환경 설정
+## 0. 패키지 설치
 
 이번 챕터에서 사용할 패키지들인 `pandas`, `scikit-learn`, `joblib` 를 설치합니다.
 
