@@ -2,46 +2,59 @@
 sidebar_position: 1
 ---
 
-# Tutorial Intro
+# 01. Introduction
+## Introduction
 
-Let's discover **Docusaurus in less than 5 minutes**.
+2022년 MLOps 에 대한 관심은 폭발적으로 증가했습니다. [그림 1-1] 은 “MLOps” 키워드에 대한 구글 트랜드 그래프입니다. 2022년을 기점으로 검색량이 폭발적으로 증가한 것을 확인할 수 있습니다.
 
-## Getting Started
 
-Get started by **creating a new site**.
+![[그림 1-1] MLOps 구글 트랜드](./img/google-trend.png)
+<center> [그림 1-1] MLOps 구글 트랜드 </center>
+<br/>
 
-Or **try Docusaurus immediately** with **[docusaurus.new](https://docusaurus.new)**.
+이런 관심의 집중에 따라 MLOps에 관한 많은 포스팅 글들을 찾아볼 수 있습니다. 하지만 대부분은 MLOps 의 개념에 관해서만 다루고 있습니다.
+또한, MLOps는 그 자체로 제품 혹은 플랫폼이 될 정도로 방대한 범위를 다루고 있습니다. 대표적인 클라우드 회사에서는 SageMaker(AWS), VertexAI (Google Cloud) 과 같이 MLOps 제품을 출시했습니다. 
 
-### What you'll need
+그런데 정작 이를 사용해야 하는 머신러닝 엔지니어 입장에서는 “그래서 어떻게 MLOps 를 할 수 있는 건데?” 라는 의문이 들 수 밖에 없습니다.
+이러한 의문을 조금이라도 풀 수 있도록  “머신러닝 엔지니어를 위한 MLOps”를 집필하였습니다.
 
-- [Node.js](https://nodejs.org/en/download/) version 16.14 or above:
-  - When installing Node.js, you are recommended to check all checkboxes related to dependencies.
+## 다루는 내용
 
-## Generate a new site
+[그림 1-2]는 MLOps를 설명할 때 많이 쓰이는 구글 클라우드에서 제시한 MLOps의 0단계 입니다. MLOps의 목표는 0단계를 자동화시키는 것과 모델 개발 환경과 모델 운영 환경을 일치시키는 것에 있습니다.
 
-Generate a new Docusaurus site using the **classic template**.
+![[그림 1-2] MLOps Level 0](./img/mlops-level-0.png)
+<center> [그림 1-2] MLOps Level 0 </center>
+<br/>
 
-The classic template will automatically be added to your project after you run the command:
+“머신러닝 엔지니어를 위한 MLOps” 에서는 직접 구현해보며 각 컴포넌트들이 어떤 역할을 하는지 컴포넌트끼리는 어떻게 연결해야 하는지 설명하고자 합니다. 여기서 다루는 내용을 간단히 도식화 하면 [그림 1-3]과 같이 표시할 수 있습니다.
 
-```bash
-npm init docusaurus@latest my-website classic
-```
+![pipeline](./img/pipeline.png)
+<center> [그림 1-3] Pipeline </center>
+<br/>
 
-You can type this command into Command Prompt, Powershell, Terminal, or any other integrated terminal of your code editor.
+도표에 표시되어 있는 컴포넌트들에 대한 내용은 다음 챕터에서 다룹니다.
 
-The command also installs all necessary dependencies you need to run Docusaurus.
+| 컴포넌트 | 챕터 |
+| --- | --- |
+| Chapter 2 | Database 구축 |
 
-## Start your site
 
-Run the development server:
+각 컴포넌트를 구현하는데 사용하는 패키지 및 소프트웨어는 다음의 기준으로 선정하였습니다.
 
-```bash
-cd my-website
-npm run start
-```
+1. 오픈소스일 것
+2. 공식 Documentation 에 자세한 설명이 나와 있으며 관리가 되고 있을 것
 
-The `cd` command changes the directory you're working with. In order to work with your newly created Docusaurus site, you'll need to navigate the terminal there.
+대표적으로 사용하는 패키지는 FastAPI, sqlalchemy, mlflow 등이 있습니다.
+단순히 따라해보는 것에 그치지 않고 본인의 업무에 필요한 방향으로 적용해 볼 수 있도록 간단한 튜토리얼을 작성하고 MLOps에 맞게 변형하는 과정으로 진행됩니다.
 
-The `npm run start` command builds your website locally and serves it through a development server, ready for you to view at http://localhost:3000/.
+## 이 문서를 학습하는 방법
 
-Open `docs/intro.md` (this page) and edit some lines: the site **reloads automatically** and displays your changes.
+“머신러닝 엔지니어를 위한 MLOps” 는 모든 컴포넌트들을 Docker로 실행됩니다. 머신러닝의 성능 재현은 머신러닝 모델을 다룰 때 가장 중요한 부분 중 하나입니다. 이를 위해서는 OS, 파이썬 버전, 패키지 버전, 코드, 가중치 등 모델을 학습 했을 때의 환경과 모든 것이 동일해야 합니다. 이런 동일한 환경을 제공하기 위해서  Containerization 은 머신러닝에서 중요한 기술 중 하나이며 이를 대표하는 소프트웨어가 바로 Docker 입니다. 이러한 배경으로 머신러닝 엔지니어에게 Docker를 이해하고 다룰 수 있어야 합니다. 머신러닝 엔지니어에게 필요한 수준의 docker를 다루고 이해할 수 있게하기 위해서 본 문서에서는 로컬 환경에서 실행되는 스크립트 작성 후 이를 docker에서도 실행할 수 있는 순서로 진행됩니다.
+
+본 문서에서는 모든 챕터가 시작하기에 앞서 “요구사항” 항목을 작성했습니다.  예를 들어서 다음 챕터에서 다룰 요구 사항은 다음과 같습니다.
+
+<요구사항>
+
+이 후 챕터는 각 요구사항을 충족할 수 있는 코드를 작성하며 필요한 배경 지식들을 설명합니다.
+
+좀 더 효율적인 학습을 위해서는 직접 해당 요구사항을 구현한 뒤 설명하는 내용들을 읽는다면 좋을 것 같습니다.
