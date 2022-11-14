@@ -1,41 +1,30 @@
-# Website
+# MLOps for MLE Tutorial
 
-This website is built using [Docusaurus 2](https://docusaurus.io/), a modern static website generator.
+"머신러닝 엔지니어를 위한 MLOps" 튜토리얼 문서가 있는 레포입니다.
 
-### Installation
+## How to start
+### Install npm
 
-```
-$ yarn
-```
+이 레포는 [Docusaurus 2](https://docusaurus.io/) 로 build 되며 백엔드는 npm을 사용합니다.
 
-### Local Development
+- 요구사항
+    - `Node.js>=16.14`
 
-```
-$ yarn start
-```
 
-This command starts a local development server and opens up a browser window. Most changes are reflected live without having to restart the server.
+### Check local build
 
-### Build
+수정한 후 로컬에서 실행이 되는지 확인합니다.
 
-```
-$ yarn build
+```bash
+npm run start
 ```
 
-This command generates static content into the `build` directory and can be served using any static contents hosting service.
+### pre-commit
+pre-commit 을 통과하는지 확인합니다.
 
-### Deployment
-
-Using SSH:
-
-```
-$ USE_SSH=true yarn deploy
+```bash
+pre-commit run --all-files
 ```
 
-Not using SSH:
-
-```
-$ GIT_USER=<Your GitHub username> yarn deploy
-```
-
-If you are using GitHub pages for hosting, this command is a convenient way to build the website and push to the `gh-pages` branch.
+## How to Contribute?
+TBD
