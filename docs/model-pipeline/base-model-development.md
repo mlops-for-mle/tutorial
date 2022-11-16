@@ -1,8 +1,8 @@
 ---
-sidebar_position: 2
+sidebar_position: 1
 ---
 
-# 2. base-model-pipeline
+# 1. Base Model Development
 
 ## 목표
 
