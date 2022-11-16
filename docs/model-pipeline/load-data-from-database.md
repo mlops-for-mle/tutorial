@@ -108,21 +108,11 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 # 1. get data
-db_connect = psycopg2.connect(
-    host="localhost",
-    database="postgres",
-    user="postgres",
-    password="mypassword",
-)
+db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
 df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 10", db_connect)
 X = df.drop(["id", "target"], axis="columns")
 y = df["target"]
-X_train, X_valid, y_train, y_valid = train_test_split(
-    X,
-    y,
-    train_size=0.8,
-    random_seed=2022,
-)
+X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 
 # 2. model development and train
 rf = RandomForestClassifier()
@@ -138,14 +128,17 @@ print("Train Accuracy :", train_acc)
 print("Valid Accuracy :", valid_acc)
 
 # 3. save model
-joblib.dump(rf, "rf.joblib")
+joblib.dump(rf, "db_rf.joblib")
 
+# 4. save data
+df.to_csv("data.csv", index=False)
 ```
 
 ### 2.2 `validate_save_model.py`
 
 다음은 저장된 모델을 검증하는 `base_validate_save_model.py` 를 수정해 `db_validate_save_model.py` 로 저장합니다 입니다.
 `# 1. reproduce data` 에서 저장된 데이터를 불러오게 수정합니다. 나머지 부분은 이 전 장과 동일합니다.
+
 ```python
 # db_validate_save_model.py
 
@@ -155,18 +148,13 @@ from sklearn.metrics import accuracy_score
 from sklearn.model_selection import train_test_split
 
 # 1. reproduce data
-df = pd.load_csv("data.csv")
+df = pd.read_csv("data.csv")
 X = df.drop(["id", "target"], axis="columns")
 y = df["target"]
-X_train, X_valid, y_train, y_valid = train_test_split(
-    X,
-    y,
-    train_size=0.8,
-    random_seed=2022,
-)
+X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 
 # 2. load model
-rf_load = joblib.load("rf.joblib")
+rf_load = joblib.load("db_rf.joblib")
 
 # 3. validate
 load_train_pred = rf_load.predict(X_train)
