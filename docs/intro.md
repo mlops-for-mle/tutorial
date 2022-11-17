@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# 01. Introduction
+# 00. Introduction
 ## Introduction
 
 2022년 MLOps 에 대한 관심은 폭발적으로 증가했습니다. [그림 1-1] 은 “MLOps” 키워드에 대한 구글 트랜드 그래프입니다. 2022년을 기점으로 검색량이 폭발적으로 증가한 것을 확인할 수 있습니다.
