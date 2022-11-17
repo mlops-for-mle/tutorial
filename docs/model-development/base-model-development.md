@@ -218,8 +218,6 @@ print("Load Model Valid Accuracy :", load_valid_acc)
 우선 학습 및 데이터 저장을 위한 코드들을 모은 `base_train.py` 입니다.
 
 ```python
-# base_train.py
-
 import joblib
 from sklearn.datasets import load_iris
 from sklearn.metrics import accuracy_score
