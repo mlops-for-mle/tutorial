@@ -34,26 +34,21 @@ $ pip install psycopg2-binary
 `id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
 
 ```sql
-SELECT * FROM iris_data ORDER BY id DESC LIMIT 10;
+SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 ```
 
 `psql` 에서 해당 쿼리문을 입력하면 다음과 같이 출력됩니다.
 
 ```sql
-postgres=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 10;
-  id  | sepal_width | sepal_length | petal_width | petal_length | target
-------+-------------+--------------+-------------+--------------+--------
- 5789 |         4.4 |            3 |         1.3 |          0.2 |      0
- 5788 |         5.1 |          3.7 |         1.5 |          0.4 |      0
- 5787 |           5 |          3.4 |         1.6 |          0.4 |      0
- 5786 |         5.3 |          3.7 |         1.5 |          0.2 |      0
- 5785 |           5 |            3 |         1.6 |          0.2 |      0
- 5784 |         6.1 |            3 |         4.9 |          1.8 |      2
- 5783 |         6.7 |            3 |           5 |          1.7 |      1
- 5782 |         6.9 |          3.1 |         5.4 |          2.1 |      2
- 5781 |         6.8 |          3.2 |         5.9 |          2.3 |      2
- 5780 |         5.9 |          3.2 |         4.8 |          1.8 |      1
-(10 rows)
+mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
+  id  | sepal_length | sepal_width | petal_length | petal_width | target
+------+--------------+-------------+--------------+-------------+--------
+ 3499 |          5.4 |         3.9 |          1.7 |         0.4 |      0
+ 3498 |          6.4 |         2.8 |          5.6 |         2.1 |      2
+ 3497 |          6.3 |         2.3 |          4.4 |         1.3 |      1
+ 3496 |          5.4 |         3.9 |          1.7 |         0.4 |      0
+ 3495 |          5.5 |         4.2 |          1.4 |         0.2 |      0
+(...)
 ```
 
 `pandas.read_sql` 는 입력 argument로 Query문과 DB Connection을 받습니다.
@@ -65,29 +60,24 @@ import pandas as pd
 import psycopg2
 
 db_connect = psycopg2.connect(host="localhost", database="postgres", user="postgres", password="mypassword")
-df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 10", db_connect)
+df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
 ```
 
 추출된 데이터를 확인하면 다음과 같습니다.
 
 ```python
-print(df)
-#      id  sepal_width  sepal_length  petal_width  petal_length  target
-# 0  5824          6.0           2.2          5.0           1.5       2
-# 1  5823          5.7           4.4          1.5           0.4       0
-# 2  5822          6.0           2.7          5.1           1.6       1
-# 3  5821          6.3           2.3          4.4           1.3       1
-# 4  5820          4.8           3.4          1.9           0.2       0
-# 5  5819          4.5           2.3          1.3           0.3       0
-# 6  5818          6.7           3.3          5.7           2.1       2
-# 7  5817          5.2           4.1          1.5           0.1       0
-# 8  5816          5.7           4.4          1.5           0.4       0
-# 9  5815          5.4           3.0          4.5           1.5       19
+print(df.head(5))
+#      id  sepal_length  sepal_width  petal_length  petal_width  target
+# 0  3499          5.4           3.9          1.7           0.4       0
+# 1  3498          6.4           2.8          5.6           2.1       2
+# 2  3497          6.3           2.3          4.4           1.3       1
+# 3  3496          5.4           3.9          1.7           0.4       0
+# 4  3495          5.5           4.2          1.4           0.2       0
 ```
 
 ## 2. 모델 파이프라인 수정
 
-### **2.1** `db_**train.py**`
+### 2.1 `db_train.py`
 
 우선 학습 및 데이터 저장을 위한 코드들을 모은 `base_train.py` 를 수정해 `db_train.py` 로 저장합니다.
 
@@ -111,7 +101,7 @@ from sklearn.svm import SVC
 
 # 1. get data
 db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
-df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 10", db_connect)
+df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
 X = df.drop(["id", "target"], axis="columns")
 y = df["target"]
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
