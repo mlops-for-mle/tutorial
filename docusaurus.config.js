@@ -38,14 +38,14 @@ const config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/mlops-for-all/mlops-for-mle.github.io/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/mlops-for-mle/tutorial/tree/main/',
         },
         blog: {
           showReadingTime: true,
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/mlops-for-all/mlops-for-mle.github.io/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/mlops-for-mle/tutorial/tree/main/',
         },
         theme: {
           customCss: require.resolve('./src/css/custom.css'),
@@ -71,7 +71,7 @@ const config = {
             label: 'Documentation',
           },
           {
-            href: 'https://github.com/facebook/docusaurus',
+            href: 'https://github.com/mlops-for-mle/mlops-for-mle',
             label: 'GitHub',
             position: 'right',
           },
@@ -80,7 +80,7 @@ const config = {
       footer: {
         style: 'dark',
         links: [],
-        copyright: `Copyright © ${new Date().getFullYear()} My Project, Inc. Built with Docusaurus.`,
+        copyright: `Copyright © ${new Date().getFullYear()} MakinaRocks. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,
