@@ -87,7 +87,7 @@ DB service 와 data generator service 를 띄우는 `docker-compose` 파일을 �
 ```yaml
 version: "3"
 services:
-	
+  
 ```
 
 - `version` : `docker-compose` 의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
@@ -137,8 +137,8 @@ services:
     environment:
       TZ: Asia/Seoul
     command: ["postgres-server"]
-		depends_on: 
-			- postgres-server
+    depends_on: 
+      - postgres-server
 ```
 
 - `build` : `Dockerfile` 을 build 하기 위해 `Dockerfile` 이 있는 경로를 설정합니다.
@@ -175,8 +175,8 @@ services:
     environment:
       TZ: Asia/Seoul
     command: ["postgres-server"]
-		depends_on: 
-			- postgres-server
+    depends_on: 
+      - postgres-server
 ```
 
 `docker compose up` 명령어를 이용하여 service 들을 띄워보겠습니다.
