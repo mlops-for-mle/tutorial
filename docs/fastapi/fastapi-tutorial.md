@@ -57,7 +57,7 @@ $ uvicorn main:app --reload
 ```
 
 - `uvicorn` : FastAPI 를 실행하는 웹 서버 실행 Command Line Tool 입니다.
-- `main` : 위에서 작성한 python 스크립트 `main.py` 를 의미합니다.
+- `main` : 위에서 작성한 python 모듈 `main.py` 를 의미합니다.
 - `app` : `main.py` 에서 `app = FastAPI()` 를 통해 생성된 객체를 의미합니다.
 - `--reload` : 코드가 바뀌었을 때 서버가 재시작할 수 있도록 해주는 옵션입니다.
 
@@ -109,13 +109,13 @@ app = FastAPI()
 
 “Operation” 은 POST, GET, PUT, DELETE 등과 같은 HTTP “methods” 를 의미합니다.
 
-이러한 operation 을 수행하기 위해 `@app.get("/")` 같은 *path operation decorator* 를 사용합니다.
+이러한 operation 을 수행하기 위해 `@app.get("/")` 와 같은 *path operation decorator* 를 사용합니다.
 
 `@app.get("/")` 은 FastAPI 로 하여금 path `/` 로 가서 `get` operation 을 수행하라는 의미로 사용할 수 있습니다.
 
 ### 2.4 Step 4: Define the path operation function
 
-Path operation function 은 path operation 이 수행되었을 때 호출될 Python 함수를 말합니다.
+Path operation function 은 path operation 이 수행되었을 때 호출될 python 함수를 말합니다.
 
 다음과 같은 형태로 사용되었습니다.
 
@@ -129,13 +129,13 @@ def read_root():
 
 Path operation function 을 통해 return 하는 값으로는 `dict` , `list` , `str` , `int` 등이 가능합니다.
 
-또한, 뒤에서 나올 Pydantic models 의 형태로도 return 할 수 있습니다.
+또한, 뒤에서 나올 Pydantic model 의 형태로도 return 할 수 있습니다.
 
 ## 3. Path Parameter 이해하기
 
-Path Parameter 는 Path operation 에 포함된 변수로 사용자에게 입력받아 function 의 argument 로 사용되는 parameter 를 의미합니다. [[Path Parameters](https://fastapi.tiangolo.com/tutorial/path-params/)]
+Path Parameter 는 path operation 에 포함된 변수로 사용자에게 입력받아 function 의 argument 로 사용되는 parameter 를 의미합니다. [[Path Parameters](https://fastapi.tiangolo.com/tutorial/path-params/)]
 
-다음과 같이 `path_param.py` 를 작성하고 `uvicorn path_param:app --reload` 를 통해 실행합니다.
+다음과 같이 `path_param.py` 를 작성하고 `uvicorn path_param:app --reload` 를 입력하여 실행합니다.
 
 ```python
 # path_param.py
@@ -150,13 +150,13 @@ def read_item(item_id: int):
 		return {"item_id": item_id}
 ```
 
-이와 같은 형태로 path 에 parameter 를 입력하도록 할 수 있습니다.
+위와 같이 path 에 parameter 를 입력하도록 할 수 있습니다.
 
-이렇듯 `item_id` 와 같은 parameter 를 Path Parameter 라고 합니다.
+여기에서 `item_id` 와 같은 parameter 를 Path Parameter 라고 합니다.
 
 입력된 Path parameter 의 값은 function 에 argument 로 전달되어 함수가 호출됩니다.
 
-또한, `def read(item_id: int)` 와 같이 `int` 라는 type 을 제공할 수 있는데 이 때 제공된 것과 다른 type (예를 들어 `str`) 의 데이터가 입력 되었을 때 다음과 같은 형태로 HTTP Error 를 나타내게 됩니다.
+또한, `def read(item_id: int)` 와 같이 type (여기에서는 `int`)을 제공할 수 있는데 이 때 제공된 것과 다른 type (예를 들어 `str`) 의 데이터가 입력되면 다음과 같은 형태로 HTTP Error 를 return 하게 됩니다.
 
 ```json
 {
@@ -177,7 +177,7 @@ def read_item(item_id: int):
 
 Query Parameter 는 function parameter 로는 사용되지만 path operation 에 포함되지 않아 Path Parameter 라고 할 수 없는 parameter 를 의미합니다. [[Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/)]
 
-다음과 같이 `query_param.py` 를 작성하고 `uvicorn query_param:app --reload` 를 통해 실행합니다.
+다음과 같이 `query_param.py` 를 작성하고 `uvicorn query_param:app --reload` 를 입력하여 실행합니다.
 
 ```python
 # query_param.py
@@ -186,11 +186,7 @@ from fastapi import FastAPI
 # Create a FastAPI instance
 app = FastAPI()
 
-fake_items_db = [
-		{"item_name": "Foo"},
-		{"item_name": "Bar"},
-		{"item_name": "Baz"}
-]
+fake_items_db = [{"item_name": "Foo"}, {"item_name": "Bar"}, {"item_name": "Baz"}]
 
 
 @app.get("/items/")
@@ -202,13 +198,13 @@ Path parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 
 
 Query 는 URL 에서 `?` 뒤에 key-value 쌍의 형태로 나타나고, `&` 로 구분되어 사용됩니다.
 
-예를 들면, 위와 같은 경우 `http://127.0.0.1:8000/items/?skip=0&limit=10` 과 같은 형태로 사용할 수 있습니다.
+예를 들면, 위와 같은 경우 `http://localhost:8000/items/?skip=0&limit=10` 과 같은 형태로 사용할 수 있습니다.
 
-Query Parameter 는 path 의 고정된 부분이 아니기 때문에, optional 로 사용될 수 있고 이에 따라 default 값을 가질 수 있습니다. 
+Query Parameter 는 path 의 고정된 부분이 아니기 때문에 optional 로 사용될 수 있고, 따라서 default 값을 가질 수 있습니다. 
 
 위의 예시에서는 `skip=0` 과 `limit=10` 의 default 값을 가지고 있습니다.
 
-하지만 항상 default 값을 가지는 것은 아니고, 경우에 따라 값을 입력받아야 하지만 path operation 에는 포함이 되어 있지 않아 query parameter 로 구분되는 경우도 존재합니다.
+하지만 항상 default 값을 가지는 것은 아니고, 값을 입력받아야만 하는 query parameter 도 존재합니다.
 
 이를 Required Query Parameter 라고 하고 다음과 같은 형태로 사용할 수 있습니다.
 
@@ -221,9 +217,9 @@ def read_user_item(item_id: str, needy: str):
 
 위의 예시에서 `needy` 는 path operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 query parameter 이고, function `read_user_item()` 에서 default 값이 존재하지 않기 때문에 required query parameter 임을 알 수 있습니다.
 
-이러한 경우 `http://127.0.0.1:8000/items/foo-item` 와 같이 `needy` 를 입력해주지 않으면 에러가 발생합니다.
+이러한 경우 `http://localhost:8000/items/foo-item` 와 같이 `needy` 를 입력해주지 않으면 에러가 발생합니다.
 
-따라서 `http://127.0.0.1:8000/items/foo-item?needy=someneedy` 와 같은 형태로 `?` 뒤에 입력을 해 주어야 에러가 발생하지 않고 함수가 제대로 동작합니다.
+따라서 `http://localhost:8000/items/foo-item?needy=someneedy` 와 같은 형태로 `?` 뒤에 입력을 해 주어야 에러가 발생하지 않고 함수가 제대로 동작합니다.
 
 ## 5. Multiple path and query parameters 사용해보기
 
@@ -242,15 +238,13 @@ app = FastAPI()
 
 
 @app.get("/users/{user_id}/items/{item_id}")
-def read_user_item(
-    user_id: int, item_id: str, q: Union[str, None] = None, short: bool = False
-):
+def read_user_item(user_id: int, item_id: str, q: Union[str, None] = None, short: bool = False):
     item = {"item_id": item_id, "owner_id": user_id}
     if q:
         item.update({"q": q})
     if not short:
         item.update(
-            {"description": "This is an amazing item that has a long description"}
+            {"description": "This is an amazing item that has a long description"},
         )
     return item
 ```
@@ -265,7 +259,7 @@ def read_user_item(
 
 다음과 같은 형태로 URL 을 줄 수 있을 것입니다.
 
-- `http:127.0.0.1:8000/users/3/items/foo-item?q=hello&short=True`
-- `http:127.0.0.1:8000/users/3/items/foo-item?short=True`
-- `http:127.0.0.1:8000/users/3/items/foo-item?q=hello`
-- `http:127.0.0.1:8000/users/3/items/foo-item`
+- `http://localhost:8000/users/3/items/foo-item?q=hello&short=True`
+- `http://localhost:8000/users/3/items/foo-item?short=True`
+- `http://localhost:8000/users/3/items/foo-item?q=hello`
+- `http://localhost:8000/users/3/items/foo-item`
