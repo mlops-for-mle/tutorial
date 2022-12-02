@@ -74,9 +74,9 @@ print(model_pipeline)
 
 #### 1.2.2 `pyfunc` 모델 불러오기
 
-`mlflow` 에서는 지정한 방식[[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는, 어떤 모델이라도 `mlflow.pyfunc.load_model` 을 이용해 쉽게 모델을 불러올 수 있습니다.
+`mlflow` 에서는 지정한 방식[[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는 종류에 관계없이 `mlflow.pyfunc.load_model` 을 이용해 쉽게 모델을 불러올 수 있습니다.
 
-로드된 모델은 `mlflow.pyfunc.PyFuncModel` class 로 불러와집니다. `PyFuncModel` 이란 `mlflow` 에서 정의된 새로운 클래스로, 결과 추론을 위해 학습한 모델의 `predict` method 를 호출하도록 wrapping 된 클래스입니다.
+이 때 로드된 모델은 기존의 클래스가 아닌 `mlflow.pyfunc.PyFuncModel` 클래스로 불러와집니다. `PyFuncModel` 이란 `mlflow` 에서 정의된 새로운 클래스로, 결과 추론을 위해 학습한 모델의 `predict` method 를 호출하도록 wrapping 된 클래스입니다.
 
 ```python
 parser = ArgumentParser()
