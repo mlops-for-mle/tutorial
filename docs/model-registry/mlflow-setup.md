@@ -9,11 +9,11 @@ sidebar_position: 1
 
 ## 스펙 명세서
 
-1. MLflow 의 운영 정보, 모델 결과 등을 저장 할 물리적인 데이터베이스 Postgres 서버를 정의합니다.
+1. MLflow 의 운영 정보, 모델 결과 등을 저장 할 물리적인 데이터베이스 Postgres 서버 스펙을 정의합니다.
     - `POSTGRES_USER` : `myuser`
     - `POSTGRES_PASSWORD` : `mypassword`
     - `POSTGRES_DB` : `mydatabase`
-2. 학습된 모델을 저장 할 물리적인 저장 공간인 MinIO 를 정의 합니다.
+2. 학습된 모델을 저장 할 물리적인 저장 공간인 MinIO 스펙을 정의 합니다.
     - `MINIO_ROOT_USER` : `mystorage`
     - `MINO_ROOT_PASSWORD` : `mystoragepw`
     - `Port forwarding`
@@ -26,8 +26,10 @@ sidebar_position: 1
     - docker-compose
         - `MinIO` 에 접속 할 수 있도록, `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 를 적절하게 설정합니다.
         - `MinIO` client 를 설치하고, MinIO 의 default bucket 을 생성하도록 command 를 작성합니다.
-        - MLflow의 server가 실행 되도록 command 를 작성합니다.
+        - MLflow server를 띄우는 command 를 작성합니다.
         - `Port forwarding` : 5001:5000
+          - 원래 `MLflow` 에서는 default로 5000 포트를 사용합니다.
+          - 하지만 **MacOS**의 경우 5000번 포트로 "AirPlay" 기능을 사용 중이기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `psql` 로 DB에 접속이 잘 되는지 확인 합니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
