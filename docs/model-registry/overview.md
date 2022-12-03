@@ -11,7 +11,7 @@ sidebar_position: 0
 
 이번 챕터를 끝내고 나면, 아래의 그림과 같은 모습의 workflow 를 경험하실 수 있습니다.
 
-아래 그림은, [MLflow의 공식 Tracking scenario 4](https://www.mlflow.org/docs/latest/tracking.html#scenario-4-mlflow-with-remote-tracking-server-backend-and-artifact-stores)를 기반으로 작성 되었습니다.
+아래 **그림 3-1**은, [MLflow의 공식 Tracking scenario 4](https://www.mlflow.org/docs/latest/tracking.html#scenario-4-mlflow-with-remote-tracking-server-backend-and-artifact-stores)를 기반으로 작성 되었습니다.
 
 <div style={{textAlign: 'center'}}>
 
