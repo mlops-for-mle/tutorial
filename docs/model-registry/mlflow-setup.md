@@ -27,7 +27,7 @@ sidebar_position: 1
         - `MinIO` 에 접속 할 수 있도록, `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 를 적절하게 설정합니다.
         - `MinIO` client 를 설치하고, MinIO 의 default bucket 을 생성하도록 command 를 작성합니다.
         - MLflow의 server가 실행 되도록 command 를 작성합니다.
-        - `Port forwarding` : 5000:5000
+        - `Port forwarding` : 5001:5000
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `psql` 로 DB에 접속이 잘 되는지 확인 합니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
@@ -183,7 +183,7 @@ mlflow-server:
     dockerfile: ./Dockerfile
   container_name: mlflow-server
   ports:
-    - 5000:5000
+    - 5001:5000
   environment:
     AWS_ACCESS_KEY_ID: minio
     AWS_SECRET_ACCESS_KEY: miniostorage
@@ -207,7 +207,7 @@ mlflow-server:
 
 - `platform` : 사용 할 OS 환경을 설정 합니다.
 - `build` : 앞서 작성한 `Dockerfile` 을 사용하여 이미지를 빌드 하도록 합니다.
-- `ports` : mlflow server 에 접근할 수 있도록 5000:5000 을 설정합니다.
+- `ports` : mlflow server 에 접근할 수 있도록 5001:5000 을 설정합니다.
 - `environment`
     - `AWS_ACCESS_KEY_ID` : AWS S3 의 credential 정보입니다. 이번 경우에는 `MinIO` 의 `MINIO_ROOT_USER` 와 동일합니다.
     - `AWS_SECRET_ACCESS_KEY` : AWS S3 의 credential 정보입니다. 이번 경우에는 `MinIO` 의 `MINIO_ROOT_PASSWORD` 와 동일합니다.
@@ -286,7 +286,7 @@ services:
       dockerfile: ./Dockerfile
     container_name: mlflow-server
     ports:
-      - 5000:5000
+      - 5001:5000
     environment:
       AWS_ACCESS_KEY_ID: minio
       AWS_SECRET_ACCESS_KEY: miniostorage

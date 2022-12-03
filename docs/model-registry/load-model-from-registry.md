@@ -39,7 +39,7 @@ sidebar_position: 3
 import os
 
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 ```
@@ -152,7 +152,7 @@ from sklearn.model_selection import train_test_split
 
 # 0. set mlflow environments
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
@@ -184,7 +184,7 @@ print("Valid Accuracy :", valid_acc)
 
 ### 2.2 실행 및 결과 확인
 
-1. [localhost:5000](http://localhost:5000) 에 접속하여 저장된 모델의 `run` 을 클릭하여 `run_id` 와 `model_name` 를 확인합니다.
+1. [localhost:5001](http://localhost:5001) 에 접속하여 저장된 모델의 `run` 을 클릭하여 `run_id` 와 `model_name` 를 확인합니다.
     <div style={{textAlign: 'center'}}>
 
     ![Model Download diagram](./img/model-registry-9.png)

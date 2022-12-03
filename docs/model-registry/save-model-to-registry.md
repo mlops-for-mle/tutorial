@@ -109,14 +109,14 @@ df.to_csv("data.csv", index=False)
 import os
 
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 ```
 
 - `os` 라이브러리를 이용해 시스템의 환경변수를 설정합니다.
     - `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 storage 의 주소입니다. 앞 장에서 storage 로 Minio를 설정했기 때문에 주소는 `http://localhost:9000` 입니다.
-    - `MLFLOW_TRACKING_URI` : MLflow 의 주소 입니다. 앞 장에서 MLflow 서버의 주소와 같으며 `http://localhost:5000` 입니다.
+    - `MLFLOW_TRACKING_URI` : MLflow 의 주소 입니다. 앞 장에서 MLflow 서버의 주소와 같으며 `http://localhost:5001` 입니다.
     - `AWS_ACCESS_KEY_ID` : `MinIO` 에 접근하기 위한 ID 입니다. 앞 장에서 설정한 `MINIO_ROOT_USER` 인 `minio` 를 사용합니다.
     - `AWS_SECRET_ACCESS_KEY` : `MinIO` 에 접근하기 위한 PW 입니다. 앞 장에서 설정한 `MINIO_ROOT_PASSWORD` 인 `miniostorage` 를 사용합니다.
 
@@ -227,7 +227,7 @@ from sklearn.svm import SVC
 
 # 0. set mlflow environments
 os.environ["MLFLOW_S3_ENDPOINT_URL"] = "http://localhost:9000"
-os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5000"
+os.environ["MLFLOW_TRACKING_URI"] = "http://localhost:5001"
 os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
@@ -292,7 +292,7 @@ $ python upload_model.py --model-name "sk_model" --run-name "scaler+svc"
 
 ### 2.3 Mlflow에서 결과 확인
 
-코드 실행의 결과를 [localhost:5000](http://localhost:5000)(mlflow server) 에서 확인합니다.
+코드 실행의 결과를 [localhost:5001](http://localhost:5001)(mlflow server) 에서 확인합니다.
 
 <div style={{textAlign: 'center'}}>
 
