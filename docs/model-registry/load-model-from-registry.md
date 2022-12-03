@@ -22,7 +22,7 @@ sidebar_position: 3
 
 <div style={{textAlign: 'center'}}>
 
-![Model Download diagram](./img/model-registry-8.png)
+![Model Download diagram](./img/model-registry-9.png)
 [그림 3-8] MLflow Model Upload Diagram
 </div>
 
@@ -187,7 +187,7 @@ print("Valid Accuracy :", valid_acc)
 1. [localhost:5001](http://localhost:5001) 에 접속하여 저장된 모델의 `run` 을 클릭하여 `run_id` 와 `model_name` 를 확인합니다.
     <div style={{textAlign: 'center'}}>
 
-    ![Model Download diagram](./img/model-registry-9.png)
+    ![Model Download diagram](./img/model-registry-10.png)
     [그림 3-9] `run-id` 및 `model-name` 확인
     </div>    
 2. 아래 코드의 `--model-name` , `--run-id` 뒤에 해당 값을 사용해 실행합니다.
@@ -199,6 +199,6 @@ print("Valid Accuracy :", valid_acc)
 3. MLflow server 의 metrics 를 확인하여 학습 했던 결과와 같은지 확인합니다.
     <div style={{textAlign: 'center'}}>
 
-    ![Model Download diagram](./img/model-registry-10.png)
+    ![Model Download diagram](./img/model-registry-11.png)
     [그림 3-10] 모델 추론 결과 확인
     </div>

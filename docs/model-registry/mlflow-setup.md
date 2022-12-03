@@ -4,8 +4,8 @@ sidebar_position: 1
 # 1) MLflow Setup
 ## 목표
 
-- docker compose를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
-- 외부 상황을 가정하여 mlflow의 구성 요소 각각을 이해합니다.
+1. docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
+2. 외부 상황을 가정하여 mlflow 의 구성 요소 각각을 이해합니다.
 
 ## 스펙 명세서
 
@@ -17,8 +17,8 @@ sidebar_position: 1
     - `MINIO_ROOT_USER` : `mystorage`
     - `MINO_ROOT_PASSWORD` : `mystoragepw`
     - `Port forwarding`
-        - 9000:9000
-        - 9001:9001
+        - api: 9000:9000
+        - console: 9001:9001
 3. 모델과 모델의 결과등의 정보를 관리할 MLFlow server 를 정의 합니다.
     - 앞서 띄워둔 `Postgres` , `MinIO` 두 가지 서버를 연결 합니다.
     - Dockerfile
@@ -47,7 +47,7 @@ sidebar_position: 1
 
 수치에 관련된 데이터들을 저장하고, mlflow 서버의 정보들을 체계적으로 관리하기위해 RDBMS 서버를 사용하며 이를 **Backend store** 라고 합니다. 예를 들어서 accuracy, precision, recall, f1-score, loss, hyperparmameters 등의 수치들과 run_id, run_name, experiment_name 등의 `mlflow` 의 meta data 가 저장 됩니다.
 
-이번 챕터에서는 Backend Store 로 `01. Database` 챕터에서 배운 Postgres를 사용합니다.
+이번 챕터에서는 Backend Store 로 `01. Database` 챕터에서 사용한 Postgres를 사용합니다.
 
 ### 1.2 Postgres Server docker-compose
 
@@ -66,11 +66,11 @@ mlflow-backend-store:
     POSTGRES_PASSWORD: mlflowpassword
     POSTGRES_DB: mlflow
     TZ: Asia/Seoul
-	healthcheck:
-	  test: ["CMD", "pg_isready", "-q", "-U", "mlflowuser", "-d", "mlflow"]
-	  interval: 10s
-	  timeout: 5s
-	  retries: 5
+  healthcheck:
+    test: ["CMD", "pg_isready", "-q", "-U", "mlflowuser", "-d", "mlflow"]
+    interval: 10s
+    timeout: 5s
+    retries: 5
 ```
 
 - `image` : Postgres 서버에서 사용할 이미지는 `postgres:14.0` 입니다.
@@ -87,9 +87,8 @@ mlflow-backend-store:
 
 MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하기 위해 스토리지 서버를 사용 할 수 있는데 이를 **Artifact store** 라고 합니다. Artifact Store 를 이용하면 기본적인 파일 시스템 보다, 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
 
-이번 챕터에서는 Artifact Store 로 MinIO 서버를 사용합니다.
-
 ### 2.2 Why MinIO?
+이번 챕터에서는 Artifact Store 로 MinIO 서버를 사용하는데 그 이유는 다음과 같습니다.
 
 - [MinIO](https://en.wikipedia.org/wiki/MinIO) 는 S3 를 대체 할 수 있는 오픈 소스 고성능 개체 storage 입니다.
 - AWS S3 의 API 와도 호환되어 sdk 도 동일하게 사용 할 수 있습니다.
@@ -116,11 +115,11 @@ mlflow-artifact-store:
     MINIO_ROOT_USER: minio
     MINIO_ROOT_PASSWORD: miniostorage
   command: server /data/minio --console-address :9001
-	healthcheck:
-	  test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-	  interval: 30s
-	  timeout: 20s
-	  retries: 3
+  healthcheck:
+    test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
 ```
 
 - `image` : Minio 서버에서 사용할 이미지는 `minio/minio` 입니다.
@@ -135,21 +134,14 @@ mlflow-artifact-store:
 
 ## 3. MLflow server
 
-1. MLflow 에 필요한 패키지가 설치된 이미지를 만들기 위해 `Dockerfile` 을 작성합니다.
-2. MLflow 의 스펙을 `docker-compose` 의 `services` 탭 밑에 정의합니다. 작성할 순서는 아래와 같습니다.
-    1. `MinIO` 에 연결하기위한 계정 정보를 환경변수를 활용해 설정합니다.
-    2. 모델을 저장할 때 사용 될 `MinIO` bucket 을 생성합니다.
-    3. mlflow server를 띄우는 명령어를 작성합니다.
-        - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
-        - `MinIO` 에 연결하기 위한 keyword argument 를 추가합니다.
+앞서 만든 **Backend-store** 와 **Artifact-store** 에 연결된 **MLflow-server**를 띄웁니다.  
 
 ### 3.1 Dockerfile
 
-MLflow 서버에 필요한 패키지가 설치된 이미지를 build 할 Dockerfile 을 작성합니다.
-
+MLflow 서버에 필요한 패키지가 설치된 이미지를 build 할 Dockerfile 을 작성합니다.  
 서버를 띄울때, MinIO 에 초기 bucket 을 생성하기 위해 MinIO Client 도 함께 설치합니다.
 
-`**Dockerfile**`
+**`Dockerfile`**
 
 ```docker
 FROM amd64/python:3.9-slim
@@ -174,12 +166,16 @@ RUN cd /tmp && \
 - `RUN cd /tmp &&` ~ : 앞서 설치한 `wget` 을 활용하여 `MinIO` client 를 설치합니다.
 
 ### 3.2 MLflow Server docker-compose
+작성된 `Dockerfile`을 사용하여 `docker-compose` 의 `services` 탭 밑에 정의합니다. 
+  1. `MinIO` 에 연결하기위한 계정 정보를 환경변수를 활용해 설정합니다.
+  2. 모델을 저장할 때 사용 될 `MinIO` bucket 을 생성합니다.
+  3. mlflow server를 띄우는 명령어를 작성합니다.
+      - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
+      - `MinIO` 에 연결하기 위한 keyword argument 를 추가합니다.
 
 **`docker-compose.yaml`**
-
 ```yaml
 mlflow-server:
-  platform: linux/amd64
   build:
     context: .
     dockerfile: ./Dockerfile
@@ -327,5 +323,13 @@ $ docker compose up -d
   <div style={{textAlign: 'center'}}>
 
     ![MinIO ui](./img/model-registry-4.png)
-    [그림 3-4] MinIO UI
+    [그림 3-4] MinIO Login 화면
+  </div>
+  
+  `MinIO` 에 로그인할 수 있는 아이디는 위에서 설정한 minio / miniostorage 입니다.    
+  해당 정보로 로그인하면 **그림 3-5** 와 같은 화면이 보입니다.
+  <div style={{textAlign: 'center'}}>
+
+    ![MinIO ui](./img/model-registry-5.png)
+    [그림 3-5] MinIO 접속 화면
   </div>

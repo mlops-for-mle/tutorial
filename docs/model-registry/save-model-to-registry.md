@@ -26,7 +26,7 @@ sidebar_position: 2
 
 <div style={{textAlign: 'center'}}>
 
-![Model Upload diagram](./img/model-registry-5.png)
+![Model Upload diagram](./img/model-registry-6.png)
 [그림 3-5] MLflow Model Upload Diagram
 </div>
 
@@ -126,7 +126,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 `experiment` 의 경우 이름을 지정하지 않으면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다. 
 
-![MLflow ui-1](./img/model-registry-6.png)
+![MLflow ui-1](./img/model-registry-7.png)
 
 이어서 `02. Model Development` 챕터의 **모델**과 **모델의 결과 metric** 인 정확도를 저장해 보겠습니다.
 
@@ -296,12 +296,12 @@ $ python upload_model.py --model-name "sk_model" --run-name "scaler+svc"
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui-1](./img/model-registry-6.png)
+![MLflow ui-1](./img/model-registry-7.png)
 [그림 3-6] 모델 저장 결과
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui-2](./img/model-registry-7.png)
+![MLflow ui-2](./img/model-registry-8.png)
 [그림 3-7] 모델 저장 결과 상세
 </div>
