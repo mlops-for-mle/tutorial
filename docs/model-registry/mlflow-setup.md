@@ -5,7 +5,7 @@ sidebar_position: 1
 ## 목표
 
 1. docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
-2. 외부 상황을 가정하여 mlflow 의 구성 요소 각각을 이해합니다.
+2. 서비스 상황을 가정하여 mlflow 의 구성 요소 각각을 이해합니다.
 
 ## 스펙 명세서
 
@@ -22,16 +22,16 @@ sidebar_position: 1
 3. 모델과 모델의 결과등의 정보를 관리할 MLFlow server 를 정의 합니다.
     - 앞서 띄워둔 `Postgres` , `MinIO` 두 가지 서버를 연결 합니다.
     - Dockerfile
-        - MLflow 에 관련된 패키지가 설치된 Dockerfile 을 정의합니다.
+        - MLflow 에 관련된 패키지가 설치된 이미지를 생성하기위한 Dockerfile 을 정의합니다.
+        - Artifact-store 인 `MinIO` 에 초기 버켓을 생성 하기 위해 `MinIO` Client 도 함께 설치되도록 합니다.
     - docker-compose
-        - `MinIO` 에 접속 할 수 있도록, `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 를 적절하게 설정합니다.
-        - `MinIO` client 를 설치하고, MinIO 의 default bucket 을 생성하도록 command 를 작성합니다.
+        - `MinIO` 의 접속 정보를 `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 변수를 통해 적절하게 설정합니다.
+        - `MinIO` client 를 설치하고, MinIO 의 초기 버켓을 생성하도록 command 를 작성합니다.
         - MLflow server를 띄우는 command 를 작성합니다.
         - `Port forwarding` : 5001:5000
-          - 원래 `MLflow` 에서는 default로 5000 포트를 사용합니다.
-          - 하지만 **MacOS**의 경우 5000번 포트로 "AirPlay" 기능을 사용 중이기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
+          - `MLflow` 에서는 default 로 5000 포트를 사용합니다.
+          - 하지만 **MacOS** 의 경우 5000번 포트로 "AirPlay" 기능을 사용하기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
-    - `psql` 로 DB에 접속이 잘 되는지 확인 합니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
     - `localhost:5000` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
 ---
@@ -45,7 +45,7 @@ sidebar_position: 1
 
 ### 1.1 Backend Store
 
-수치에 관련된 데이터들을 저장하고, mlflow 서버의 정보들을 체계적으로 관리하기위해 RDBMS 서버를 사용하며 이를 **Backend store** 라고 합니다. 예를 들어서 accuracy, precision, recall, f1-score, loss, hyperparmameters 등의 수치들과 run_id, run_name, experiment_name 등의 `mlflow` 의 meta data 가 저장 됩니다.
+수치 데이터와 mlflow 서버의 정보들을 체계적으로 관리하기위해 데이터 베이스를 사용합니다. 이를 **Backend store** 라고 합니다. **Backend store** 에는 accuracy, f1-score 같은 metric , 모델이 학습되면서 생기는 loss , 모델 자체의 정보인 hyperparmameters 등의 값들과 run_id, run_name, experiment_name 등의 `mlflow` 의 meta data 가 저장 됩니다.
 
 이번 챕터에서는 Backend Store 로 `01. Database` 챕터에서 사용한 Postgres를 사용합니다.
 
@@ -85,15 +85,15 @@ mlflow-backend-store:
 
 ### 2.1 Artifact Store
 
-MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하기 위해 스토리지 서버를 사용 할 수 있는데 이를 **Artifact store** 라고 합니다. Artifact Store 를 이용하면 기본적인 파일 시스템 보다, 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
+MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하기 위해 스토리지 서버를 사용 할 수 있는데 이를 **Artifact store** 라고 합니다. **Artifact Store** 를 이용하면 기본적인 파일 시스템 보다, 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
 
 ### 2.2 Why MinIO?
-이번 챕터에서는 Artifact Store 로 MinIO 서버를 사용하는데 그 이유는 다음과 같습니다.
+이번 챕터에서는 **Artifact Store** 로 MinIO 서버를 사용하는데 그 이유는 다음과 같습니다.
 
-- [MinIO](https://en.wikipedia.org/wiki/MinIO) 는 S3 를 대체 할 수 있는 오픈 소스 고성능 개체 storage 입니다.
+- [MinIO](https://en.wikipedia.org/wiki/MinIO) 는 S3 를 대체 할 수 있는 오픈 소스 고성능 개체 스토리지 입니다.
 - AWS S3 의 API 와도 호환되어 sdk 도 동일하게 사용 할 수 있습니다.
 - MLflow 에서는 AWS S3 를 모델을 저장하기 위한 스토리지로 사용하도록 권장하고 있어 이를 대체하기 위해 사용합니다.
-- 실습에서 MinIO 를 대체하여 AWS credential 을 통해 S3 를 사용하셔도 같은 결과를 얻을 수 있습니다.
+- 실습에서 MinIO 를 대체하여 AWS credential 을 통해 AWS S3 를 사용하셔도 같은 결과를 얻을 수 있습니다.
 
 ### 2.3 MinIO Server docker-compose
 

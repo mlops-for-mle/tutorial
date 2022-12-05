@@ -27,7 +27,7 @@ sidebar_position: 2
 <div style={{textAlign: 'center'}}>
 
 ![Model Upload diagram](./img/model-registry-6.png)
-[그림 3-5] MLflow Model Upload Diagram
+[그림 3-6] MLflow Model Upload Diagram
 </div>
 
 ---
@@ -101,8 +101,7 @@ df.to_csv("data.csv", index=False)
 
 `mlflow` 와 통신하기 위해서는 몇 가지 환경 변수가 설정 되어야 합니다.
 
-그림 3-5 에서 `mlflow` 에 모델을 저장하거나 불러오기 위해서는 Artifact-store의 접근 권한이 필요 합니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 필요한 ID, PW 변수들은 주어진 시스템 변수에 매핑하여 사용 할 수 있습니다.
-
+그림 3-6을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 주어진 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 또한, 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 주소도 함께 매핑해 줍니다.
 ```python
 import os
 
@@ -295,11 +294,11 @@ $ python upload_model.py --model-name "sk_model" --run-name "scaler+svc"
 <div style={{textAlign: 'center'}}>
 
 ![MLflow ui-1](./img/model-registry-7.png)
-[그림 3-6] 모델 저장 결과
+[그림 3-7] 모델 저장 결과
 </div>
 
 <div style={{textAlign: 'center'}}>
 
 ![MLflow ui-2](./img/model-registry-8.png)
-[그림 3-7] 모델 저장 결과 상세
+[그림 3-8] 모델 저장 결과 상세
 </div>

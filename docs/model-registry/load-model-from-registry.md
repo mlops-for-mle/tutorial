@@ -22,7 +22,7 @@ sidebar_position: 3
 <div style={{textAlign: 'center'}}>
 
 ![Model Download diagram](./img/model-registry-9.png)
-[그림 3-8] MLflow Model Upload Diagram
+[그림 3-9] MLflow Model Upload Diagram
 </div>
 
 
@@ -176,7 +176,7 @@ print("Valid Accuracy :", valid_acc)
     <div style={{textAlign: 'center'}}>
 
     ![Model Download diagram](./img/model-registry-10.png)
-    [그림 3-9] `run-id` 및 `model-name` 확인
+    [그림 3-10] `run-id` 및 `model-name` 확인
     </div>    
 2. 아래 코드의 `--model-name` , `--run-id` 뒤에 해당 값을 사용해 실행합니다.
     
@@ -188,5 +188,5 @@ print("Valid Accuracy :", valid_acc)
     <div style={{textAlign: 'center'}}>
 
     ![Model Download diagram](./img/model-registry-11.png)
-    [그림 3-10] 모델 추론 결과 확인
+    [그림 3-11] 모델 추론 결과 확인
     </div>
