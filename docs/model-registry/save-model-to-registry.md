@@ -9,17 +9,17 @@ sidebar_position: 2
 
 ## 스펙 명세서
 
-1. `02. Model Development` 챕터에서 추출한 데이터를 이용해 모델을 학습합니다.
+1. `02. Model Development` 에서 추출한 데이터를 이용해 모델을 학습합니다.
     - eg) `from sklearn.svc import SVC`
-2. 학습이 끝난 모델을 built-in method 를 사용해 mlflow server 에 저장합니다.
+2. 학습이 끝난 모델을 mlflow 의 built-in method 를 사용해 mlflow server 에 저장합니다.
     - Python의 `mlflow` 패키지를 이용합니다.
         - `pip install mlflow`
     - `mlflow` 를 활용해 모델을 앞장에서 띄운 mlflow server 에 저장합니다.
     - `mlflow` 를 활용해 모델을 저장하는 방법은 두 가지가 있습니다.
         - artifact 처럼 다루기 [[MLFLow log_artifact](https://mlflow.org/docs/latest/python_api/mlflow.html#mlflow.log_artifact)]
         - built-in method 사용하기
-            - [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
-            - [MLFLow pyfunc log_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.log_model)
+            1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
+            2. [MLFLow pyfunc log_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.log_model)
     - 이번 장에서는 `sklearn` 의 모델을 저장하기 위해 `mlflow.sklean` built-in method 를 사용합니다.
 3. 저장된 모델을 작동 중인 mlflow server 에서 확인합니다.
     - 모델이 어떻게 저장되어 있는지 확인합니다. [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]
@@ -44,9 +44,7 @@ $ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 
 이제 Model Development 챕터 에서 학습한 모델을 mlflow server 에 업로드 해 보겠습니다.
 
-`sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
-
-이번 장에서는 02. Model Development 챕터에서 작성한 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
+이번 장에서는 `02. Model Development` 에서 작성한 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
 
 ### 1.1 기존 코드 확인 & 환경 변수 설정
 
@@ -103,7 +101,7 @@ df.to_csv("data.csv", index=False)
 
 `mlflow` 와 통신하기 위해서는 몇 가지 환경 변수가 설정 되어야 합니다.
 
-아래 그림의 영역의 `mlflow` 사용자가 모델, 모델 결과 등을 저장하거나 불러오기 위한 storage ID 와 PW 가 필요 합니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` 의 정보와 같습니다. 이러한 변수들을 프로그램이 실행 될 때 시스템 변수에 넣어서 사용 할 수 있습니다.
+그림 3-5 에서 `mlflow` 에 모델을 저장하거나 불러오기 위해서는 Artifact-store의 접근 권한이 필요 합니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 필요한 ID, PW 변수들은 주어진 시스템 변수에 매핑하여 사용 할 수 있습니다.
 
 ```python
 import os
@@ -124,7 +122,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 `mlflow` 는 정보를 `experiment` / `run` 의 구조로 저장하며 `experiment` 에 unique 한 `run` 을 동적으로 생성합니다. 이 때, 각각의 `run` 은 unique 한 해쉬값인 `run_id` 를 부여받게 되며 이를 통해서 추후 원하는 정보에 접근 할 수 있습니다.
 
-`experiment` 의 경우 이름을 지정하지 않으면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다. 
+`experiment` 의 경우 이름을 지정하지 않으면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다. 또한 `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
 
 ![MLflow ui-1](./img/model-registry-7.png)
 
