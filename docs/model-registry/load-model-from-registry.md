@@ -53,8 +53,8 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 ```python
 parser = ArgumentParser()
-parser.add_argument("--model-name", dest="model_name", type=str, default="sk_model")
 parser.add_argument("--run-id", dest="run_id", type=str)
+parser.add_argument("--model-name", dest="model_name", type=str, default="sk_model")
 args = parser.parse_args()
 ```
 
