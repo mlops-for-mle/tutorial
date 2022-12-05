@@ -9,16 +9,15 @@ sidebar_position: 3
 
 ## 스펙 명세서
 
-1. 앞 장에서 저장한 모델을 서버로 부터 불러옵니다.
-2. 학습이 끝난 모델을 built-in method 를 사용해 mlflow server 에 저장합니다.
+1. 학습이 끝난 모델을 mlflow built-in method 를 사용해 mlflow server 에서 불러옵니다.
     - Python 의 `mlflow` 패키지를 이용합니다.
         - `pip install mlflow`
-    - `mlflow` 를 활용해 모델을 앞장에서 띄운 mlflow server 에 저장합니다.
+    - `mlflow` 를 활용해 모델을 앞장에서 띄운 mlflow server 에서 불러옵니다.
     - `mlflow` 를 활용해 모델을 불러오는 방법은 두 가지가 있습니다.
-        - [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
-        - [MLFLow pyfunc load_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.load_model)
-    - 이번 장에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.pyfunc.load_model` 을 사용합니다.
-3. 불러온 모델 활용해 학습에 사용된 데이터를 추론합니다.
+        1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
+        2. [MLFLow pyfunc load_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.load_model)
+    - 이번 장에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.sklean.load_model` 을 사용합니다.
+2. 불러온 모델 활용해 학습에 사용된 데이터를 추론합니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -33,7 +32,7 @@ sidebar_position: 3
 
 ### 1.1 환경 변수 설정
 
-앞 장과 같이 mlflow 와 통신하기 위한 환경 변수를 설정합니다.
+앞 장과 같이 mlflow 에 접근하기 위한 환경 변수를 설정합니다.
 
 ```python
 import os
@@ -48,7 +47,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 #### 1.2.1 `sklearn` 모델 불러오기
 
-앞 장에서 저장했던 모델을 불러오기 위해, `mlflow.sklearn.load_model` 함수를 사용해 저장된 모델을 불러옵니다.
+앞 장에서 저장했던 모델을 불러오기 위해, `mlflow.sklearn.load_model` 함수를 사용해 저장된 모델을 불러옵니다. 모델을 포함하고 있는 `run_id` 와 모델을 저장 할 때 설정했던 모델 이름을 받을 수 있도록 외부 변수를 설정합니다.
 
 ```python
 parser = ArgumentParser()
@@ -57,13 +56,11 @@ parser.add_argument("--run-id", dest="run_id", type=str)
 args = parser.parse_args()
 ```
 
-앞 장에서 학습한 모델이 저장된 `run` 의 `run_id` , `model_name` 를 외부 변수로 받아 오도록 설정합니다.
+앞서 받은 두 가지 변수를 `mlflow.sklearn.load_model` 의 인자에 매핑하여 모델을 로드합니다.
 
 ```python
 model_pipeline = mlflow.sklearn.load_model(f"runs:/{args.run_id}/{args.model_name}")
 ```
-
-앞서 받은 두 가지 변수를 `mlflow.sklearn.load_model` 의 인자에 매핑하여 모델을 로드합니다.
 
 불러와진 모델을 확인하면 아래와 같습니다.
 
@@ -79,19 +76,10 @@ print(model_pipeline)
 이 때 로드된 모델은 기존의 클래스가 아닌 `mlflow.pyfunc.PyFuncModel` 클래스로 불러와집니다. `PyFuncModel` 이란 `mlflow` 에서 정의된 새로운 클래스로, 결과 추론을 위해 학습한 모델의 `predict` method 를 호출하도록 wrapping 된 클래스입니다.
 
 ```python
-parser = ArgumentParser()
-parser.add_argument("--model-name", dest="model_name", type=str, default="sk_model")
-parser.add_argument("--run-id", dest="run_id", type=str)
-args = parser.parse_args()
-```
-
-앞 장에서 학습한 모델이 저장된 `run` 의 `run_id` , `model_name` 를 외부 변수로 받아 오도록 설정합니다.
-
-```python
 model_pipeline = mlflow.pyfunc.load_model(f"runs:/{args.run_id}/{args.model_name}")
 ```
 
-앞서 받은 두 가지 변수를 `mlflow.pyfunc.load_model` 의 인자에 매핑하여 모델을 로드합니다.
+마찬가지로 앞서 받은 두 가지 변수를 `mlflow.pyfunc.load_model` 의 인자에 매핑하여 모델을 로드합니다.
 
 불러와진 모델을 확인하면 아래와 같습니다.
 
@@ -105,7 +93,7 @@ print(model_pipeline)
 
 ### 1.3 추론 코드 작성하기
 
-학습 시 사용했던 데이터가 저장된 `data.csv` 파일로 부터 데이터를 불러옵니다.
+앞 장에서 저장했던 데이터인 `data.csv` 파일로 부터 데이터를 불러옵니다.
 
 ```python
 df = pd.read_csv("data.csv")
