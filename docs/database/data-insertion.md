@@ -172,6 +172,7 @@ import pandas as pd
 import psycopg2
 from sklearn.datasets import load_iris
 
+
 def get_data():
     X, y = load_iris(return_X_y=True, as_frame=True)
     df = pd.concat([X, y], axis="columns")
@@ -183,6 +184,7 @@ def get_data():
     }
     df = df.rename(columns=rename_rule)
     return df
+
 
 def insert_data(db_connect, data):
     insert_row_query = f"""
@@ -199,6 +201,7 @@ def insert_data(db_connect, data):
     with db_connect.cursor() as cur:
         cur.execute(insert_row_query)
         db_connect.commit()
+
 
 if __name__ == "__main__":
     db_connect = psycopg2.connect(

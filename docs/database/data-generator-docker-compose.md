@@ -6,7 +6,7 @@ sidebar_position: 6
 
 ## 목표
 
-1. Docker 위에서 데이터를 생성하기 위한 준비로서 `Dockerfile` 을 작성합니다.
+1. Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
 2. DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose` 파일을 작성합니다.
 3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
@@ -45,7 +45,7 @@ sidebar_position: 6
 
 ## 0. 환경 설정
 
-이번 장에서는 Docker Compose를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다. 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
+이번 장에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다. 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
 
 다음 명령어를 통해 종료시킵니다.
 
@@ -205,7 +205,7 @@ Docker desktop 으로 봐도 동일한 현상입니다.
 
 이유는 앞서 `depends_on` 으로 service 간의 종속성은 정했지만, 실제로 postgres server 가 띄워진 뒤에 곧바로 data generator server 가 띄워집니다. **postgres server 는 아직 준비가 되어있지 않은데 data generator server 가 띄워져서 DB connection 을 하려다보니 data generator server 가 Exited 되는 문제가 발생한 것입니다.**
 
-따라서 해결방안은 postgres server 가 사용가능한 상태가 되어있는지 체크를 한 뒤에 data generator server 를 띄워야 합니다.  
+따라서 해결방안은 postgres server 가 사용 가능한 상태가 되어있는지 체크를 한 뒤에 data generator server 를 띄워야 합니다.  
 이를 해결하기 위한 방법으로 [docker compose healthcheck](https://github.com/peter-evans/docker-compose-healthcheck) 이 있습니다.
 
 간단하게 아래와 같이 yaml 파일에 `healthcheck` 부분과 `condition` 을 추가하면 됩니다.
@@ -253,8 +253,6 @@ services:
 이렇게 설정된 것을 정리해보면, 10초마다 test 를 실행했을 때 5초 이내에 DB 가 ready 상태가 되었는지를 체크할 것이며, 실패 시 5번 재시도한다는 뜻이 됩니다.
 
 이외에 더 자세한 내용은 [Dockerfile reference](https://docs.docker.com/engine/reference/builder/#healthcheck) 을 참고해주시기 바랍니다.
-
-
 
 이제 모두 완성된 전체 `docker-compose` 파일을 `docker compose up` 명령어를 이용하여 service 들을 띄웁니다.
 
@@ -312,5 +310,5 @@ mydatabase=# select * from iris_data;
 
 ### 3.3 docker-compose 종료
 
-docker compose 를 종료시키기 위해서는 `docker-compose.yaml` 이 있는 폴더에서 `docker compose down` 를 통해 할 수 있습니다.  
+Docker compose 를 종료시키기 위해서는 `docker-compose.yaml` 이 있는 폴더에서 `docker compose down` 를 통해 할 수 있습니다.  
 다만 다음 챕터들의 원할한 진행을 위해서 종료 후 다시 실행시켜놔야 합니다.

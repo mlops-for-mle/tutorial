@@ -178,7 +178,7 @@ with 문을 이용한 사용법에 대한 내용은 [공식 홈페이지](https:
 위에서 작성한 코드를 이용해 `create_table` 함수를 작성합니다.
 
 ```python
-def create_table(db_connect) -> None:
+def create_table(db_connect):
     create_table_query = """
     CREATE TABLE IF NOT EXISTS iris_data (
         id SERIAL PRIMARY KEY,
@@ -208,6 +208,7 @@ def create_table(db_connect) -> None:
 # create_table.py
 import psycopg2
 
+
 def create_table(db_connect):
     create_table_query = """
     CREATE TABLE IF NOT EXISTS iris_data (
@@ -222,6 +223,7 @@ def create_table(db_connect):
     with db_connect.cursor() as cur:
         cur.execute(create_table_query)
         db_connect.commit()
+
 
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
