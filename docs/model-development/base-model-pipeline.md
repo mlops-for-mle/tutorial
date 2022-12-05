@@ -2,7 +2,7 @@
 sidebar_position: 2
 ---
 
-# 2. Model Pipeline
+# 2) Model Pipeline
 
 ## 목표
 

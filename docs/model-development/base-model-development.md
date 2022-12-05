@@ -2,7 +2,7 @@
 sidebar_position: 1
 ---
 
-# 1. Base Model Development
+# 1) Base Model Development
 
 ## 목표
 
