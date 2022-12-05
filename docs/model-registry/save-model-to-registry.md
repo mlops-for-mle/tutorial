@@ -9,7 +9,7 @@ sidebar_position: 2
 
 ## 스펙 명세서
 
-1. `02. Model Development` 에서 추출한 데이터를 이용해 모델을 학습합니다.
+1. `02. Model Development` 챕터 에서 사용한 코드를 이용해 모델을 학습합니다.
     - eg) `from sklearn.svc import SVC`
 2. 학습이 끝난 모델을 mlflow 의 built-in method 를 사용해 mlflow server 에 저장합니다.
     - Python의 `mlflow` 패키지를 이용합니다.
@@ -123,20 +123,16 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 `experiment` 의 경우 이름을 지정하지 않으면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다. 또한 `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
 
-![MLflow ui-1](./img/model-registry-7.png)
-
-이어서 `02. Model Development` 챕터의 **모델**과 **모델의 결과 metric** 인 정확도를 저장해 보겠습니다.
-
+이어서 `02. Model Development` 챕터의 **모델**과 **모델의 결과 metric** 인 정확도를 저장해 보겠습니다.  
 `mlflow` 클래스를 이용하여 다음과 같이 작성 합니다.
 
-1. 모델의 이름, `run` 의 이름을 설정 할 수 있는 외부 변수를 설정합니다.
+1. 모델의 이름을 설정 할 수 있는 외부 변수를 설정합니다.
     
     ```python
     from argparser import ArgumentParser
     
     parser = ArgumentParser()
     parser.add_argument("--model-name", dest="model_name", type=str, default="sk_model")
-    parser.add_argument("--run-name", dest="run_name", type=str, default="scaler+svc")
     args = parser.parse_args()
     ```
     
@@ -174,7 +170,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
     # 64           5.5          2.5           4.0          1.3
     ```
     
-4. 주어진 `run_name` 으로 `run` 을 생성하고 정보를 저장합니다.
+4. `run` 을 생성하고 정보를 저장합니다.
     - `mlflow.log_metrics` : 모델의 결과 metrics 를 python 의 dict 형태로 받아 생성된 `run` 에 저장합니다.
     - `mlflow.sklearn.log_model` : 학습된 모델 결과물이 `sklearn` 객체일 경우 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]의 구조로 `run` 에 저장 합니다.
     
@@ -258,7 +254,6 @@ print("Valid Accuracy :", valid_acc)
 # 3. save model
 parser = ArgumentParser()
 parser.add_argument("--model-name", dest="model_name", type=str, default="sk_model")
-parser.add_argument("--run-name", dest="run_name", type=str, default="scaler+svc")
 args = parser.parse_args()
 
 mlflow.set_experiment("new-exp")
@@ -284,7 +279,7 @@ df.to_csv("data.csv", index=False)
 완성된 코드를 실행합니다.
 
 ```bash
-$ python upload_model.py --model-name "sk_model" --run-name "scaler+svc"
+$ python upload_model.py --model-name "sk_model"
 ```
 
 ### 2.3 Mlflow에서 결과 확인
