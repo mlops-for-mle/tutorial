@@ -109,8 +109,8 @@ FastAPI 에서 제공하는 [Interactive API docs](https://fastapi.tiangolo.com/
 
 <div style={{textAlign: 'center'}}>
 
-![API's Swagger UI Screen](./img/fastapi-3.png)
-[그림 5-3] 작성한 API의 Swagger UI 화면
+![API's Swagger UI Screen](./img/fastapi-4.png)
+[그림 5-4] 작성한 API의 Swagger UI 화면
 
 </div>
 
