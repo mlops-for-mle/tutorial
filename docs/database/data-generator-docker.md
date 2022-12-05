@@ -6,27 +6,15 @@ sidebar_position: 5
 
 ## 목표
 
-<<<<<<< HEAD
 1. Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
-=======
-1. Docker 위에서 데이터를 생성하기 위한 준비로서 `Dockerfile` 을 작성합니다.
-2. DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose` 파일을 작성합니다.
-3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 
 ## 스펙 명세서
 
 1. 이전 장에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
-<<<<<<< HEAD
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
     - Container 에서 psql 을 이용하여 DB 에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
 2. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
-=======
-    - Base image는 `amd64/python:3.9-slim` 을 사용합니다.
-    - Container 에서 psql 을 이용하여 DB에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
-2. `psql` 을 이용하여 DB에 데이터가 계속해서 쌓이고 있는지 확인합니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
     - Local 에서 확인합니다.
     - Data generator server 에서 확인합니다.
 
@@ -241,11 +229,6 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 
 로컬에서는 어떻게 DB 컨테이너에 접근이 가능했을까요?
 
-<<<<<<< HEAD
-=======
-
-
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 <div style={{textAlign: 'center'}}>
 
 ![Localhost Networking](./img/db-2.png)  
@@ -269,11 +252,7 @@ $ docker run -d \
 [그림 1-3] Container Networking Disconneted
 </div>
 
-<<<<<<< HEAD
 [그림 1-3] 는 `ch-1-data-generator` 의 컨테이너를 실행시켰을 때의 도식입니다. 이 때 `ch-1-data-generator` 컨테이너에게 `localhost:5432` 는 자기 자신의 컨테이너 내부입니다. 그렇기 때문에 DB 를 찾지 못하게 됩니다.
-=======
-[그림 1-3] 는 `ch-1-data-generator` 의 컨테이너를 실행 시켰을 때의 도식입니다. 이 때 `ch-1-data-generator` 컨테이너에게 `localhost:5432` 는 자기 자신의 컨테이너 내부입니다. 그렇기 때문에 DB 를 찾지 못하게 됩니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 
 <div style={{textAlign: 'center'}}>
 
@@ -311,11 +290,7 @@ $ docker run -d \
 
 `psql` 을 이용하여 DB 에 접근하고, 계속해서 데이터가 삽입되고 있는지 확인해 보겠습니다.
 
-<<<<<<< HEAD
 1. psql 에 접속합니다.
-=======
-1. psql에 접속합니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
     
     ```bash
     $ psql -h localhost -p 5432 -U myuser -d mydatabase
@@ -339,11 +314,7 @@ $ docker run -d \
     (4 rows)
     ```
     
-<<<<<<< HEAD
     실행을 할 때마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
-=======
-    실행을 할 때 마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
     
 
 ## 3. 한계

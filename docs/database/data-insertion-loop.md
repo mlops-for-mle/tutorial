@@ -33,11 +33,7 @@ def generate_data(db_connect, df):
 
 다만 위와 같이 작성할 경우 너무 빠른 시간에 데이터가 추가되기 때문에 DB 에 부하가 생길 수 있습니다.  
 이를 방지하기 위해서는 데이터를 삽입 후 잠시 대기하는 시간을 추가하겠습니다. 파이썬 스크립트를 대기시키는 것은 `time` 패키지의 `sleep` 함수를 이용하면 됩니다. 이 함수가 실행될 경우 해당 줄에서 지정된 시간만큼 대기를 합니다.  
-<<<<<<< HEAD
 여기서는 1초간 멈추게 해보겠습니다.
-=======
-여기서는 5초간 멈추게 해보겠습니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 
 ```python
 import time
@@ -45,11 +41,7 @@ import time
 def generate_data(db_connect, df):
     while True:
         insert_data(db_connect, df.sample(1).squeeze())
-<<<<<<< HEAD
         time.sleep(1)
-=======
-        time.sleep(5)
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 ```
 
 ### 1.2 Query 실행
@@ -66,10 +58,6 @@ import pandas as pd
 import psycopg2
 from sklearn.datasets import load_iris
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 def get_data():
     X, y = load_iris(return_X_y=True, as_frame=True)
     df = pd.concat([X, y], axis="columns")
@@ -82,10 +70,6 @@ def get_data():
     df = df.rename(columns=rename_rule)
     return df
 
-<<<<<<< HEAD
-
-=======
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 def insert_data(db_connect, data):
     insert_row_query = f"""
     INSERT INTO iris_data
@@ -103,19 +87,12 @@ def insert_data(db_connect, data):
         cur.execute(insert_row_query)
         db_connect.commit()
 
-<<<<<<< HEAD
 
 def generate_data(db_connect, df):
     while True:
         insert_data(db_connect, df.sample(1).squeeze())
         time.sleep(1)
 
-=======
-def generate_data(db_connect, df):
-    while True:
-        insert_data(db_connect, df.sample(1).squeeze())
-        time.sleep(5)
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
@@ -134,11 +111,7 @@ if __name__ == "__main__":
 Python 파일을 실행하면 아래와 같이 나옵니다.
 
 ```bash
-<<<<<<< HEAD
 $ python data_generator.py
-=======
-$ python generate_data.py
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
 
     CREATE TABLE IF NOT EXISTS iris_data (
         id SERIAL PRIMARY KEY,
@@ -186,11 +159,7 @@ $ python generate_data.py
 
 `psql` 을 이용하여 DB 에 접근하고, 계속해서 data 가 삽입되고 있는지 확인해 보겠습니다.
 
-<<<<<<< HEAD
 1. psql 에 접속합니다.
-=======
-1. psql에 접속합니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
     
     ```bash
     $ psql -h localhost -p 5432 -U myuser -d mydatabase
@@ -214,8 +183,4 @@ $ python generate_data.py
     (4 rows)
     ```
     
-<<<<<<< HEAD
     실행을 할 때마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
-=======
-    실행을 할 때 마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
->>>>>>> 9cd52a67ad7b0f32eb8d1ccb88e18770aaf57ec7
