@@ -65,13 +65,20 @@ $ uvicorn main:app --reload
 
 이제 [`http://localhost:8000`](http://localhost:8000) 에 접속해보면 작성한 `{"Hello": "World"}` 가 표시되는 것을 확인할 수 있습니다.
 
+<div style={{textAlign: 'center'}}>
+
+![API Running Screen](./img/fastapi-2.png)
+[그림 5-2] 실행 화면 예시
+
+</div>
+
 이번에는 [`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속해 봅시다.
 다음과 같은 형태로 된 화면을 볼 수 있습니다.
 
 <div style={{textAlign: 'center'}}>
 
-![Swagger UI Screen](./img/fastapi-2.png)
-[그림 5-2] Swagger UI 화면 예시
+![Swagger UI Screen](./img/fastapi-3.png)
+[그림 5-3] Swagger UI 화면 예시
 
 </div>
 
@@ -81,7 +88,7 @@ $ uvicorn main:app --reload
 
 ## 2. Step by step 으로 이해하기
 
-이번에는 코드 한 줄 한 줄을 자세히 살펴보겠습니다. [[First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/)]
+이번에는 [First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/) 에 있는 코드를 한 줄씩 살펴보겠습니다.
 
 ### 2.1 Step 1: Import FastAPI
 
@@ -94,8 +101,7 @@ from fastapi import FastAPI
 ### 2.2 Step 2: Create a FastAPI instance
 
 `FastAPI` 클래스의 instance 를 생성합니다.
-
-이 때 생성하는 instance 의 이름에 맞게 `uvicorn main:app --reload` 과 같은 형태로 실행을 해 주어야 합니다.
+여기에서 생성하는 instance 의 이름에 따라 `uvicorn main:app --reload` 과 같은 형태로 실행 명령어가 달라지게 됩니다.
 
 ```python
 app = FastAPI()
