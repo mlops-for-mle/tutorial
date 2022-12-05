@@ -382,7 +382,7 @@ def delete_user(name: str):
 
 ## 3. API 테스트
 
-`http://localhost:8000/docs`를 통해 FastAPI 의 Swagger UI 에 접속하여 다음의 시나리오가 잘 작동하는 지 확인합니다.
+`http://localhost:8000/docs`를 통해 FastAPI 의 Swagger UI 에 접속하여 다음의 시나리오가 잘 작동하는지 확인합니다.
 
 1. **Create**
 

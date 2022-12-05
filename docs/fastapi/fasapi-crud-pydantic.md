@@ -63,8 +63,8 @@ NAME_NOT_FOUND = HTTPException(status_code=400, detail="Name not found.")
 
 ```python
 class CreateIn(BaseModel):
-	name: str
-	nickname: str
+    name: str
+    nickname: str
 ```
 
 ### 1.3 Define Output Schema
@@ -77,8 +77,8 @@ class CreateIn(BaseModel):
 
 ```python
 class CreateOut(BaseModel):
-	status: str
-	id: int
+    status: str
+    id: int
 ```
 
 ## 2. Response Model
