@@ -29,49 +29,27 @@ sidebar_position: 2
 
 3. FastAPI 의 Swagger UI ([`http://localhost:8000/docs`](http://localhost:8000/docs)) 를 통해 다음의 시나리오가 잘 작동하는지 확인합니다.
     - **Create**
-
         - POST 를 통해 `{"name": "hello", "nickname": "world"}` 로 create 합니다.
-
             - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
     - **Read**
-
         - GET 을 통해 `{"name": "hello"}` 로 read 합니다.
-
             - `{"nickname": "world"}` 를 정상적으로 return 하는지 확인합니다.
-
         - GET 을 통해 `{"name": "hello2"}` 로 read 합니다.
-
             - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
     - **Update**
-
         - PUT 을 통해 `{"name": "hello", "nickname": "world"}` 로 update 합니다.
-
             - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
             - GET 을 통해 `{"name": "hello"}` 로 read 하여 정상적으로 `{"nickname": "world"}` 를 return 하는지 확인합니다.
-
         - PUT 을 통해 `{”name”: “hello”, “nickname”: “world2”}` 로 update 합니다.
-
             - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
             - GET 을 통해 `{"name": "hello"}` 로 read 하여 정상적으로 `{"nickname": "world2"}` 를 return 하는지 확인합니다.
-
         - PUT 을 통해 `{"name": "hello2", "nickname": "world2"}` 로 update 합니다.
-
             - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
     - **Delete**
-
         - DELETE 를 통해 `{"name": "hello"}` 로 delete 합니다.
-
             - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
             - GET 을 통해 `{"name": "hello"}` 로 read 하여 `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
         - DELETE 를 통해 `{"name": "hello2"}` 로 delete 합니다.
-
             - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
 
 4. **Path parameter** 를 이용한 방법과 **Query parameter** 를 이용한 방법에 어떠한 차이가 있는지 확인합니다.
@@ -163,7 +141,6 @@ Query Parameter 의 경우 각 API 에서 사용되는 파라미터를 Request B
 작성한 명세서를 FastAPI 를 이용해 구현합니다.
 
 다음과 같이 FastAPI 클래스의 instance 를 생성한 후 입력받은 데이터를 저장할 수 있도록 `USER_DB` 를 생성합니다.
-
 또한, 메모리에 존재하지 않는 이름에 대한 요청이 들어온 경우에 에러를 발생할 수 있도록 `HTTPException` 을 이용하여 `NAME_NOT_FOUND` 를 선언합니다.
 
 ```python
@@ -385,53 +362,30 @@ def delete_user(name: str):
 `http://localhost:8000/docs`를 통해 FastAPI 의 Swagger UI 에 접속하여 다음의 시나리오가 잘 작동하는지 확인합니다.
 
 1. **Create**
-
     - POST 를 통해 `{"name": "hello", "nickname": "world"}` 로 create 합니다.
-
         - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
 2. **Read**
-
     - GET 을 통해 `{"name": "hello"}` 로 read 합니다.
-
         - `{"nickname": "world"}` 를 정상적으로 return 하는지 확인합니다.
-
     - GET 을 통해 `{"name": "hello2"}` 로 read 합니다.
-
         - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
 3. **Update**
-
     - PUT 을 통해 `{"name": "hello", "nickname": "world"}` 로 update 합니다.
-
         - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
         - GET 을 통해 `{"name": "hello"}` 로 read 하여 정상적으로 `{"nickname": "world"}` 를 return 하는지 확인합니다.
-
     - PUT 을 통해 `{”name”: “hello”, “nickname”: “world2”}` 로 update 합니다.
-
         - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
         - GET 을 통해 `{"name": "hello"}` 로 read 하여 정상적으로 `{"nickname": "world2"}` 를 return 하는지 확인합니다.
-
     - PUT 을 통해 `{"name": "hello2", "nickname": "world2"}` 로 update 합니다.
-
         - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
 4. **Delete**
-
     - DELETE 를 통해 `{"name": "hello"}` 로 delete 합니다.
-
         - `{"status": "success"}` 를 정상적으로 return 하는지 확인합니다.
-
         - GET 을 통해 `{"name": "hello"}` 로 read 하여 `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
-
     - DELETE 를 통해 `{"name": "hello2"}` 로 delete 합니다.
-
         - `{"detail": "Name not found."}` 를 return 하며 400 error 가 발생하는지 확인합니다.
 
 ## 4. Path Parameter vs Query Parameter
 
-Path Parameter 를 이용한 API 에서는 path 에 변수의 값을 저장하여 함수에 전달합니다.
-
+Path Parameter 를 이용한 API 에서는 path 에 변수의 값을 저장하여 함수에 전달합니다.  
 반면, Query Parameter 를 이용한 API 에서는 path 에 변수의 값을 저장하지 않기 때문에 request body 를 통해 데이터를 전달합니다.

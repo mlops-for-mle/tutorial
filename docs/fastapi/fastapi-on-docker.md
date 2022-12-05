@@ -100,12 +100,10 @@ fb72ccf8fb47   ch5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 1
 ## 2. API 서버 접속하여 작동 확인
 
 이제 FastAPI 를 통해 만든 API 서버가 잘 작동하는지 확인해 보겠습니다.
-
 API 서버 컨테이너를 실행할 때 포트 포워딩을 `8000` 번에서 `8000` 번으로 했으므로 `8000` 번 포트로 접속하면 API 서버로 접속할 수 있습니다.
-
 FastAPI 에서 제공하는 [Interactive API docs](https://fastapi.tiangolo.com/tutorial/first-steps/#interactive-api-docs) 에 접속하려면 URL 뒤에 `/docs` 를 붙이면 됩니다.
 
-따라서, [`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하면 다음과 같이 접속이 되는 것을 확인할 수 있습니다.
+[`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하면 다음과 같이 접속이 되는 것을 확인할 수 있습니다.
 
 <div style={{textAlign: 'center'}}>
 
