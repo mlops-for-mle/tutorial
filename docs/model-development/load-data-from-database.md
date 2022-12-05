@@ -2,7 +2,7 @@
 sidebar_position: 3
 ---
 
-# 3. Load Data from Database
+# 3) Load Data from Database
 
 ## 목표
 

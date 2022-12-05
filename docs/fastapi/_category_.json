@@ -1,8 +1,8 @@
 {
-  "label": "06. Model Deployment",
-  "position": 7,
+  "label": "05. FastAPI",
+  "position": 6,
   "link": {
     "type": "generated-index",
-    "description": "Model Deployment"
+    "description": "FastAPI"
   }
 }
