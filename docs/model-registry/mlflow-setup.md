@@ -45,7 +45,7 @@ sidebar_position: 1
 
 ### 1.1 Backend Store
 
-수치 데이터와 mlflow 서버의 정보들을 체계적으로 관리하기위해 데이터 베이스를 사용합니다. 이를 **Backend store** 라고 합니다. **Backend store** 에는 accuracy, f1-score 같은 metric , 모델이 학습되면서 생기는 loss , 모델 자체의 정보인 hyperparmameters 등의 값들과 run_id, run_name, experiment_name 등의 `mlflow` 의 meta data 가 저장 됩니다.
+수치 데이터와 mlflow 서버의 정보들을 체계적으로 관리하기위해 데이터 베이스를 사용합니다. 이를 **Backend store** 라고 합니다. **Backend store** 에는 모델의 학습 결과인 accuracy, f1-score 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터들과 run_id, run_name, experiment_name 등의 MLflow 의 meta data 가 저장 됩니다.
 
 이번 챕터에서는 Backend Store 로 `01. Database` 챕터에서 사용한 Postgres를 사용합니다.
 
@@ -93,7 +93,7 @@ MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하�
 - [MinIO](https://en.wikipedia.org/wiki/MinIO) 는 S3 를 대체 할 수 있는 오픈 소스 고성능 개체 스토리지 입니다.
 - AWS S3 의 API 와도 호환되어 sdk 도 동일하게 사용 할 수 있습니다.
 - MLflow 에서는 AWS S3 를 모델을 저장하기 위한 스토리지로 사용하도록 권장하고 있어 이를 대체하기 위해 사용합니다.
-- 실습에서 MinIO 를 대체하여 AWS credential 을 통해 AWS S3 를 사용하셔도 같은 결과를 얻을 수 있습니다.
+- 실습에서 AWS credential 을 통해 MinIO 대신 AWS S3 를 사용하셔도 같은 결과를 얻을 수 있습니다.
 
 ### 2.3 MinIO Server docker-compose
 
@@ -122,13 +122,13 @@ mlflow-artifact-store:
     retries: 3
 ```
 
-- `image` : Minio 서버에서 사용할 이미지는 `minio/minio` 입니다.
+- `image` : MinIO 서버에서 사용할 이미지는 `minio/minio` 입니다.
 - `ports` : host 와 container 의 포트를 설정합니다.
     - MinIO의 API 포트를 9000으로 forwarding 합니다.
     - MinIO의 Console 포트를 9001으로 forwarding 합니다.
 - `environment` :
-    - `MINIO_ROOT_USER` : minio 에 접근하기 위한 사용자 이름입니다.
-    - `MINIO_ROOT_PASSWORD` : minio 에 접근하기 위한 비밀번호입니다.
+    - `MINIO_ROOT_USER` : MinIO 에 접근하기 위한 사용자 이름입니다.
+    - `MINIO_ROOT_PASSWORD` : MinIO 에 접근하기 위한 비밀번호입니다.
 - `command` : MinIO 서버를 실행시키는 명령어를 추가합니다. `--console-address` 를 통해 컨테이너의 9001 포트로 MinIO 에 접근 할 수 있도록 주소를 열어줍니다.
 - `healthcheck` : MinIO 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크하는 구문을 추가합니다.
 
@@ -160,15 +160,15 @@ RUN cd /tmp && \
     mv mc /usr/bin/mc
 ```
 
-- `FROM amd64/python:3.9-slim` : Base 이미지를 python 3.9파 포함된 이미지로 설정합니다.
+- `FROM amd64/python:3.9-slim` : Base 이미지를 python 3.9가 포함된 이미지로 설정합니다.
 - `RUN apt-get update && apt-get install -y` ~ : `git` , `wget` 을 설치합니다. `git` 은 mlflow server의 내부 동작에, `wget` 은 `MinIO` client를 설치하기 위해 사용됩니다.
 - `RUN pip install -U pip &&` ~ : `mlflow` 를 비롯해 postgres, AWS S3 에 관련된 python 패키지를 설치합니다.
 - `RUN cd /tmp &&` ~ : 앞서 설치한 `wget` 을 활용하여 `MinIO` client 를 설치합니다.
 
 ### 3.2 MLflow Server docker-compose
-작성된 `Dockerfile`을 사용하여 `docker-compose` 의 `services` 탭 밑에 정의합니다. 
+작성된 `Dockerfile`을 빌드하도록 `docker-compose` 의 `services` 탭 밑에 정의합니다. 
   1. `MinIO` 에 연결하기위한 계정 정보를 환경변수를 활용해 설정합니다.
-  2. 모델을 저장할 때 사용 될 `MinIO` bucket 을 생성합니다.
+  2. 모델을 저장할 때 사용 할 `MinIO` 초기 버켓을 생성합니다.
   3. mlflow server를 띄우는 명령어를 작성합니다.
       - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
       - `MinIO` 에 연결하기 위한 keyword argument 를 추가합니다.
@@ -203,18 +203,19 @@ mlflow-server:
       condition: service_healthy
 ```
 
-- `platform` : 사용 할 OS 환경을 설정 합니다.
-- `build` : 앞서 작성한 `Dockerfile` 을 사용하여 이미지를 빌드 하도록 합니다.
-- `ports` : mlflow server 에 접근할 수 있도록 5001:5000 을 설정합니다.
+- `build` : 앞서 작성한 `Dockerfile` 을 사용하여 이미지를 빌드 하여 사용 합니다.
+- `ports` : host 와 container 의 포트를 설정합니다. 
+    - 5001:5000 포트를 설정합니다.
 - `environment`
     - `AWS_ACCESS_KEY_ID` : AWS S3 의 credential 정보입니다. 이번 경우에는 `MinIO` 의 `MINIO_ROOT_USER` 와 동일합니다.
     - `AWS_SECRET_ACCESS_KEY` : AWS S3 의 credential 정보입니다. 이번 경우에는 `MinIO` 의 `MINIO_ROOT_PASSWORD` 와 동일합니다.
-- `command` : `MinIO` 버킷 생성, `mlflow` 서버 실행 명령어를 입력합니다.
+    - `MLFLOW_S3_ENDPOINT_URL` : AWS S3 의 주소를 설정합니다. 이번 경우에는 `MinIO` 의 주소와 같습니다.
+- `command` : `MinIO` 초기 버켓을 생성 하고, `mlflow` 서버 실행 명령어를 입력합니다.
     - `mc config` ~ : MinIO client 를 활용해 MinIO 서버에 호스트를 등록합니다.
-    - `mc mb` ~ : 등록된 호스트를 통해 초기 버킷을 생성합니다.
+    - `mc mb` ~ : 등록된 호스트를 통해 초기 버켓을 생성합니다.
     - `mlflow server` : `mlflow` 서버를 동작시킵니다.
-    - `--backend-store-uri` 에 명시된 주소를 통해 `PostgresDB` 의 주소와 연결합니다.
-    - `--default-artifact-root` 에 명시된 주소를 통해 `MinIO` 의 주소와 연결합니다.
+    - `--backend-store-uri` 에 명시된 정보를 통해 `PostgresDB` 와 연결합니다.
+    - `--default-artifact-root` 에 명시된 버켓을 통해 `MinIO` 의 초기 버켓과 연결합니다.
 - `depends_on` : `mlflow` 서버가 띄워지기 전에, `PostgresDB` , `MinIO` 서버를 먼저 띄우도록 합니다.
     - `condition` : 앞선 2가지 서비스의 동작 상태가 체크되면 `mlflow` 서버를 띄웁니다.
 
@@ -278,7 +279,6 @@ services:
       retries: 3
 
   mlflow-server:
-    platform: linux/amd64
     build:
       context: .
       dockerfile: ./Dockerfile
@@ -327,7 +327,7 @@ $ docker compose up -d
   </div>
   
   `MinIO` 에 로그인할 수 있는 아이디는 위에서 설정한 minio / miniostorage 입니다.    
-  해당 정보로 로그인하면 **그림 3-5** 와 같은 화면이 보입니다.
+  해당 정보로 로그인하면 아래의 [그림 3-5] 와 같은 화면이 보입니다.
   <div style={{textAlign: 'center'}}>
 
     ![MinIO ui](./img/model-registry-5.png)

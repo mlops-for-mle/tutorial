@@ -4,31 +4,33 @@ sidebar_position: 3
 # 3) Load Model from registry
 ## 목표
 
-1. mlflow 에 저장된 모델을 다운로드 받을 수 있는 스크립트를 작성합니다.
-2. 모델을 다운로드 받아 결과를 추론합니다.
+1. mlflow 에 저장된 모델을 불러올 수 있는 스크립트를 작성합니다.
+2. 불러온 모델을 통해 추론하고 결과를 확인합니다.
 
 ## 스펙 명세서
 
 1. 학습이 끝난 모델을 mlflow built-in method 를 사용해 mlflow server 에서 불러옵니다.
     - Python 의 `mlflow` 패키지를 이용합니다.
         - `pip install mlflow`
-    - `mlflow` 를 활용해 모델을 앞장에서 띄운 mlflow server 에서 불러옵니다.
+    - 학습에 관련된 정보가 저장 되어있는 `run` 의 `run_id` 를 사용해 모델을 불러옵니다.
     - `mlflow` 를 활용해 모델을 불러오는 방법은 두 가지가 있습니다.
         1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
         2. [MLFLow pyfunc load_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.load_model)
     - 이번 장에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.sklean.load_model` 을 사용합니다.
-2. 불러온 모델 활용해 학습에 사용된 데이터를 추론합니다.
+2. 불러온 모델을 활용해 저장해두었던 학습 데이터의 결과를 추론합니다.
 
 <div style={{textAlign: 'center'}}>
 
 ![Model Download diagram](./img/model-registry-9.png)
-[그림 3-9] MLflow Model Upload Diagram
+[그림 3-9] MLflow Model Load Diagram
 </div>
 
 
 ---
 
-## 1.  모델 다운로드
+## 1.  모델 불러오기
+
+앞 장에서 작성한 코드로 학습된 모델을 서버로 부터 로드하는 코드를 작성합니다.
 
 ### 1.1 환경 변수 설정
 

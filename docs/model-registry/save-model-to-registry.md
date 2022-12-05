@@ -10,24 +10,23 @@ sidebar_position: 2
 ## 스펙 명세서
 
 1. `02. Model Development` 챕터 에서 사용한 코드를 이용해 모델을 학습합니다.
-    - eg) `from sklearn.svc import SVC`
 2. 학습이 끝난 모델을 mlflow 의 built-in method 를 사용해 mlflow server 에 저장합니다.
     - Python의 `mlflow` 패키지를 이용합니다.
         - `pip install mlflow`
-    - `mlflow` 를 활용해 모델을 앞장에서 띄운 mlflow server 에 저장합니다.
+    - `mlflow` 를 활용해 모델을 앞 장에서 띄운 mlflow server 에 저장합니다.
     - `mlflow` 를 활용해 모델을 저장하는 방법은 두 가지가 있습니다.
         - artifact 처럼 다루기 [[MLFLow log_artifact](https://mlflow.org/docs/latest/python_api/mlflow.html#mlflow.log_artifact)]
         - built-in method 사용하기
             1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
             2. [MLFLow pyfunc log_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.log_model)
-    - 이번 장에서는 `sklearn` 의 모델을 저장하기 위해 `mlflow.sklean` built-in method 를 사용합니다.
+    - 이번 장에서는 `sklearn` 모델을 저장하기 위해 `mlflow.sklean` built-in method 를 사용합니다.
 3. 저장된 모델을 작동 중인 mlflow server 에서 확인합니다.
     - 모델이 어떻게 저장되어 있는지 확인합니다. [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]
 
 <div style={{textAlign: 'center'}}>
 
 ![Model Upload diagram](./img/model-registry-6.png)
-[그림 3-6] MLflow Model Upload Diagram
+[그림 3-6] MLflow Model Save Diagram
 </div>
 
 ---
@@ -40,11 +39,9 @@ sidebar_position: 2
 $ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 ```
 
-## 1.  모델 업로드
+## 1.  모델 저장하기
 
-이제 Model Development 챕터 에서 학습한 모델을 mlflow server 에 업로드 해 보겠습니다.
-
-이번 장에서는 `02. Model Development` 에서 작성한 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
+`02. Model Development` 챕터에서 작성한 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
 
 ### 1.1 기존 코드 확인 & 환경 변수 설정
 
@@ -101,7 +98,7 @@ df.to_csv("data.csv", index=False)
 
 `mlflow` 와 통신하기 위해서는 몇 가지 환경 변수가 설정 되어야 합니다.
 
-그림 3-6을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 주어진 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 또한, 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 주소도 함께 매핑해 줍니다.
+[그림 3-6]을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 사전에 정의된 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 같은 방식으로 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 URI도 함께 매핑해 줍니다.
 ```python
 import os
 
@@ -112,16 +109,16 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 ```
 
 - `os` 라이브러리를 이용해 시스템의 환경변수를 설정합니다.
-    - `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 storage 의 주소입니다. 앞 장에서 storage 로 Minio를 설정했기 때문에 주소는 `http://localhost:9000` 입니다.
-    - `MLFLOW_TRACKING_URI` : MLflow 의 주소 입니다. 앞 장에서 MLflow 서버의 주소와 같으며 `http://localhost:5001` 입니다.
+    - `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 storage 의 주소입니다. 앞 장에서 띄운 `MinIO` 서버 주소와 같으며 `http://localhost:9000` 입니다.
+    - `MLFLOW_TRACKING_URI` : 정보를 저장하기 위해 연결 할 MLflow 서버의 주소 입니다. 앞 장의 MLflow 서버 주소와 같으며 `http://localhost:5001` 입니다.
     - `AWS_ACCESS_KEY_ID` : `MinIO` 에 접근하기 위한 ID 입니다. 앞 장에서 설정한 `MINIO_ROOT_USER` 인 `minio` 를 사용합니다.
     - `AWS_SECRET_ACCESS_KEY` : `MinIO` 에 접근하기 위한 PW 입니다. 앞 장에서 설정한 `MINIO_ROOT_PASSWORD` 인 `miniostorage` 를 사용합니다.
 
 ### 1.2 모델 저장하기
 
-`mlflow` 는 정보를 `experiment` / `run` 의 구조로 저장하며 `experiment` 에 unique 한 `run` 을 동적으로 생성합니다. 이 때, 각각의 `run` 은 unique 한 해쉬값인 `run_id` 를 부여받게 되며 이를 통해서 추후 원하는 정보에 접근 할 수 있습니다.
+`mlflow` 는 정보를 `experiment` / `run` 의 구조로 저장하며 `experiment` 에 `run` 을 동적으로 생성합니다. 이 때, 각각의 `run` 은 unique 한 해쉬값인 `run_id` 를 부여받게 되며 이를 통해서 추후 원하는 정보에 접근 할 수 있습니다.
 
-`experiment` 의 경우 이름을 지정하지 않으면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다. 또한 `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
+모델의 결과 등을 저장 할 가장 큰 카테고리인 `experiment` 의 경우 이름을 지정하지 않고 결과를 저장하면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다.
 
 이어서 `02. Model Development` 챕터의 **모델**과 **모델의 결과 metric** 인 정확도를 저장해 보겠습니다.  
 `mlflow` 클래스를 이용하여 다음과 같이 작성 합니다.
@@ -172,10 +169,11 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
     
 4. `run` 을 생성하고 정보를 저장합니다.
     - `mlflow.log_metrics` : 모델의 결과 metrics 를 python 의 dict 형태로 받아 생성된 `run` 에 저장합니다.
+    - `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
     - `mlflow.sklearn.log_model` : 학습된 모델 결과물이 `sklearn` 객체일 경우 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]의 구조로 `run` 에 저장 합니다.
     
     ```python
-    with mlflow.start_run(run_name=args.run_name):
+    with mlflow.start_run():
         mlflow.log_metrics({"train_acc": train_acc, "valid_acc": valid_acc})
         mlflow.sklearn.log_model(
             sk_model=model_pipeline,
@@ -261,7 +259,7 @@ mlflow.set_experiment("new-exp")
 signature = mlflow.models.signature.infer_signature(model_input=X_train, model_output=train_pred)
 input_sample = X_train.iloc[:10]
 
-with mlflow.start_run(run_name=args.run_name):
+with mlflow.start_run():
     mlflow.log_metrics({"train_acc": train_acc, "valid_acc": valid_acc})
     mlflow.sklearn.log_model(
         sk_model=model_pipeline,
