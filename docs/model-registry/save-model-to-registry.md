@@ -123,7 +123,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 이어서 `02. Model Development` 챕터의 **모델**과 **모델의 결과 metric** 인 정확도를 저장해 보겠습니다.  
 `mlflow` 클래스를 이용하여 다음과 같이 작성 합니다.
 
-1. 모델의 이름을 설정 할 수 있는 외부 변수를 설정합니다.
+1. 모델의 이름을 설정 할 수 있는 외부 변수를 설정합니다. MLflow 에서는 모델을 저장 할 때 이름을 설정하여 관리 하게 됩니다.
     
     ```python
     from argparser import ArgumentParser
