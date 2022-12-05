@@ -80,7 +80,7 @@ class CreateOut(BaseModel):
 ### 2.1 Response Model
 
 `@app.get()`, `@app.post()` 등 다양한 path operations 에 `response_model` 을 이용하여 response body 에 사용될 데이터 model 을 지정해줄 수 있습니다.
-또한, output data 의 type 을 변환시키고, type 이 유효한지 확인해주고, response 를 위해 JSON Schema 를 추가해 주는 등의 역할을 할 수 있습니다.
+또한, output data 의 type 을 체크하여 자동으로 변환시키고, type 이 유효한지 확인해주고, response 를 위해 자동으로 JSON Schema 를 추가해 주는 등의 역할을 할 수 있습니다.
 
 그 중에서도 `response_model` 의 가장 중요한 역할은 output data 의 형태를 제한해 줄 수 있다는 것입니다.
 예를 들면, `response_model=CreateOut` 과 같이 지정해주면 해당 path operation 이 실행되었을 때 `CreateOut` 에 존재하는 attribute 의 형태로 데이터를 반환하게 됩니다.
@@ -170,5 +170,5 @@ def delete_user(name: str):
 ## 3. Pydantic Model 사용 전후 비교
 
 위와 같이 Pydantic Model 을 사용하여 response model 로 지정을 해 주어 Create API 를 수정하였습니다.
-이처럼 Pydantic Model 을 통해 response model 을 사용하면 입력 받는 변수와 생성되고 난 후에 반환하는 변수를 다르게 지정해 줄 수 있습니다.
-이러한 기능은 password 처럼 사용자가 입력은 꼭 해야 하지만 반환되면 안 되는 변수를 지정할 때 유용하게 사용될 수 있습니다.
+이처럼 Pydantic Model 을 통해 response model 을 사용하면 입력 받는 파라미터와 생성 후 반환하는 파라미터를 다르게 지정해 줄 수 있습니다.
+이러한 기능은 password 처럼 사용자가 필수적으로 입력해야 하지만 반환 값에는 나타나면 안 되는 파라미터를 지정할 때 유용하게 사용될 수 있습니다.
