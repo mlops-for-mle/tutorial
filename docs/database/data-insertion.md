@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: 📌 생성한 테이블에 iris data row 한 줄을 삽입합니다.
 ---
 
 # 3) Data Insertion

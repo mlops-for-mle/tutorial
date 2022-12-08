@@ -1,5 +1,6 @@
 ---
 sidebar_position: 6
+description: 📌 DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose` 파일을 작성합니다.
 ---
 
 # 6) Data Generator on Docker Compose

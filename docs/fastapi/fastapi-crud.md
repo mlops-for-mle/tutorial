@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: 📌 FastAPI 를 이용해 CRUD 를 수행하는 API 를 작성합니다.
 ---
 
 # 2) FastAPI CRUD

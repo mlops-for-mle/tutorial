@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 ---
 
 # 1) DB Server Creation

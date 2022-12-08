@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
 ---
 # 1) MLflow Setup
 ## 목표

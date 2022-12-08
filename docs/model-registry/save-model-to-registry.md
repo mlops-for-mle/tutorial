@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 ---
 # 2) Save Model to registry
 ## 목표

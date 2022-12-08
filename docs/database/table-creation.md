@@ -1,5 +1,6 @@
 ---
 sidebar_position: 2
+description: 📌 생성된 DB 에 query 를 작성하여 테이블을 생성합니다.
 ---
 
 # 2) Table Creation

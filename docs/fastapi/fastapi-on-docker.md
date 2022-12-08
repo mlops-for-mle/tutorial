@@ -1,12 +1,13 @@
 ---
 sidebar_position: 4
+description: 📌 앞서 작성한 API 를 도커를 이용하여 실행합니다.
 ---
 
 # 4) FastAPI on Docker
 
 ## 목표
 
-앞서 작성한 API 를 도커를 이용하여 실행합니다.
+1. 앞서 작성한 API 를 도커를 이용하여 실행합니다.
 
 ## 스펙 명세서
 

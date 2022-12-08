@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: 📌 mlflow 에 저장된 모델을 불러올 수 있는 스크립트를 작성합니다.
 ---
 # 3) Load Model from registry
 ## 목표

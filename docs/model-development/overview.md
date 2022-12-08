@@ -1,5 +1,6 @@
 ---
 sidebar_position: 0
+description: 📌 Overview of Model Development Chapter
 ---
 
 # 0) Overview

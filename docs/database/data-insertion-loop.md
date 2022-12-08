@@ -1,5 +1,6 @@
 ---
 sidebar_position: 4
+description: 📌 생성된 테이블안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
 ---
 
 # 4) Data Insertion Loop

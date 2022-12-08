@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ML Engineer를 위한 MLOps',
-  tagline: 'MLops is cool',
+  tagline: 'Journey to build my own MLOps',
   url: 'https://mlops-for-mle.github.io/',
   baseUrl: '/tutorial/',
   trailingSlash: false,
@@ -27,7 +27,22 @@ const config = {
     defaultLocale: 'kr',
     locales: ['kr'],
   },
-
+  plugins: [
+    [
+      'content-docs',
+      /** @type {import('@docusaurus/plugin-content-docs').Options} */
+      ({
+        id: 'community',
+        path: 'community',
+        routeBasePath: 'community',
+        editUrl: 'https://github.com/mlops-for-mle/tutorial/tree/main/',
+        editCurrentVersion: true,
+        sidebarPath: require.resolve('./sidebarsCommunity.js'),
+        showLastUpdateAuthor: true,
+        showLastUpdateTime: true,
+      }),
+    ],
+  ],
   presets: [
     [
       'classic',
@@ -39,6 +54,9 @@ const config = {
           // Remove this to remove the "edit this page" links.
           editUrl:
             'https://github.com/mlops-for-mle/tutorial/tree/main/',
+          editCurrentVersion: true,
+          showLastUpdateAuthor: true,
+          showLastUpdateTime: true,
         },
         blog: {
           showReadingTime: true,
@@ -77,8 +95,18 @@ const config = {
             label: 'Documentation',
           },
           {
+            to: '/community/contributors',
+            position: 'left',
+            label: 'Community',
+          },
+          {
             href: 'https://github.com/mlops-for-mle/mlops-for-mle',
-            label: 'GitHub',
+            label: 'Code GitHub',
+            position: 'right',
+          },
+          {
+            href: 'https://github.com/mlops-for-mle/tutorial',
+            label: 'Tutorial Github',
             position: 'right',
           },
         ],
@@ -86,6 +114,11 @@ const config = {
       footer: {
         style: 'dark',
         links: [],
+        logo: {
+          alt: 'MakinaRocks',
+          src: '/img/makinarocks.png',
+          href: 'https://makinarocks.ai',
+        },
         copyright: `Copyright © ${new Date().getFullYear()} MakinaRocks. Built with Docusaurus.`,
       },
       prism: {

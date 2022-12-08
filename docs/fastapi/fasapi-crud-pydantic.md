@@ -1,5 +1,6 @@
 ---
 sidebar_position: 3
+description: 📌 앞서 작성한 API 에서 Create 부분을 **Pydantic** 을 이용하여 수정합니다.
 ---
 
 # 3) FastAPI CRUD (Pydantic)

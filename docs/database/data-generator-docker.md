@@ -1,5 +1,6 @@
 ---
 sidebar_position: 5
+description: 📌 Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
 ---
 
 # 5) Data Generator on Docker

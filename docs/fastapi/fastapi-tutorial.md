@@ -1,5 +1,6 @@
 ---
 sidebar_position: 1
+description: 📌 FastAPI 의 공식 문서를 참고하여 간단한 API 를 만들어봅니다.
 ---
 
 # 1) FastAPI Tutorial

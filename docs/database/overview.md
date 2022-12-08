@@ -1,5 +1,6 @@
 ---
 sidebar_position: 0
+description: 📌 Overview of Database Chapter
 ---
 
 # 0) Overview

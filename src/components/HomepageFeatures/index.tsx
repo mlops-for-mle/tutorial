@@ -10,32 +10,23 @@ type FeatureItem = {
 
 const FeatureList: FeatureItem[] = [
   {
-    title: 'Easy to Use',
-    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
-    description: (
-      <>
-        Docusaurus was designed from the ground up to be easily installed and
-        used to get your website up and running quickly.
-      </>
-    ),
-  },
-  {
-    title: 'Focus on What Matters',
+    title: 'Github Code',
     Svg: require('@site/static/img/undraw_docusaurus_tree.svg').default,
     description: (
       <>
-        Docusaurus lets you focus on your docs, and we&apos;ll do the chores. Go
-        ahead and move your docs into the <code>docs</code> directory.
+        ML Engineer를 위한 MLOps 에서 사용하는 코드들은 다음 저장소에 있습니다.<br/>
+        <a href="https://github.com/mlops-for-mle/mlops-for-mle">MLOps for MLE</a>
       </>
     ),
   },
   {
-    title: 'Powered by React',
-    Svg: require('@site/static/img/undraw_docusaurus_react.svg').default,
+    title: 'For Next Step',
+    Svg: require('@site/static/img/undraw_docusaurus_mountain.svg').default,
     description: (
       <>
-        Extend or customize your website layout by reusing React. Docusaurus can
-        be extended while reusing the same header and footer.
+        프로젝트 학습을 끝냈거나 MLOps에 개념에 익숙하시다면 MLOps for ALL 은 어떨까요?<br/>
+        MLOps for all 은 Kubeflow를 기반으로한 MLOps 플랫폼 구축을 위한 과정을 담은 튜토리얼 입니다.<br/>
+        <a href="https://mlops-for-all.github.io/">MLOps for ALL</a>
       </>
     ),
   },
@@ -43,7 +34,7 @@ const FeatureList: FeatureItem[] = [
 
 function Feature({title, Svg, description}: FeatureItem) {
   return (
-    <div className={clsx('col col--4')}>
+    <div className={clsx('col col--6')}>
       <div className="text--center">
         <Svg className={styles.featureSvg} role="img" />
       </div>
