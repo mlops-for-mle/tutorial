@@ -53,20 +53,23 @@ Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼�
 
 ## 0. 환경 설정
 
-이번 장에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다. 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
+:::caution
 
-다음 명령어를 통해 종료시킵니다.
+📌  이번 장에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다.  
+📌 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
+:::
+ 
+
+다음 명령어를 통해 실행중인 postgres 서버와 data generator 를 종료시킵니다.
 
 ```bash
 # terminal-command
 docker rm --force postgres-server data-generator
 ```
 
-## 1. Dockerfile 작성
+## 1. `Dockerfile`
 
-### 1.1 Dockerfile
-
-`Dockerfile` 은 앞선 장에서 작성한 내용을 사용하겠습니다.
+앞선 장에서 작성한 파일을 사용합니다.
 
 ```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
@@ -85,14 +88,13 @@ ENTRYPOINT ["python", "data_generator.py", "--db-host"]
 CMD ["localhost"]
 ```
 
-## 2. `Docker-compose.yaml`
+## 2. `docker-compose.yaml`
 
-DB service 와 data generator service 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
+이제  `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
+
+`docker-compose.yaml` 의 아키텍쳐는 다음과 같습니다.
 
 <CodeDescription>
-`docker-compose.yaml` 은 다음과 같이 형태로 구성되어 있습니다.
-
-구성요소는 다음과 같습니다.
 
 ```yaml  title="docker-compose.yaml"
 version: "3"
@@ -100,12 +102,14 @@ services:
   
 ```
 
-- `version` : `docker-compose` 의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
-- `services` : `docker-compose` 에 묶일 서비스들을 의미합니다.
+- `version` : `docker compose` 의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
+- `services` : `docker compose` 에 묶일 서비스들을 의미합니다.
 
 </CodeDescription>
 
-### 2.1 DB service 작성
+이제 DB service 와 data generator service 를 작성해 보겠습니다.
+
+### 2.1 DB service
 
 먼저, DB service 를 아래와 같이 yaml 형태로 작성합니다.
 
@@ -139,7 +143,7 @@ services:
     
 </CodeDescription>
 
-### 2.2 Data generator service 작성
+### 2.2 Data Denerator Service
 
 다음으로, data generator service 를 아래와 같이 yaml 형태로 작성합니다.
 
@@ -162,13 +166,13 @@ services:
     - `context` : `Dockerfile` 이 있는 절대경로 또는 상대경로를 설정합니다.
     - `dockerfile` : `context` 에서 설정한 경로에 있는 `Dockerfile` 의 파일명을 입력합니다.
 - `command` : Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다. 앞선 장에서 DB 의 host 는 컨테이너의 이름으로 주어야 한다는 것을 설명했습니다. 이를 위해서 여기서는 `["postgres-server"]` 로 덮어씁니다.
-- `depends_on` : `docker-compose` 로 띄워지는 service 간의 종속성 순서대로 service 를 시작할 때 사용합니다. 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator server 를 실행 해야하기 때문에 postgres server 의 service 이름인 `db` 를 입력합니다.
+- `depends_on` : `docker compose` 로 띄워지는 service 간의 종속성 순서대로 service 를 시작할 때 사용합니다. 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator server 를 실행 해야하기 때문에 postgres server 의 service 이름인 `db` 를 입력합니다.
 
 </CodeDescription>
 
-### 2.3 Docker-compose healthcheck 설정
+### 2.3 Docker Compose Healthcheck
 
-앞서 작성한 docker-compose 파일을 함께 나열하면 아래와 같습니다.
+앞서 작성한 `docker-compose.yaml` 파일을 함께 나열하면 아래와 같습니다.
 
 
 ```yaml  title="docker-compose.yaml"
@@ -199,19 +203,27 @@ services:
       - postgres-server
 ```
 
-`docker compose up` 명령어를 이용하여 service 들을 띄워보겠습니다.
+이제 작성한 `docker-compose.yaml` 파일을 실행해 보겠습니다.  
+docker compose 는 `up` 명령어와 `down` 명령어를 통해 실행과 종료를 할 수 있습니다.
+
+이제 `docker-compose.yaml` 파일에 정의되어 있는 service 들의 컨테이너를 실행시겠습니다.
+
+<CodeDescription>
 
 ```bash
 # terminal-command
 docker compose up -d
 ```
+- `-d` : detach 모드로 실행합니다. detach 모드란 백그라운드에서 컨테이너를 실행 후 유지시키는 모드를 의미합니다.
+
+</CodeDescription>
 
 하지만 `docker ps` 를 입력해보면 postgres server 만 띄워져있습니다.
 
 :::info
 
 하드웨어 스펙에 따라 따라 해당 내용이 재현이 안 되는 경우도 있습니다.  
-전체 흐름에 초점을 맞춰서 봐주시면 될 것 같습니다.
+재현이 안되는 경우, 전체 흐름에 초점을 맞춰서 봐주시면 될 것 같습니다.
 
 :::
 
@@ -234,8 +246,8 @@ Docker desktop 으로 봐도 동일한 현상입니다.
 
 이유는 앞서 `depends_on` 으로 service 간의 종속성은 정했지만, 실제로 postgres server 가 띄워진 뒤에 곧바로 data generator server 가 띄워집니다. **postgres server 는 아직 준비가 되어있지 않은데 data generator server 가 띄워져서 DB connection 을 하려다보니 data generator server 가 Exited 되는 문제가 발생한 것입니다.**
 
-따라서 해결방안은 postgres server 가 사용 가능한 상태가 되어있는지 체크를 한 뒤에 data generator server 를 띄워야 합니다.  
-이를 해결하기 위한 방법으로 [docker compose healthcheck](https://github.com/peter-evans/docker-compose-healthcheck) 이 있습니다.
+그렇기 때문에 postgres server 가 사용 가능한 상태가 되어있는지 체크를 한 뒤에 data generator server 를 띄워야 합니다.  
+이를 해결하기 위한 방법으로 [docker compose healthcheck](https://github.com/peter-evans/docker-compose-healthcheck) 가 있습니다.
 
 간단하게 아래와 같이 yaml 파일에 `healthcheck` 부분과 `condition` 을 추가하면 됩니다.
 
@@ -284,10 +296,9 @@ services:
 </CodeDescription>
 
 이렇게 설정된 것을 정리해보면, 10초마다 test 를 실행했을 때 5초 이내에 DB 가 ready 상태가 되었는지를 체크할 것이며, 실패 시 5번 재시도한다는 뜻이 됩니다.
-
 이외에 더 자세한 내용은 [Dockerfile reference](https://docs.docker.com/engine/reference/builder/#healthcheck) 을 참고해주시기 바랍니다.
 
-이제 모두 완성된 전체 `docker-compose` 파일을 `docker compose up` 명령어를 이용하여 service 들을 띄웁니다.
+이제 다시 service 들을 실행해 보겠습니다.
 
 ```bash
 # terminal-command
