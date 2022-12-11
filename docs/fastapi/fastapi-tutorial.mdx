@@ -27,7 +27,7 @@ FastAPI 의 [공식 문서](https://fastapi.tiangolo.com/)를 참고하여 튜�
 필요한 패키지를 설치합니다. [[Tutorial - User Guide - Intro](https://fastapi.tiangolo.com/tutorial/)]
 
 ```bash
-$ pip install "fastapi[all]"
+pip install "fastapi[all]"
 ```
 
 ## 1. FastAPI 를 이용해 간단한 API 만들어보기
@@ -36,7 +36,7 @@ $ pip install "fastapi[all]"
 
 다음과 같이 `main.py` 를 작성합니다. [[First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/)]
 
-```python
+```python  title="main.py"
 # main.py
 from fastapi import FastAPI
 
@@ -156,7 +156,7 @@ def read_item(item_id: int):
 여기에서 `item_id` 와 같은 parameter 를 Path Parameter 라고 합니다.
 입력된 Path parameter 의 값은 function 에 argument 로 전달되어 함수가 호출됩니다.
 
-또한, `def read(item_id: int)` 와 같이 type (여기에서는 `int`)을 제공할 수 있는데 이 때 제공된 것과 다른 type (예를 들어 `str`) 의 데이터가 입력되면 다음과 같은 형태로 HTTP Error 를 return 하게 됩니다.
+또한, `def read_item(item_id: int)` 와 같이 type (여기에서는 `int`)을 제공할 수 있는데 이 때 제공된 것과 다른 type (예를 들어 `str`) 의 데이터가 입력되면 다음과 같은 형태로 HTTP Error 를 return 하게 됩니다.
 
 ```json
 {
