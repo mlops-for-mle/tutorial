@@ -4,8 +4,12 @@ description: 📌 Overview of Model Registry Chapter
 ---
 
 # 0) Overview
-> **📌  해당 챕터는 `01. Database` 의 DB를 이용합니다.**  
-**📌  DB를 띄우지 않은 경우 `01. Database` 을 완료하고 DB가 띄워진 상태에서 진행해주세요.**
+:::caution
+
+📌  해당 챕터는 `01. Database` 의 DB를 이용합니다.  
+📌  DB를 띄우지 않은 경우 `01. Database` 을 완료하고 DB가 띄워진 상태에서 진행해주세요.
+
+:::
  
 **`03. Model Registry`** 에서는 **`02. Model development`** 를 통해 만들어진 모델을 저장, 관리 하는 방법을 학습합니다.
 앞선 챕터에서 작성한 코드 중에서 `# 3. save model` 부분을 변경하게 되며, 가장 대중적인 오픈소스 중 하나인 MLflow 를 이용합니다.

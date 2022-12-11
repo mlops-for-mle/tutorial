@@ -1,7 +1,23 @@
+---
+sidebar_position: 1
+---
+
 # Contributors
 
+## Main Authors
+
 import {
-  ActiveTeamRow,
+  MainAuthorRow,
 } from '@site/src/components/TeamProfileCards';
 
-<ActiveTeamRow />
+<MainAuthorRow />
+
+
+## Reviewers
+Thank you for reviewing our tutorials!
+
+import {
+  ReviewersRow,
+} from '@site/src/components/TeamProfileCards';
+
+<ReviewersRow />

@@ -133,7 +133,7 @@ CREATE TABLE IF NOT EXISTS iris_data (
     sepal_width float8,
     sepal_length float8,
     petal_width float8,
-    petal_length float8
+    petal_length float8,
     target int
 );"""
 ```
@@ -205,7 +205,7 @@ def create_table(db_connect):
 
 위에서 작성한 코드를 모아서 `create_table.py` 로 작성합니다.
 
-```python
+```python  title="create_table.py"
 # create_table.py
 import psycopg2
 

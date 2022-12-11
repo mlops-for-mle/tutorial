@@ -2,7 +2,7 @@
 sidebar_position: 2
 description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 ---
-# 2) Save Model to registry
+# 2) Save Model to Registry
 ## 목표
 
 1. 모델을 학습하고 mlflow server 에 저장합니다.
@@ -46,7 +46,7 @@ $ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 
 ### 1.1 기존 코드 확인 & 환경 변수 설정
 
-#### 1.1.1 **`db_train.py`**
+#### 1.1.1 `db_train.py`
 
 앞 챕터에서 학습했던 `db_train.py` 코드는 다음과 같습니다.
 
@@ -99,7 +99,9 @@ df.to_csv("data.csv", index=False)
 
 `mlflow` 와 통신하기 위해서는 몇 가지 환경 변수가 설정 되어야 합니다.
 
-[그림 3-6]을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다. 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 사전에 정의된 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 같은 방식으로 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 URI도 함께 매핑해 줍니다.
+[그림 3-6]을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다.
+이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 사전에 정의된 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 같은 방식으로 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 URI도 함께 매핑해 줍니다.
+
 ```python
 import os
 
@@ -109,11 +111,12 @@ os.environ["AWS_ACCESS_KEY_ID"] = "minio"
 os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 ```
 
-- `os` 라이브러리를 이용해 시스템의 환경변수를 설정합니다.
-    - `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 storage 의 주소입니다. 앞 장에서 띄운 `MinIO` 서버 주소와 같으며 `http://localhost:9000` 입니다.
-    - `MLFLOW_TRACKING_URI` : 정보를 저장하기 위해 연결 할 MLflow 서버의 주소 입니다. 앞 장의 MLflow 서버 주소와 같으며 `http://localhost:5001` 입니다.
-    - `AWS_ACCESS_KEY_ID` : `MinIO` 에 접근하기 위한 ID 입니다. 앞 장에서 설정한 `MINIO_ROOT_USER` 인 `minio` 를 사용합니다.
-    - `AWS_SECRET_ACCESS_KEY` : `MinIO` 에 접근하기 위한 PW 입니다. 앞 장에서 설정한 `MINIO_ROOT_PASSWORD` 인 `miniostorage` 를 사용합니다.
+`os` 라이브러리를 이용해 시스템의 환경변수를 설정합니다.
+
+- `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 storage 의 주소입니다. 앞 장에서 띄운 `MinIO` 서버 주소와 같으며 `http://localhost:9000` 입니다.
+- `MLFLOW_TRACKING_URI` : 정보를 저장하기 위해 연결 할 MLflow 서버의 주소 입니다. 앞 장의 MLflow 서버 주소와 같으며 `http://localhost:5001` 입니다.
+- `AWS_ACCESS_KEY_ID` : `MinIO` 에 접근하기 위한 ID 입니다. 앞 장에서 설정한 `MINIO_ROOT_USER` 인 `minio` 를 사용합니다.
+- `AWS_SECRET_ACCESS_KEY` : `MinIO` 에 접근하기 위한 PW 입니다. 앞 장에서 설정한 `MINIO_ROOT_PASSWORD` 인 `miniostorage` 를 사용합니다.
 
 ### 1.2 모델 저장하기
 
@@ -186,7 +189,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
     
 5. 모델은 다음과 구조로 저장됩니다.
     
-    ```python
+    ```bash
     # Directory written by mlflow.sklearn.save_model(model, "sk_model")
     
     sk_model/
@@ -202,7 +205,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 추가 작성한 코드를 전체 코드에 적용하여 완성합니다.
 
-### 2.1 **`save_model_to_registry.py`**
+### 2.1 `save_model_to_registry.py`
 
 ```python
 import os

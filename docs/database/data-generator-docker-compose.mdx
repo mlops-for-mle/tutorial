@@ -35,8 +35,14 @@ description: 📌 DB container 와 data generator container 를 함께 띄우기
             - TZ : `Asia/Seoul`
         - Command
             - `create_table.py` 실행
-            - `generate_data.py` 실행
-    - (**중요**) Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼저 띄워져야하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
+            - `data_generator.py` 실행
+
+:::info
+
+Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼저 띄워져야하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
+
+:::
+
 3. `docker-compose.yaml` 을 실행합니다.
 4. `psql` 을 이용하여 DB에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
@@ -60,7 +66,7 @@ $ docker rm --force postgres-server data-generator
 
 `Dockerfile` 은 앞선 장에서 작성한 내용을 사용하겠습니다.
 
-```docker
+```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 RUN apt-get update && apt-get install -y postgresql-client
@@ -70,22 +76,22 @@ WORKDIR /usr/app
 RUN pip install -U pip &&\
     pip install scikit-learn pandas psycopg2-binary
 
-COPY generate_data.py generate_data.py
+COPY data_generator.py data_generator.py
 
 ENTRYPOINT ["python", "data_generator.py", "--db-host"]
 # Change CMD to solve host finding error
 CMD ["localhost"]
 ```
 
-## 2. Docker-compose
+## 2. `Docker-compose.yaml`
 
-DB service 와 data generator service 를 띄우는 `docker-compose` 파일을 작성해보도록 하겠습니다.
+DB service 와 data generator service 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
 
-`docker-compose` 은 다음과 같이 형태로 구성되어 있습니다.
+`docker-compose.yaml` 은 다음과 같이 형태로 구성되어 있습니다.
 
 구성요소는 다음과 같습니다.
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 services:
   
@@ -98,7 +104,7 @@ services:
 
 먼저, DB service 를 아래와 같이 yaml 형태로 작성합니다.
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 
 services:
@@ -152,7 +158,7 @@ services:
 
 앞서 작성한 docker-compose 파일을 함께 나열하면 아래와 같습니다.
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 
 services:
@@ -188,6 +194,13 @@ $ docker compose up -d
 
 하지만 `docker ps` 를 입력해보면 postgres server 만 띄워져있습니다.
 
+:::info
+
+하드웨어 스펙에 따라 따라 해당 내용이 재현이 안 되는 경우도 있습니다.  
+전체 흐름에 초점을 맞춰서 봐주시면 될 것 같습니다.
+
+:::
+
 ```bash
 $ docker ps
 CONTAINER ID   IMAGE           COMMAND                  CREATED              STATUS              PORTS                    NAMES
@@ -211,7 +224,7 @@ Docker desktop 으로 봐도 동일한 현상입니다.
 
 간단하게 아래와 같이 yaml 파일에 `healthcheck` 부분과 `condition` 을 추가하면 됩니다.
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 
 services:
@@ -286,12 +299,12 @@ mydatabase=# select * from iris_data;
 
 ### 3.2 Data generator container 에서 확인
 
-`docker exec` 를 이용하여 data generator container 안으로 접속하고, `psql` 을 이용하여 DB 로 접속합니다. 이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `db` 로 변경합니다.
+`docker exec` 를 이용하여 data generator container 안으로 접속하고, `psql` 을 이용하여 DB 로 접속합니다. 이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
 
 ```bash
 $ docker exec -it data-generator /bin/bash
 
-$ psql -h db -p 5432 -U myuser -d mydatabase
+$ psql -h postgres-server -p 5432 -U myuser -d mydatabase
 Password for user myuser: 
 psql (13.8 (Debian 13.8-0+deb11u1), server 14.0 (Debian 14.0-1.pgdg110+1))
 WARNING: psql major version 13, server major version 14.

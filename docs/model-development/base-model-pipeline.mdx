@@ -97,7 +97,7 @@ joblib.dump(model_pipeline, "model_pipeline.joblib")
 
 위에서 작성한 코드를 모아서 `pipeline_train.py` 로 작성합니다.
 
-```python
+```python  title="pipeline_train.py"
 # pipeline_train.py
 
 import joblib
@@ -133,7 +133,7 @@ joblib.dump(model_pipeline, "model_pipeline.joblib")
 
 저장된 파이프라인이 정상적으로 동작하는 지 검증하기 위해 이 전 장에서 작성한 `base_validate_save_model.py` 의 코드를 수정해 `pipeline_validate_save_model.py` 로 작성합니다.
 
-```python
+```python  title="pipeline_validate_save_model.py"
 # pipeline_validate_save_model.py
 
 import joblib
