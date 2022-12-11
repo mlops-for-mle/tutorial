@@ -50,7 +50,7 @@ $ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 
 앞 챕터에서 학습했던 `db_train.py` 코드는 다음과 같습니다.
 
-```python
+```python  title="db_train.py"
 # db_train.py
 
 import joblib
@@ -207,7 +207,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 ### 2.1 `save_model_to_registry.py`
 
-```python
+```python  title="save_model_to_registry.py"
 import os
 from argparse import ArgumentParser
 
@@ -281,7 +281,7 @@ df.to_csv("data.csv", index=False)
 완성된 코드를 실행합니다.
 
 ```bash
-$ python upload_model.py --model-name "sk_model"
+$ python save_model_to_registry.py.py --model-name "sk_model"
 ```
 
 ### 2.3 Mlflow에서 결과 확인

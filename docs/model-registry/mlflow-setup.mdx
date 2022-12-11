@@ -34,7 +34,7 @@ description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷
           - 하지만 **MacOS** 의 경우 5000번 포트로 "AirPlay" 기능을 사용하기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
-    - `localhost:5000` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
+    - `localhost:5001` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
 ---
 <div style={{textAlign: 'center'}}>
 
@@ -56,9 +56,7 @@ Postgres의 스펙을 `docker-compose` 의 `services` 탭 밑에 정의합니다
 
 - 서비스 이름, 사용자, 비밀번호, 데이터베이스 이름, 시간대를 환경변수를 활용해 설정합니다.
 
-**`docker-compose.yaml`**
-
-```yaml
+```yaml  title="docker-compose.yaml"
 mlflow-backend-store:
   image: postgres:14.0
   container_name: mlflow-backend-store
@@ -103,9 +101,7 @@ MinIO의 스펙을 `docker-compose` 의 `services` 탭 밑에 정의합니다.
 - 서비스 이름, 사용자, 비밀번호를 환경변수를 활용해 설정합니다.
 - host 와 연결되는 포트를 정의합니다.
 
-**`docker-compose.yaml`**
-
-```yaml
+```yaml  title="docker-compose.yaml"
 mlflow-artifact-store:
   image: minio/minio
   container_name: mlflow-artifact-store
@@ -142,9 +138,7 @@ mlflow-artifact-store:
 MLflow 서버에 필요한 패키지가 설치된 이미지를 build 할 Dockerfile 을 작성합니다.  
 서버를 띄울때, MinIO 에 초기 bucket 을 생성하기 위해 MinIO Client 도 함께 설치합니다.
 
-**`Dockerfile`**
-
-```docker
+```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 RUN apt-get update && apt-get install -y \
@@ -174,8 +168,7 @@ RUN cd /tmp && \
       - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
       - `MinIO` 에 연결하기 위한 keyword argument 를 추가합니다.
 
-**`docker-compose.yaml`**
-```yaml
+```yaml  title="docker-compose.yaml"
 mlflow-server:
   build:
     context: .
@@ -222,11 +215,11 @@ mlflow-server:
 
 ## 4. docker compose를 활용해 서비스 띄우기
 
-완성된 `Dockerfile` , `docker-compose.yaml` 을 확인 합니다.
+완성된 `Dockerfile`, `docker-compose.yaml` 을 확인 합니다.
 
 ### 4.1 `Dockerfile`
 
-```docker
+```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 RUN apt-get update && apt-get install -y \
@@ -245,7 +238,7 @@ RUN cd /tmp && \
 
 ### 4.2 `docker-compose.yaml`
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 
 services:
@@ -308,13 +301,13 @@ services:
 ```
 ### 4.3 실행
 
-`Dockerfile` , `docker-compose.yaml` 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
+`Dockerfile`, `docker-compose.yaml` 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
 
 ```bash
 $ docker compose up -d
 ```
 
-- [localhost:5000](http://localhost:5000) 에 접속하여 `MLflow` 서버 동작을 확인합니다.
+- [localhost:5001](http://localhost:5001) 에 접속하여 `MLflow` 서버 동작을 확인합니다.
   <div style={{textAlign: 'center'}}>
   
     ![MLflow ui](./img/model-registry-3.png)
