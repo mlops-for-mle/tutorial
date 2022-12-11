@@ -57,7 +57,8 @@ Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼�
 다음 명령어를 통해 종료시킵니다.
 
 ```bash
-$ docker rm --force postgres-server data-generator
+# terminal-command
+docker rm --force postgres-server data-generator
 ```
 
 ## 1. Dockerfile 작성
@@ -135,7 +136,7 @@ services:
 
 다음으로, data generator service 를 아래와 같이 yaml 형태로 작성합니다.
 
-```yaml
+```yaml  title="docker-compose.yaml"
   data-generator:
     build:
       context: .
@@ -189,7 +190,8 @@ services:
 `docker compose up` 명령어를 이용하여 service 들을 띄워보겠습니다.
 
 ```bash
-$ docker compose up -d
+# terminal-command
+docker compose up -d
 ```
 
 하지만 `docker ps` 를 입력해보면 postgres server 만 띄워져있습니다.
@@ -202,7 +204,8 @@ $ docker compose up -d
 :::
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 CONTAINER ID   IMAGE           COMMAND                  CREATED              STATUS              PORTS                    NAMES
 8a4a16837f28   postgres:14.0   "docker-entrypoint.s…"   About a minute ago   Up About a minute   0.0.0.0:5432->5432/tcp   postgres-server
 ```
@@ -271,7 +274,8 @@ services:
 이제 모두 완성된 전체 `docker-compose` 파일을 `docker compose up` 명령어를 이용하여 service 들을 띄웁니다.
 
 ```bash
-$ docker compose up -d
+# terminal-command
+docker compose up -d
 ```
 
 ## 3. 데이터 확인
@@ -281,7 +285,8 @@ $ docker compose up -d
 `psql` 을 이용하여 DB 에 접근하고, 계속해서 data 가 삽입되고 있는지 확인합니다.
 
 ```bash
-$ psql -h localhost -p 5432 -U myuser -d mydatabase
+# terminal-command
+psql -h localhost -p 5432 -U myuser -d mydatabase
 Password for user myuser: 
 psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
 Type "help" for help.
@@ -299,12 +304,19 @@ mydatabase=# select * from iris_data;
 
 ### 3.2 Data generator container 에서 확인
 
-`docker exec` 를 이용하여 data generator container 안으로 접속하고, `psql` 을 이용하여 DB 로 접속합니다. 이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
+`docker exec` 를 이용하여 data generator container 안으로 접속합니다.
 
 ```bash
-$ docker exec -it data-generator /bin/bash
+# terminal-command
+docker exec -it data-generator /bin/bash
+```
 
-$ psql -h postgres-server -p 5432 -U myuser -d mydatabase
+그리고 `psql` 을 이용하여 DB 로 접속합니다.
+이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
+
+```bash
+# terminal-command
+psql -h postgres-server -p 5432 -U myuser -d mydatabase
 Password for user myuser: 
 psql (13.8 (Debian 13.8-0+deb11u1), server 14.0 (Debian 14.0-1.pgdg110+1))
 WARNING: psql major version 13, server major version 14.

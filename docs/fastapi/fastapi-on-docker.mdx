@@ -51,19 +51,22 @@ CMD ["uvicorn", "crud_pydantic:app", "--host", "0.0.0.0", "--reload"]
 이미지 이름은 `ch5-api-server` 로 하겠습니다.
 
 ```bash
-$ docker build -f Dockerfile -t ch5-api-server .
+# terminal-command
+docker build -f Dockerfile -t ch5-api-server .
 ```
 
 이미지가 잘 생성되었는지 확인합니다.
 
 ```bash
-$ docker image ls
+# terminal-command
+docker image ls
 ```
 
 다음과 같이 `ch5-api-server` 이미지가 잘 생성되었음을 확인할 수 있습니다.
 
 ```bash
-$ docker image ls
+# terminal-command
+docker image ls
 REPOSITORY                  TAG       IMAGE ID       CREATED         SIZE
 ch5-api-server             latest    3dec4bf727fe   3 hours ago     249MB
 ```
@@ -73,7 +76,8 @@ ch5-api-server             latest    3dec4bf727fe   3 hours ago     249MB
 이제 build 한 이미지를 실행해 보겠습니다.
 
 ```bash
-$ docker run \
+# terminal-command
+docker run \
   --name api-server \
   -p 8000:8000 \
   -d \
@@ -87,13 +91,15 @@ $ docker run \
 이제 컨테이너가 잘 실행되고 있는지 확인합니다.
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 ```
 
 위의 명령어를 실행해보면 `api-server` 라는 이름을 가진 컨테이너가 실행되고 있음을 확인할 수 있습니다.
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                    NAMES
 fb72ccf8fb47   ch5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 13 minutes   0.0.0.0:8000->8000/tcp   api-server
 ```

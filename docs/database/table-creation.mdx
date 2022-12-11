@@ -35,7 +35,8 @@ description: 📌 생성된 DB 에 query 를 작성하여 테이블을 생성합
 필요한 패키지들을 설치합니다.
 
 ```bash
-$ pip install pandas psycopg2-binary scikit-learn
+# terminal-command
+pip install pandas psycopg2-binary scikit-learn
 ```
 
 ## 1. 테이블 생성
@@ -240,7 +241,8 @@ if __name__ == "__main__":
 Python 스크립트를 실행합니다.
 
 ```bash
-$ python create_table.py
+# terminal-command
+python create_table.py
 CREATE TABLE IF NOT EXISTS iris_data (
     id SERIAL PRIMARY KEY,
     sepal_length float8,
@@ -258,7 +260,8 @@ CREATE TABLE IF NOT EXISTS iris_data (
 1. 우선 psql에 접속합니다.
     
     ```bash
-    $ psql -h localhost -p 5432 -U myuser -d mydatabase
+    # terminal-command
+    psql -h localhost -p 5432 -U myuser -d mydatabase
     Password for user myuser: 
     psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
     Type "help" for help.
@@ -269,6 +272,7 @@ CREATE TABLE IF NOT EXISTS iris_data (
 2. `\d` 를 입력해 생성된 테이블들의 목록을 확인합니다.
     
     ```bash
+    # terminal-command
     mydatabase=# \d
     List of relations
      Schema |       Name       |   Type   | Owner  
@@ -282,6 +286,7 @@ CREATE TABLE IF NOT EXISTS iris_data (
 3. 위 목록 중 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 문을 실행한 결과입니다.
     
     ```bash
+    # terminal-command
     mydatabase=# select * from iris_data;
      id | sepal_length | sepal_width | petal_length | petal_width | target 
     ----+--------------+-------------+--------------+-------------+--------

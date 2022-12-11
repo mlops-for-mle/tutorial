@@ -37,7 +37,8 @@ description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 아래 명령어를 통해 관련 패키지를 설치합니다.
 
 ```bash
-$ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
+# terminal-command
+pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 ```
 
 ## 1.  모델 저장하기
@@ -190,6 +191,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 5. 모델은 다음과 구조로 저장됩니다.
     
     ```bash
+    # terminal-command
     # Directory written by mlflow.sklearn.save_model(model, "sk_model")
     
     sk_model/
@@ -281,7 +283,8 @@ df.to_csv("data.csv", index=False)
 완성된 코드를 실행합니다.
 
 ```bash
-$ python save_model_to_registry.py.py --model-name "sk_model"
+# terminal-command
+python save_model_to_registry.py.py --model-name "sk_model"
 ```
 
 ### 2.3 Mlflow에서 결과 확인

@@ -37,9 +37,10 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 1. Docker 를 설치하기 위해 필요한 apt 패키지를 업데이트합니다.
     
     ```bash
-    $ sudo apt-get update
-    
-    $ sudo apt-get install \
+    # terminal-command
+    sudo apt-get update
+    # terminal-command
+    sudo apt-get install \
         ca-certificates \
         curl \
         gnupg \
@@ -49,14 +50,17 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 2. Docker 의 공식 GPG 키를 추가합니다.
     
     ```bash
-    $ sudo mkdir -p /etc/apt/keyrings
-    $ curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg`
+    # terminal-command
+    sudo mkdir -p /etc/apt/keyrings
+    # terminal-command
+    curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /etc/apt/keyrings/docker.gpg`
     ```
     
 3. Docker 에서 배포한 stable 버전을 설치하도록 repository를 추가합니다.
     
     ```bash
-    $ echo \
+    # terminal-command
+    echo \
       "deb [arch=$(dpkg --print-architecture) signed-by=/etc/apt/keyrings/docker.gpg] https://download.docker.com/linux/ubuntu \
       $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
     ```
@@ -67,19 +71,22 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 1. `apt` 패키지 인덱스를 업데이트 합니다.
     
     ```bash
-    $ sudo apt-get update
+    # terminal-command
+    sudo apt-get update
     ```
     
 2. Docker Engine, containerd, Docker Compose 을 설치합니다.
     
     ```bash
-     $ sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
+    # terminal-command
+     sudo apt-get install docker-ce docker-ce-cli containerd.io docker-compose-plugin
     ```
     
 3. Docker Engine 이 정상적으로 설치되었는지 확인합니다.
     
     ```bash
-    $ sudo docker run hello-world
+    # terminal-command
+    sudo docker run hello-world
     ```
     
     정상적으로 설치된 경우 다음과 같이 출력 됩니다.
@@ -104,7 +111,7 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
         to your terminal.
     
     To try something more ambitious, you can run an Ubuntu container with:
-     $ docker run -it ubuntu bash
+     docker run -it ubuntu bash
     
     Share images, automate workflows, and more with a free Docker ID:
      https://hub.docker.com/
@@ -121,7 +128,8 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 `-d` 옵션을 사용하면 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
 
 ```bash
-$ docker run -d \
+# terminal-command
+docker run -d \
   --name postgres-server \
   -e POSTGRES_USER=myuser \
   -e POSTGRES_PASSWORD=mypassword \
@@ -140,7 +148,8 @@ $ docker run -d \
 `docker ps` 명령어를 통해 postres server 가 잘 생성되었는지 확인합니다.
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS          PORTS                    NAMES
 13bd38add3e7   postgres:14.0   "docker-entrypoint.s…"   40 seconds ago   Up 39 seconds   0.0.0.0:5432->5432/tcp   postres-server
 ```
@@ -156,13 +165,15 @@ PostgreSQL 서버를 확인할 때 사용하는 cli 툴을 설치합니다.
 
 `psql` 을 통해 생성된 DB 로 접속합니다.
 ```bash
-$ psql -h localhost -p 5432 -U myuser -d mydatabase
+# terminal-command
+psql -h localhost -p 5432 -U myuser -d mydatabase
 ```
 
 접속되면 다음과 같이 출력됩니다.
 
 ```sql
-$ psql -h localhost -p 5432 -U myuser -d mydatabase
+# terminal-command
+psql -h localhost -p 5432 -U myuser -d mydatabase
 Password for user myuser: 
 psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
 Type "help" for help.

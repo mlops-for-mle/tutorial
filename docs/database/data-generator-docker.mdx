@@ -4,6 +4,7 @@ description: 📌 Docker 위에서 데이터를 생성하기 위한 준비로써
 ---
 
 # 5) Data Generator on Docker
+import CodeDescription from '@site/src/components/CodeDescription';
 
 ## 목표
 
@@ -158,25 +159,29 @@ CMD ["localhost"]
 이미지를 build 하기 위해서는 아래 규칙을 따르면 됩니다. 관련해 자세한 내용은 [공식 홈페이지](https://docs.docker.com/engine/reference/commandline/build/)를 참고해주세요.
 
 ```bash
-$ docker build [OPTIONS] PATH | URL | -
+# terminal-command
+docker build [OPTIONS] PATH | URL | -
 ```
 
 이미지 이름은 `ch-1-data-generator` 로 하겠습니다.
 
 ```bash
-$ docker build . -t ch-1-data-generator
+# terminal-command
+docker build . -t ch-1-data-generator
 ```
 
 이미지가 생성되었는지 확인해 보겠습니다.
 
 ```bash
-$ docker image ls
+# terminal-command
+docker image ls
 ```
 
 위 명령어를 실행하면 아래와 같이 `ch-1-data-generator` 가 있음을 확인할 수 있습니다.
 
 ```bash
-$ docker image ls
+# terminal-command
+docker image ls
 REPOSITORY                  TAG       IMAGE ID       CREATED         SIZE
 ch-1-data-generator         latest    96d8fa213c74   5 hours ago     635MB
 ```
@@ -186,13 +191,15 @@ ch-1-data-generator         latest    96d8fa213c74   5 hours ago     635MB
 이제 build 한 이미지를 실행해 보겠습니다.
 
 ```bash
-$ docker run ch-1-data-generator
+# terminal-command
+docker run ch-1-data-generator
 ```
 
 실행할 경우 아래와 같이 에러 메세지와 함께 컨테이너가 종료됩니다.
 
 ```bash
-$ docker run ch-1-data-generator
+# terminal-command
+docker run ch-1-data-generator
 Traceback (most recent call last):
   File "/usr/app/create_table.py", line 26, in <module>
     db_connect = psycopg2.connect(
@@ -209,13 +216,15 @@ connection to server at "localhost" (::1), port 5432 failed: Cannot assign reque
 해당 메세지를 읽고 나면 제일 처음 확인해 볼 부분은 DB 컨테이너가 실행되지 않고 있는지 확인합니다.
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 ```
 
 명령어를 실행해보면 현재 DB 컨테이너가 실행중임을 확인할 수 있습니다.
 
 ```bash
-$ docker ps
+# terminal-command
+docker ps
 CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS         PORTS                    NAMES
 26eeee50afc6   postgres:14.0   "docker-entrypoint.s…"   3 seconds ago   Up 2 seconds   0.0.0.0:5432->5432/tcp   postres-server
 ```
@@ -239,7 +248,8 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 [그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계입니다. 앞선 장에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
 
 ```bash
-$ docker run -d \
+# terminal-command
+docker run -d \
 	...
   -p 5432:5432 \
   postgres:14.0
@@ -268,19 +278,22 @@ $ docker run -d \
 1. 컨테이너간 통신할 수 있는 네트워크를 생성합니다.
     
     ```bash
-    $ docker network create my-network
+    # terminal-command
+    docker network create my-network
     ```
     
 2. 실행 중인 DB 컨테이너를 생성한 도커 네트워크에 연결합니다.
     
     ```bash
-    $ docker network connect my-network postgres-server
+    # terminal-command
+    docker network connect my-network postgres-server
     ```
     
 3. 이제 다시 `ch-1-data-generator` 를 실행합니다.
     
     ```bash
-    $ docker run --name data-generator --network "my-network" ch-1-data-generator "postgres-server"
+    # terminal-command
+    docker run --name data-generator --network "my-network" ch-1-data-generator "postgres-server"
     ```
     
     - `--network` 옵션에 위에서 생성한 네트워크 이름을 입력합니다.
@@ -294,7 +307,8 @@ $ docker run -d \
 1. psql 에 접속합니다.
     
     ```bash
-    $ psql -h localhost -p 5432 -U myuser -d mydatabase
+    # terminal-command
+    psql -h localhost -p 5432 -U myuser -d mydatabase
     Password for user myuser: 
     psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
     Type "help" for help.
@@ -305,6 +319,7 @@ $ docker run -d \
 2. 앞선 장에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```bash
+    # terminal-command
     mydatabase=# select * from iris_data;
      id | sepal_length | sepal_width | petal_length | petal_width | target 
     ----+--------------+-------------+--------------+-------------+--------
@@ -316,7 +331,7 @@ $ docker run -d \
     ```
     
     실행을 할 때마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
-    
+
 
 ## 3. 한계
 
