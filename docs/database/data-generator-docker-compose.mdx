@@ -4,6 +4,7 @@ description: 📌 DB container 와 data generator container 를 함께 띄우기
 ---
 
 # 6) Data Generator on Docker Compose
+import CodeDescription from '@site/src/components/CodeDescription';
 
 ## 목표
 
@@ -88,6 +89,7 @@ CMD ["localhost"]
 
 DB service 와 data generator service 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
 
+<CodeDescription>
 `docker-compose.yaml` 은 다음과 같이 형태로 구성되어 있습니다.
 
 구성요소는 다음과 같습니다.
@@ -101,9 +103,13 @@ services:
 - `version` : `docker-compose` 의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
 - `services` : `docker-compose` 에 묶일 서비스들을 의미합니다.
 
+</CodeDescription>
+
 ### 2.1 DB service 작성
 
 먼저, DB service 를 아래와 같이 yaml 형태로 작성합니다.
+
+<CodeDescription>
 
 ```yaml  title="docker-compose.yaml"
 version: "3"
@@ -131,10 +137,13 @@ services:
 - `restart` : container 의 restart policy 를 설정합니다. 자세한 내용은 아래의 링크를 참고해주세요.  
     [Start containers automatically](https://docs.docker.com/config/containers/start-containers-automatically/)
     
+</CodeDescription>
 
 ### 2.2 Data generator service 작성
 
 다음으로, data generator service 를 아래와 같이 yaml 형태로 작성합니다.
+
+<CodeDescription>
 
 ```yaml  title="docker-compose.yaml"
   data-generator:
@@ -155,9 +164,12 @@ services:
 - `command` : Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다. 앞선 장에서 DB 의 host 는 컨테이너의 이름으로 주어야 한다는 것을 설명했습니다. 이를 위해서 여기서는 `["postgres-server"]` 로 덮어씁니다.
 - `depends_on` : `docker-compose` 로 띄워지는 service 간의 종속성 순서대로 service 를 시작할 때 사용합니다. 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator server 를 실행 해야하기 때문에 postgres server 의 service 이름인 `db` 를 입력합니다.
 
+</CodeDescription>
+
 ### 2.3 Docker-compose healthcheck 설정
 
 앞서 작성한 docker-compose 파일을 함께 나열하면 아래와 같습니다.
+
 
 ```yaml  title="docker-compose.yaml"
 version: "3"
@@ -227,6 +239,8 @@ Docker desktop 으로 봐도 동일한 현상입니다.
 
 간단하게 아래와 같이 yaml 파일에 `healthcheck` 부분과 `condition` 을 추가하면 됩니다.
 
+<CodeDescription>
+
 ```yaml  title="docker-compose.yaml"
 version: "3"
 
@@ -266,6 +280,8 @@ services:
 - `timeout` : health check 의 timeout 을 설정합니다. 여기서는 5초로 설정합니다.
 - `retries` : timeout 의 횟수를 설정합니다. 여기서는 5번으로 설정합니다.
 - `condition` : healthcheck 기능을 사용하기 위해 `depends_on` 의 parameter 로 `condition: service_healthy` 를 넣어줍니다. postgres server 의 healthcheck 를 data generator server 에서 적용시키기 위해 `db` 밑에 condition 을 추가하였습니다.
+
+</CodeDescription>
 
 이렇게 설정된 것을 정리해보면, 10초마다 test 를 실행했을 때 5초 이내에 DB 가 ready 상태가 되었는지를 체크할 것이며, 실패 시 5번 재시도한다는 뜻이 됩니다.
 

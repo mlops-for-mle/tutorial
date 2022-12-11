@@ -68,7 +68,7 @@ Path Parameter 의 경우 각 API 에서 사용되는 파라미터를 Request He
 이를 고려하여 명세서를 작성하면 다음과 같습니다.
 
 1. Create
-
+    
     이름과 별명을 입력하여 사용자를 생성합니다.
     
     | Request Header | Request Body | Response Body |
@@ -315,7 +315,7 @@ def delete_user(name: str):
 
 위에서 작성한 코드를 모으면 아래와 같습니다.
 
-```python
+```python  title="crud_query.py"
 # crud_query.py
 from fastapi import FastAPI, HTTPException
 

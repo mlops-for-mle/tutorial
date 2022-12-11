@@ -4,6 +4,7 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 ---
 
 # 1) DB Server Creation
+import CodeDescription from '@site/src/components/CodeDescription';
 
 ## 목표
 
@@ -17,7 +18,7 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
     - `POSTGRES_USER` : `myuser`
     - `POSTGRES_PASSWORD` : `mypassword`
     - `POSTGRES_DB` : `mydatabase`
-    - `Port forwarding` : `5432:5432`
+    - Port Forwarding : `5432:5432`
 3. 생성된 postgres 서버를 확인합니다.
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
@@ -127,6 +128,8 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 
 `-d` 옵션을 사용하면 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
 
+<CodeDescription>
+
 ```bash
 # terminal-command
 docker run -d \
@@ -144,6 +147,8 @@ docker run -d \
     - `POSTGRES_PASSWORD` : user 의 비밀번호를 설정합니다. 여기서는 `mypassword` 를 사용하겠습니다.
     - `POSTGRES_DB` : database 의 이름을 설정합니다. 여기서는 `mydatabase` 를 사용하겠습니다.
 - `-p` : host 와 container 의 port 를 설정합니다. 형식은 `host:container` 으로 사용이 되며, 여기서는 `5432:5432` 로 설정하겠습니다.
+
+</CodeDescription>
 
 `docker ps` 명령어를 통해 postres server 가 잘 생성되었는지 확인합니다.
 
@@ -164,10 +169,19 @@ PostgreSQL 서버를 확인할 때 사용하는 cli 툴을 설치합니다.
 ### 3.2 서버 확인
 
 `psql` 을 통해 생성된 DB 로 접속합니다.
+
+<CodeDescription>
+
 ```bash
 # terminal-command
 psql -h localhost -p 5432 -U myuser -d mydatabase
 ```
+- `-h` : host 를 지정합니다. 이 때 host 는 docker 에서 port forwarding 을 했기 때문에 `localhost` 를 입력합니다.
+- `-p` : port 를 지정합니다. 여기서는 `5432` 를 입력합니다.
+- `-U` : 접속할 user 이름을 입력합니다. 여기서는 `myuser` 를 통해 접속합니다.
+- `-d` : database 의 이름을 입력합니다. 여기서는 `mydatabase` 를 입력합니다.
+
+</CodeDescription>
 
 접속되면 다음과 같이 출력됩니다.
 
@@ -180,11 +194,6 @@ Type "help" for help.
 
 mydatabase=#
 ```
-
-- `-h` : host 를 지정합니다. 이 때 host 는 docker 에서 port forwarding 을 했기 때문에 `localhost` 를 입력합니다.
-- `-p` : port 를 지정합니다. 여기서는 `5432` 를 입력합니다.
-- `-U` : 접속할 user 이름을 입력합니다. 여기서는 `myuser` 를 통해 접속합니다.
-- `-d` : database 의 이름을 입력합니다. 여기서는 `mydatabase` 를 입력합니다.
 
 `\du` 를 통해 DB 의 role name 과 attributes 을 확인합니다.
 

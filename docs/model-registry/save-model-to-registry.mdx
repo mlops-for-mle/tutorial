@@ -2,7 +2,10 @@
 sidebar_position: 2
 description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 ---
+
 # 2) Save Model to Registry
+import CodeDescription from '@site/src/components/CodeDescription';
+
 ## 목표
 
 1. 모델을 학습하고 mlflow server 에 저장합니다.
@@ -103,6 +106,8 @@ df.to_csv("data.csv", index=False)
 [그림 3-6]을 보면 유저가 학습한 모델을 `mlflow-server` 를 통해 Artifact-store 인 `MinIO` 에 저장합니다. 이 과정에서 Artifact-store 의 접근 권한이 필요 하게 됩니다.
 이 정보는 앞 장의 `docker-compose.yaml` 에서 설정한 `mlflow-server` , `mlflow-artifact-store` 의 정보와 같습니다. 접근에 사용할 ID, PW 는 사전에 정의된 시스템 환경 변수에 매핑하여 Artifact-store 에 접근 할 수 있습니다. 같은 방식으로 서비스가 띄워져있는 MLflow 서버와 S3(MinIO) 의 URI도 함께 매핑해 줍니다.
 
+<CodeDescription>
+
 ```python
 import os
 
@@ -118,6 +123,9 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 - `MLFLOW_TRACKING_URI` : 정보를 저장하기 위해 연결 할 MLflow 서버의 주소 입니다. 앞 장의 MLflow 서버 주소와 같으며 `http://localhost:5001` 입니다.
 - `AWS_ACCESS_KEY_ID` : `MinIO` 에 접근하기 위한 ID 입니다. 앞 장에서 설정한 `MINIO_ROOT_USER` 인 `minio` 를 사용합니다.
 - `AWS_SECRET_ACCESS_KEY` : `MinIO` 에 접근하기 위한 PW 입니다. 앞 장에서 설정한 `MINIO_ROOT_PASSWORD` 인 `miniostorage` 를 사용합니다.
+
+</CodeDescription>
+
 
 ### 1.2 모델 저장하기
 
@@ -173,10 +181,9 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
     ```
     
 4. `run` 을 생성하고 정보를 저장합니다.
-    - `mlflow.log_metrics` : 모델의 결과 metrics 를 python 의 dict 형태로 받아 생성된 `run` 에 저장합니다.
-    - `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
-    - `mlflow.sklearn.log_model` : 학습된 모델 결과물이 `sklearn` 객체일 경우 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]의 구조로 `run` 에 저장 합니다.
-    
+
+    <CodeDescription>
+
     ```python
     with mlflow.start_run():
         mlflow.log_metrics({"train_acc": train_acc, "valid_acc": valid_acc})
@@ -187,7 +194,13 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
             input_example=input_sample,
         )
     ```
+
+    - `mlflow.log_metrics` : 모델의 결과 metrics 를 python 의 dict 형태로 받아 생성된 `run` 에 저장합니다.
+    - `sklearn` 의 모델은 `mlflow.sklearn` 를 사용하여 간편하게 업로드가 가능합니다.
+    - `mlflow.sklearn.log_model` : 학습된 모델 결과물이 `sklearn` 객체일 경우 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]의 구조로 `run` 에 저장 합니다.
     
+    </CodeDescription>
+
 5. 모델은 다음과 구조로 저장됩니다.
     
     ```bash
