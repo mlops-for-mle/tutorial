@@ -4,13 +4,20 @@ description: 📌 앞서 작성한 API 에서 Create 부분을 **Pydantic** 을 
 ---
 
 # 3) FastAPI CRUD (Pydantic)
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 앞서 작성한 API 에서 Create 부분을 **Pydantic** 을 이용하여 수정합니다.
 2. **Pydantic** 을 사용하기 전과 후에 어떠한 차이가 있는지 학습합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. Create API 에서 입력으로 받아야 하는 값들을 `pydantic.BaseModel` 을 이용하여 수정합니다. [[Request Body](https://fastapi.tiangolo.com/tutorial/body/)]
     - `Class CreateIn(BaseModel)` 을 이용
@@ -20,7 +27,30 @@ description: 📌 앞서 작성한 API 에서 Create 부분을 **Pydantic** 을 
     - `CreateOut` 에는 `status` 와 `id` 변수를 만들어 Create 의 operation function 에서 두 변수의 값을 return 하도록 합니다.
         - `id` 는 create 되는 시점의 memory 에 존재하는 데이터의 개수로 정의하여 작성합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch5/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5) 에서 확인할 수 있습니다.
+
+```js
+ch5
+├── Dockerfile
+├── Makefile
+├── crud_path.py
+// highlight-next-line
+├── crud_pydantic.py
+├── crud_query.py
+├── main.py
+├── multi_param.py
+├── path_param.py
+└── query_param.py
+```
+
+</BrowserWindow>
 
 ## 1. Pydantic Model
 

@@ -4,19 +4,46 @@ description: 📌 생성된 테이블안에 데이터를 계속해서 생성하�
 ---
 
 # 4) Data Insertion Loop
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 생성된 테이블안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
 2. DB 에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 이전 장에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 만듭니다.
 2. `psycopg2` 를 이용하여 생성된 `iris_data` 테이블에 스크립트를 실행하여 계속해서 데이터를 삽입합니다.
-3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
+3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
+
+</CodeDescription>
+</details>
 
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+
+```js
+ch1
+├── Dockerfile
+├── Makefile
+├── create_table.py
+├── data_generator.py
+├── docker-compose.yaml
+├── insert_data.py
+// highlight-next-line
+└── insert_data_loop.py
+```
+
+</BrowserWindow>
 
 ## 1. 데이터 생성
 

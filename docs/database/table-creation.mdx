@@ -4,15 +4,22 @@ description: 📌 생성된 DB 에 query 를 작성하여 테이블을 생성합
 ---
 
 # 2) Table Creation
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 생성된 DB 에 query 를 작성하여 테이블을 생성합니다.
 2. 생성된 테이블 을 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
-1. `pandas` , `psycopg2-binary` , `scikit-learn` 패키지를 설치합니다.
+1. `pandas`, `psycopg2-binary`, `scikit-learn` 패키지를 설치합니다.
 2. Python 스크립트를 이용하여 DB 에 접근합니다.
     - user : `myuser`
     - password : `mypassword`
@@ -26,9 +33,31 @@ description: 📌 생성된 DB 에 query 를 작성하여 테이블을 생성합
         | column | id | sepal length (cm) | sepal width (cm) | petal length (cm) | petal width (cm) | target |
         | --- | --- | --- | --- | --- | --- | --- |
         | type | primary key | float | float | float | float | int |
-4. `psql` 을 이용하여 생성한 테이블을 확인합니다.
+4. `psql` 을 이용하여 생성한 테이블을 확인합니다.
+
+</CodeDescription>
+</details>
 
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+
+```js
+ch1
+├── Dockerfile
+├── Makefile
+// highlight-next-line
+├── create_table.py
+├── data_generator.py
+├── docker-compose.yaml
+├── insert_data.py
+└── insert_data_loop.py
+```
+
+</BrowserWindow>
+
 
 ## 0. 패키지 설치
 
@@ -44,7 +73,7 @@ Python 에서 postgres 서버에 접근하기 위한 가장 간단한 방법은 
 `psycopg2` 에 관한 자세한 내용은 [공식 문서](https://www.psycopg.org/docs/)를 참고해주세요.
 
 ### 1.1 DB connection
-`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 `db_connect` connector 를 생성합니다.
+`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 `db_connect` connector 를 생성합니다.
 
 ```python
 import psycopg2
@@ -80,7 +109,7 @@ CREATE TABLE table_name (
 
 #### 1.2.2 Table Creation Query
 
-삽입할 데이터는 `scikit-learn` 패키지의 `load_iris` 를 이용합니다.
+삽입할 데이터는 `scikit-learn` 패키지의 `load_iris` 를 이용합니다.
 
 ```python
 import pandas as pd
@@ -123,7 +152,7 @@ print(df.dtypes)
 ```
 
 `X` 의 data type 은 `float64` 로 표기되고, target 은 `int64` 로 표기됩니다. 그런데 이 data type 들은 postgres 에서 지원하지 않기에 각각 `float8`, `int` 로 선언해 주어야 합니다. 
-또한 column 이름은 `sepal length (cm)` 에 포함되어 있는 `(` 때문에 이용할 수 없기 때문에 해당 부분을 제거해야 합니다.
+또한 column 이름은 `sepal length (cm)` 에 포함되어 있는 `(` 때문에 이용할 수 없기 때문에 해당 부분을 제거해야 합니다.
 
 위의 내용을 반영한 query 는 다음과 같이 작성할 수 있습니다.
 

@@ -4,19 +4,49 @@ description: 📌 여러 개의 모델들을 하나의 파이프라인으로 작
 ---
 
 # 2) Model Pipeline
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 여러 개의 모델들을 하나의 파이프라인으로 작성합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 모델들의 파이프라인화
     - Scikit-learn pipeline 을 이용합니다.
 2. 저장된 파이프라인 검증
     - 저장된 파이프라인이 정상적으로 동작하는지 확인합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch2/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2) 에서 확인할 수 있습니다.
+
+```js
+ch2
+├── Makefile
+├── README.md
+├── base_train.py
+├── base_validate_save_model.py
+├── db_train.py
+├── db_validate_save_model.py
+// highlight-next-line
+├── pipeline_train.py
+// highlight-next-line
+└── pipeline_validate_save_model.py
+```
+
+</BrowserWindow>
 
 ## 1.  모델들의 파이프라인화
 

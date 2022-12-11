@@ -5,20 +5,26 @@ description: 📌 DB container 와 data generator container 를 함께 띄우기
 
 # 6) Data Generator on Docker Compose
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
 2. DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose` 파일을 작성합니다.
 3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 이전 장에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
     - Base image는 `amd64/python:3.9-slim` 을 사용합니다.
     - Container 에서 psql 을 이용하여 DB에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
 2. `docker-compose.yaml` 파일을 작성합니다.
-    - Postgres server
+    - Postgres server service
         - Service name : `db`
         - Image : `postgres:14.0`
         - Container name : `postgres-server`
@@ -28,7 +34,7 @@ import CodeDescription from '@site/src/components/CodeDescription';
             - `POSTGRES_DB` : `mydatabase`
             - `TZ` : `Asia/Seoul`
         - Port : `5432:5432`
-    - Data generator server
+    - Data generator serivce
         - Service name : `data-generator`
         - Image : `Dockerfile`
         - Container name : `data-generator-server`
@@ -38,25 +44,48 @@ import CodeDescription from '@site/src/components/CodeDescription';
             - `create_table.py` 실행
             - `data_generator.py` 실행
 
-:::info
+      :::info
 
-Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼저 띄워져야하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
+      Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼저 띄워져야하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
 
-:::
+      :::
 
 3. `docker-compose.yaml` 을 실행합니다.
-4. `psql` 을 이용하여 DB에 데이터가 계속해서 쌓이고 있는지 확인합니다.
+4. `psql` 을 이용하여 DB에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
     - Data generator server 에서 확인합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+
+```js
+ch1
+// highlight-next-line
+├── Dockerfile
+├── Makefile
+├── create_table.py
+// highlight-next-line
+├── data_generator.py
+// highlight-next-line
+├── docker-compose.yaml
+├── insert_data.py
+└── insert_data_loop.py
+```
+
+</BrowserWindow>
 
 ## 0. 환경 설정
 
 :::caution
 
-📌  이번 장에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다.  
-📌 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
+📌 이번 장에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다.  
+📌 이를 위해서 앞서 1장과 5장에서 시작한 컨테이너를 종료해야 합니다. 
 :::
  
 
@@ -135,12 +164,13 @@ services:
 - `db` : DB service 의 이름을 지정합니다. 지정한 이름은 띄울 container 의 host 이름이 됩니다.
 - `version` : docker-compose 파일에 대한 버전을 지정합니다. 여기서는 `3` 으로 지정하겠습니다.
 - `image` : container 에서 사용할 image 를 지정합니다. 여기서는 `postgres:14.0` 을 사용하도록 하겠습니다.
-- `environment` : container 에서 사용할 환경 변수를 지정합니다. 여기서는 `POSTGRES_USER` , `POSTGRES_PASSWORD` , `POSTGRES_DB` , `TZ` 을 각각 `myuser` , `mypassword` , `mydatabase` , `Asia/Seoul` 으로 지정하겠습니다.
+- `environment` : container 에서 사용할 환경 변수를 지정합니다.  
+  여기서는 `POSTGRES_USER` , `POSTGRES_PASSWORD` , `POSTGRES_DB` , `TZ` 을 각각 `myuser` , `mypassword` , `mydatabase` , `Asia/Seoul` 으로 지정하겠습니다.
     - 여기서 `TZ` 은 Time Zone 을 뜻합니다.
 - `ports` : host 와 container 의 port 를 설정합니다. 형식은  `host:container` 으로 사용되며, 여기서는 `5432:5432` 로 설정하겠습니다.
 - `restart` : container 의 restart policy 를 설정합니다. 자세한 내용은 아래의 링크를 참고해주세요.  
     [Start containers automatically](https://docs.docker.com/config/containers/start-containers-automatically/)
-    
+
 </CodeDescription>
 
 ### 2.2 Data Denerator Service

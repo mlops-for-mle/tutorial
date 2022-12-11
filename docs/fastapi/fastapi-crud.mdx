@@ -4,13 +4,20 @@ description: 📌 FastAPI 를 이용해 CRUD 를 수행하는 API 를 작성합�
 ---
 
 # 2) FastAPI CRUD
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. FastAPI 를 이용해 CRUD 를 수행하는 API 를 작성합니다.
 2. Path Parameter 와 Query Parameter 의 차이점에 대해 학습합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 다음의 CRUD 기능을 수행하는 API 의 명세서를 **(a) Path Parameter** 를 이용한 방법과 **(b) Query Parameter** 를 이용한 방법으로 각각 작성합니다.
     - **C (Create)**
@@ -55,7 +62,32 @@ description: 📌 FastAPI 를 이용해 CRUD 를 수행하는 API 를 작성합�
 
 4. **Path parameter** 를 이용한 방법과 **Query parameter** 를 이용한 방법에 어떠한 차이가 있는지 확인합니다.
 
+
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch5/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5) 에서 확인할 수 있습니다.
+
+```js
+ch5
+├── Dockerfile
+├── Makefile
+// highlight-next-line
+├── crud_path.py
+├── crud_pydantic.py
+// highlight-next-line
+├── crud_query.py
+├── main.py
+├── multi_param.py
+├── path_param.py
+└── query_param.py
+```
+
+</BrowserWindow>
 
 ## 1. API 명세서 작성
 

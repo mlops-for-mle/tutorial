@@ -5,13 +5,19 @@ description: 📌 Docker 를 이용해 postgres server 를 생성합니다.
 
 # 1) DB Server Creation
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. Docker 를 이용해 postgres server 를 생성합니다.
 2. 생성된 DB 의 role name 과 attributes 를 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. Docker 를 설치합니다.
 2. Postgres 서버를 생성합니다.
@@ -22,7 +28,29 @@ import CodeDescription from '@site/src/components/CodeDescription';
 3. 생성된 postgres 서버를 확인합니다.
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
+
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+
+```js
+ch1
+├── Dockerfile
+// highlight-next-line
+├── Makefile
+├── create_table.py
+├── data_generator.py
+├── docker-compose.yaml
+├── insert_data.py
+└── insert_data_loop.py
+```
+
+</BrowserWindow>
 
 ## 1. Docker 설치
 ### 1.1 Docker Desktop
@@ -69,7 +97,7 @@ import CodeDescription from '@site/src/components/CodeDescription';
 
 #### 1.2.2 Docker Engine 설치
 
-1. `apt` 패키지 인덱스를 업데이트 합니다.
+1. `apt` 패키지 인덱스를 업데이트 합니다.
     
     ```bash
     # terminal-command
@@ -126,7 +154,7 @@ import CodeDescription from '@site/src/components/CodeDescription';
 
 `docker run` 명령어를 이용하면 간단한 옵션들을 통해 postgres 서버를 생성할 수 있습니다.
 
-`-d` 옵션을 사용하면 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
+`-d` 옵션을 사용하면 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
 
 <CodeDescription>
 

@@ -5,13 +5,19 @@ description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 
 # 2) Save Model to Registry
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 모델을 학습하고 mlflow server 에 저장합니다.
 2. mlflow 의 모델 저장 구조를 이해합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. `02. Model Development` 챕터 에서 사용한 코드를 이용해 모델을 학습합니다.
 2. 학습이 끝난 모델을 mlflow 의 built-in method 를 사용해 mlflow server 에 저장합니다.
@@ -27,13 +33,34 @@ import CodeDescription from '@site/src/components/CodeDescription';
 3. 저장된 모델을 작동 중인 mlflow server 에서 확인합니다.
     - 모델이 어떻게 저장되어 있는지 확인합니다. [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]
 
+</CodeDescription>
+</details>
+
+---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch3/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3) 에서 확인할 수 있습니다.
+
+```js
+ch3
+├── Dockerfile
+├── Makefile
+├── README.md
+├── docker-compose.yaml
+├── load_model_from_registry.py
+// highlight-next-line
+└── save_model_to_registry.py
+```
+
+</BrowserWindow>
+
+
 <div style={{textAlign: 'center'}}>
 
 ![Model Upload diagram](./img/model-registry-6.png)
 [그림 3-6] MLflow Model Save Diagram
 </div>
-
----
 
 ## 0. 패키지 설치
 

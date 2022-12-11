@@ -4,13 +4,19 @@ description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷
 ---
 # 1) MLflow Setup
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
 2. 서비스 상황을 가정하여 mlflow 의 구성 요소 각각을 이해합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. MLflow 의 운영 정보, 모델 결과 등을 저장 할 물리적인 데이터베이스 Postgres 서버 스펙을 정의합니다.
     - `POSTGRES_USER` : `myuser`
@@ -37,7 +43,30 @@ import CodeDescription from '@site/src/components/CodeDescription';
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
     - `localhost:5001` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
+
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch3/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3) 에서 확인할 수 있습니다.
+
+```js
+ch3
+// highlight-next-line
+├── Dockerfile
+├── Makefile
+├── README.md
+// highlight-next-line
+├── docker-compose.yaml
+├── load_model_from_registry.py
+└── save_model_to_registry.py
+```
+
+</BrowserWindow>
+
 <div style={{textAlign: 'center'}}>
 
 ![MLflow setup diagram](./img/model-registry-2.png)  

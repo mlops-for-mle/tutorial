@@ -5,22 +5,49 @@ description: 📌 Docker 위에서 데이터를 생성하기 위한 준비로써
 
 # 5) Data Generator on Docker
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 이전 장에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
     - Container 에서 psql 을 이용하여 DB 에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
-2. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
+2. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
     - Data generator server 에서 확인합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+
+```js
+ch1
+// highlight-next-line
+├── Dockerfile
+├── Makefile
+├── create_table.py
+// highlight-next-line
+├── data_generator.py
+├── docker-compose.yaml
+├── insert_data.py
+└── insert_data_loop.py
+```
+
+</BrowserWindow>
 
 ## 1. Data Generator
 

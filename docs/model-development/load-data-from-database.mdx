@@ -4,23 +4,54 @@ description: 📌 데이터베이스에서 데이터를 가져오는 파이프�
 ---
 
 # 3) Load Data from Database
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 데이터베이스에서 데이터를 가져오는 파이프라인을 작성합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 데이터 불러오기
     - 챕터2에서 생성한 데이터베이스에서 데이터를 가져옵니다.
-    - `id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
-    - `pandas.read_sql` 함수를 이용해 데이터를 추출합니다.
+    - `id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
+    - `pandas.read_sql` 함수를 이용해 데이터를 추출합니다.
 2. 모델 파이프라인 수정
     - 이전 장에서 작성한 파이프라인 중 데이터를 불러오는 부분을 위에서 작성한 함수로 수정합니다.
     - 모델을 학습하고 저장합니다.
     - 모델이 정상적으로 저장되었는지 확인합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch2/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2) 에서 확인할 수 있습니다.
+
+```js
+ch2
+├── Makefile
+├── README.md
+├── base_train.py
+├── base_validate_save_model.py
+// highlight-next-line
+├── db_train.py
+// highlight-next-line
+├── db_validate_save_model.py
+├── pipeline_train.py
+└── pipeline_validate_save_model.py
+```
+
+</BrowserWindow>
+
 
 ## 0.  패키지 설치
 
@@ -33,13 +64,13 @@ pip install psycopg2-binary
 
 ## 1. 데이터 불러오기
 
-`id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
+`id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
 
 ```sql
 SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 ```
 
-`psql` 에서 해당 쿼리문을 입력하면 다음과 같이 출력됩니다.
+`psql` 에서 해당 쿼리문을 입력하면 다음과 같이 출력됩니다.
 
 ```sql
 mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
@@ -53,7 +84,7 @@ mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 (...)
 ```
 
-`pandas.read_sql` 는 입력 argument로 Query문과 DB Connection을 받습니다.
+`pandas.read_sql` 는 입력 argument로 Query문과 DB Connection을 받습니다.
 
 postgres 에 연결할 수 있는 db connection을 생성 후 쿼리문과 db 커넥션을 이용해 데이터를 불러옵니다.
 

@@ -4,12 +4,19 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
 ---
 
 # 1) Base Model Development
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+<details>
+<summary>목표 및 스펙 명세서</summary>
+<CodeDescription>
+
+### 목표
 
 1. 모델을 학습하고 저장하는 기본적인 파이프라인을 작성합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. 학습 및 평가 데이터 선정
     - scikit-learn 에서 제공하는 iris 데이터를 불러옵니다.
@@ -26,7 +33,30 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
     - 불러온 모델로 2.3)에서 학습 데이터와 평가 데이터의 정확도를 계산합니다.
     - `1. 학습 및 평가 데이터 선정` 에서 나눈 Validation 데이터를 이용해 정상적으로 동작하는지 확인합니다.
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch2/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2) 에서 확인할 수 있습니다.
+
+```js
+ch2
+├── Makefile
+├── README.md
+// highlight-next-line
+├── base_train.py
+// highlight-next-line
+├── base_validate_save_model.py
+├── db_train.py
+├── db_validate_save_model.py
+├── pipeline_train.py
+└── pipeline_validate_save_model.py
+```
+
+</BrowserWindow>
 
 ## 0. 패키지 설치
 
