@@ -3,6 +3,8 @@ sidebar_position: 1
 description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
 ---
 # 1) MLflow Setup
+import CodeDescription from '@site/src/components/CodeDescription';
+
 ## 목표
 
 1. docker compose 를 이용해 실제 서비스 환경과 비슷한 형태로 mlflow 서버를 띄워봅니다.
@@ -34,7 +36,7 @@ description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷
           - 하지만 **MacOS** 의 경우 5000번 포트로 "AirPlay" 기능을 사용하기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
 4. 정의된 스펙에 따라 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `localhost:9001` 에 접속하여 MinIO login 페이지가 잘 동작하는지 확인 합니다.
-    - `localhost:5000` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
+    - `localhost:5001` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인 합니다.
 ---
 <div style={{textAlign: 'center'}}>
 
@@ -52,13 +54,11 @@ description: 📌 docker compose 를 이용해 실제 서비스 환경과 비슷
 
 ### 1.2 Postgres Server docker-compose
 
-Postgres의 스펙을 `docker-compose` 의 `services` 탭 밑에 정의합니다.
+Postgres의 스펙을 `docker-compose` 의 `services` 탭에 서비스 이름, 사용자, 비밀번호, 데이터베이스 이름, 시간대를 환경변수를 설정합니다.
 
-- 서비스 이름, 사용자, 비밀번호, 데이터베이스 이름, 시간대를 환경변수를 활용해 설정합니다.
+<CodeDescription>
 
-**`docker-compose.yaml`**
-
-```yaml
+```yaml  title="docker-compose.yaml"
 mlflow-backend-store:
   image: postgres:14.0
   container_name: mlflow-backend-store
@@ -82,6 +82,8 @@ mlflow-backend-store:
     - `TZ` : postgresDB 의 시간대를 설정합니다.
 - `healthcheck` : postgres 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크하는 구문을 추가합니다.
 
+</CodeDescription>
+
 ## 2. Mlflow Artifact Store
 
 ### 2.1 Artifact Store
@@ -98,14 +100,11 @@ MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하�
 
 ### 2.3 MinIO Server docker-compose
 
-MinIO의 스펙을 `docker-compose` 의 `services` 탭 밑에 정의합니다.
+MinIO의 스펙을 `docker-compose` 의 `services` 탭 밑에 서비스 이름, 사용자, 비밀번호를 환경변수로 정의하고 host 와 연결되는 포트 또한 정의합니다.
 
-- 서비스 이름, 사용자, 비밀번호를 환경변수를 활용해 설정합니다.
-- host 와 연결되는 포트를 정의합니다.
+<CodeDescription>
 
-**`docker-compose.yaml`**
-
-```yaml
+```yaml  title="docker-compose.yaml"
 mlflow-artifact-store:
   image: minio/minio
   container_name: mlflow-artifact-store
@@ -133,6 +132,8 @@ mlflow-artifact-store:
 - `command` : MinIO 서버를 실행시키는 명령어를 추가합니다. `--console-address` 를 통해 컨테이너의 9001 포트로 MinIO 에 접근 할 수 있도록 주소를 열어줍니다.
 - `healthcheck` : MinIO 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크하는 구문을 추가합니다.
 
+</CodeDescription>
+
 ## 3. MLflow server
 
 앞서 만든 **Backend-store** 와 **Artifact-store** 에 연결된 **MLflow-server**를 띄웁니다.  
@@ -142,9 +143,9 @@ mlflow-artifact-store:
 MLflow 서버에 필요한 패키지가 설치된 이미지를 build 할 Dockerfile 을 작성합니다.  
 서버를 띄울때, MinIO 에 초기 bucket 을 생성하기 위해 MinIO Client 도 함께 설치합니다.
 
-**`Dockerfile`**
+<CodeDescription>
 
-```docker
+```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 RUN apt-get update && apt-get install -y \
@@ -166,7 +167,10 @@ RUN cd /tmp && \
 - `RUN pip install -U pip &&` ~ : `mlflow` 를 비롯해 postgres, AWS S3 에 관련된 python 패키지를 설치합니다.
 - `RUN cd /tmp &&` ~ : 앞서 설치한 `wget` 을 활용하여 `MinIO` client 를 설치합니다.
 
+</CodeDescription>
+
 ### 3.2 MLflow Server docker-compose
+
 작성된 `Dockerfile`을 빌드하도록 `docker-compose` 의 `services` 탭 밑에 정의합니다. 
   1. `MinIO` 에 연결하기위한 계정 정보를 환경변수를 활용해 설정합니다.
   2. 모델을 저장할 때 사용 할 `MinIO` 초기 버켓을 생성합니다.
@@ -174,8 +178,9 @@ RUN cd /tmp && \
       - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
       - `MinIO` 에 연결하기 위한 keyword argument 를 추가합니다.
 
-**`docker-compose.yaml`**
-```yaml
+<CodeDescription>
+
+```yaml  title="docker-compose.yaml"
 mlflow-server:
   build:
     context: .
@@ -220,13 +225,15 @@ mlflow-server:
 - `depends_on` : `mlflow` 서버가 띄워지기 전에, `PostgresDB` , `MinIO` 서버를 먼저 띄우도록 합니다.
     - `condition` : 앞선 2가지 서비스의 동작 상태가 체크되면 `mlflow` 서버를 띄웁니다.
 
+</CodeDescription>
+
 ## 4. docker compose를 활용해 서비스 띄우기
 
-완성된 `Dockerfile` , `docker-compose.yaml` 을 확인 합니다.
+완성된 `Dockerfile`, `docker-compose.yaml` 을 확인 합니다.
 
 ### 4.1 `Dockerfile`
 
-```docker
+```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 RUN apt-get update && apt-get install -y \
@@ -245,7 +252,7 @@ RUN cd /tmp && \
 
 ### 4.2 `docker-compose.yaml`
 
-```yaml
+```yaml  title="docker-compose.yaml"
 version: "3"
 
 services:
@@ -308,19 +315,20 @@ services:
 ```
 ### 4.3 실행
 
-`Dockerfile` , `docker-compose.yaml` 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
+`Dockerfile`, `docker-compose.yaml` 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
 
 ```bash
-$ docker compose up -d
+# terminal-command
+docker compose up -d
 ```
 
-- [localhost:5000](http://localhost:5000) 에 접속하여 `MLflow` 서버 동작을 확인합니다.
+1. [localhost:5001](http://localhost:5001) 에 접속하여 `MLflow` 서버 동작을 확인합니다.
   <div style={{textAlign: 'center'}}>
   
     ![MLflow ui](./img/model-registry-3.png)
     [그림 3-3] MLflow UI
   </div>
-- [localhost:9001](http://localhost:9001) 에 접속하여 `MinIO` 서버 동작을 확인합니다.
+2. [localhost:9001](http://localhost:9001) 에 접속하여 `MinIO` 서버 동작을 확인합니다.
   <div style={{textAlign: 'center'}}>
 
     ![MinIO ui](./img/model-registry-4.png)

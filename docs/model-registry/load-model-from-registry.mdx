@@ -2,7 +2,7 @@
 sidebar_position: 3
 description: 📌 mlflow 에 저장된 모델을 불러올 수 있는 스크립트를 작성합니다.
 ---
-# 3) Load Model from registry
+# 3) Load Model from Registry
 ## 목표
 
 1. mlflow 에 저장된 모델을 불러올 수 있는 스크립트를 작성합니다.
@@ -129,10 +129,10 @@ print("Valid Accuracy :", valid_acc)
 
 추가 작성한 코드를 전체 코드에 적용하여 완성합니다.
 
-### 2.1 `download_model_from_registry.py`
+### 2.1 `load_model_from_registry.py`
 
-```python
-# download_model.py
+```python  title="load_model_from_registry.py"
+# load_model_from_registry.py
 import os
 from argparse import ArgumentParser
 
@@ -184,7 +184,8 @@ print("Valid Accuracy :", valid_acc)
 2. 아래 코드의 `--model-name` , `--run-id` 뒤에 해당 값을 사용해 실행합니다.
     
     ```bash
-    $ python download_model.py --model-name sk_model --run-id `RUN_ID`
+    # terminal-command
+    python load_model_from_registry.py --model-name sk_model --run-id `RUN_ID`
     ```
     
 3. MLflow server 의 metrics 를 확인하여 학습 했던 결과와 같은지 확인합니다.

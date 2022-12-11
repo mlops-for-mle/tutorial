@@ -16,7 +16,7 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
     - 불러온 데이터를 학습 데이터와 평가 데이터로 나눕니다.
     - 이 때 나뉘어진 데이터는 추후에 재현이 되어야 합니다.
 2. 모델 개발 및 학습
-    - scikit-learn 에서 제공하는 Standard Scaler 아 SVC를 사용합니다.
+    - scikit-learn 에서 제공하는 Standard Scaler 와 SVC를 사용합니다.
     - `1. 학습 및 평가 데이터 선정` 에서 나눈 학습 데이터를 이용해 모델을 학습합니다.
     - 학습된 모델을 이용해 학습 데이터와 평가 데이터의 정확도를 계산합니다.
 3. 학습된 모델 저장
@@ -24,7 +24,7 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
 4. 저장된 모델 불러오기
     - 모델이 정상적으로 저장 되었는지 확인하기 위해 모델을 불러옵니다.
     - 불러온 모델로 2.3)에서 학습 데이터와 평가 데이터의 정확도를 계산합니다.
-    - `1. 학습 및 평가 데이터 선정` 에서 나눈 Valid 데이터를 이용해 정상적으로 동작하는지 확인합니다.
+    - `1. 학습 및 평가 데이터 선정` 에서 나눈 Validation 데이터를 이용해 정상적으로 동작하는지 확인합니다.
 
 ---
 
@@ -33,6 +33,7 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
 이번 장에서 사용할 패키지들인 `pandas`, `scikit-learn`, `joblib` 를 설치합니다.
 
 ```bash
+# terminal-command
 pip install pandas scikit-learn joblib
 ```
 
@@ -218,7 +219,7 @@ print("Load Model Valid Accuracy :", load_valid_acc)
 
 우선 학습 및 데이터 저장을 위한 코드들을 모은 `base_train.py` 입니다.
 
-```python
+```python  title="base_train.py"
 # base_train.py
 
 import joblib
@@ -258,7 +259,8 @@ joblib.dump(classifier, "classifier.joblib")
 ### 5.2 `base_validate_save_model.py`
 
 다음은 저장된 모델을 검증하는 `base_validate_save_model.py` 입니다.
-```python
+
+```python  title="base_validate_save_model.py"
 # base_validate_save_model.py
 
 import joblib

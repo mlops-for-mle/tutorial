@@ -5,6 +5,13 @@ description: 📌 Overview of Model Development Chapter
 
 # 0) Overview
 
+:::caution
+
+📌  해당 챕터는 `01. Database` 의 DB를 이용합니다.  
+📌  DB를 띄우지 않은 경우 `01. Database` 을 완료하고 DB가 띄워진 상태에서 진행해주세요.
+
+:::
+
 이번 챕터에서 구현할 workflow는 다음과 같습니다.
 
 <div style={{textAlign: 'center'}}>

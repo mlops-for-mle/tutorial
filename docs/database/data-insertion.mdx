@@ -167,7 +167,7 @@ def insert_data(db_connect, data):
 
 위에서 작성한 코드를 모아서 `insert_data.py` 로 작성합니다.
 
-```python
+```python  title="insert_data.py"
 # insert_data.py
 import pandas as pd
 import psycopg2
@@ -218,7 +218,8 @@ if __name__ == "__main__":
 Python 스크립트를 실행합니다.
 
 ```bash
-$ python insert_data.py
+# terminal-command
+python insert_data.py
         INSERT INTO iris_data
             (sepal_length, sepal_width, petal_length, petal_width, target)
             VALUES (
@@ -237,7 +238,8 @@ $ python insert_data.py
 1. psql에 접속합니다.
     
     ```bash
-    $ psql -h localhost -p 5432 -U myuser -d mydatabase
+    # terminal-command
+    psql -h localhost -p 5432 -U myuser -d mydatabase
     Password for user myuser: 
     psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
     Type "help" for help.
@@ -247,7 +249,7 @@ $ python insert_data.py
     
 2. 앞선 장에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
-    ```bash
+    ```sql
     mydatabase=# select * from iris_data;
      id | sepal_length | sepal_width | petal_length | petal_width | target 
     ----+--------------+-------------+--------------+-------------+--------

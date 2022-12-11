@@ -75,7 +75,7 @@
    );
  }
  
- export function ActiveTeamRow(): JSX.Element {
+ export function MainAuthorRow(): JSX.Element {
    return (
      <div className="row">
        <TeamProfileCardCol
@@ -110,6 +110,22 @@
          >
          <Translate id="team.profile.Seokgi Kim.body">
          Project Member
+         </Translate>
+       </TeamProfileCardCol>
+     </div>
+   );
+ }
+ 
+ export function ReviewersRow(): JSX.Element {
+   return (
+     <div className="row">
+       <TeamProfileCardCol
+         name="Minjoo Lee"
+         githubUrl="https://github.com/LEEMINJOO"
+         linkedinUrl="https://www.linkedin.com/in/minjoolee218/"
+         >
+         <Translate id="team.profile.Minjoo Lee.body">
+         Project Leader
          </Translate>
        </TeamProfileCardCol>
      </div>
