@@ -5,13 +5,20 @@ description: 📌 FastAPI 의 공식 문서를 참고하여 간단한 API 를 �
 
 # 1) FastAPI Tutorial
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 
-## 목표
+
+### 목표
 
 1. FastAPI 의 공식 문서를 참고하여 간단한 API 를 만들어봅니다.
 2. Path Parameter 와 Query Parameter 를 이해하고 이를 이용하여 API 를 만들어봅니다.
 
-## 스펙 명세서
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+
+### 스펙 명세서
 
 FastAPI 의 [공식 문서](https://fastapi.tiangolo.com/)를 참고하여 튜토리얼을 진행합니다.
 
@@ -21,7 +28,31 @@ FastAPI 의 [공식 문서](https://fastapi.tiangolo.com/)를 참고하여 튜�
 4. [Query Parameter](https://fastapi.tiangolo.com/tutorial/query-params/) 에 대해 학습합니다.
 5. Path parameter 와 Query parameter 를 모두 사용하여 API 를 만들어봅니다. [[Multiple path and query parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
 
+</CodeDescription>
+</details>
+
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
+
+해당 챕터의 전체 코드는 [mlops-for-mle/ch5/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5) 에서 확인할 수 있습니다.
+
+```js
+ch5
+├── Dockerfile
+├── Makefile
+├── crud_path.py
+├── crud_pydantic.py
+├── crud_query.py
+// highlight-next-line
+├── main.py
+├── multi_param.py
+├── path_param.py
+└── query_param.py
+```
+
+</BrowserWindow>
+
 
 ## 0. 패키지 설치
 

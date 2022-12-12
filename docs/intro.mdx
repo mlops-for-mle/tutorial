@@ -25,6 +25,8 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ## 다루는 내용
 
+### MLOps level: 0
+
 [그림 0-2]는 MLOps를 설명할 때 많이 쓰이는 구글 클라우드에서 제시한 MLOps의 0단계 입니다. MLOps의 목표는 0단계를 자동화시키는 것과 모델 개발 환경과 모델 운영 환경을 일치시키는 것에 있습니다.
 
 <div style={{textAlign: 'center'}}>
@@ -42,6 +44,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 [그림 0-3] Pipeline
 </div>
 
+### Chapter
 
 도표에 표시되어 있는 컴포넌트들에 대한 내용은 다음 챕터에서 다룹니다.
 
@@ -62,7 +65,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 대표적으로 사용하는 패키지는 FastAPI, sqlalchemy, mlflow 등이 있습니다.
 단순히 따라해보는 것에 그치지 않고 본인의 업무에 필요한 방향으로 적용해 볼 수 있도록 간단한 튜토리얼을 작성하고 MLOps에 맞게 변형하는 과정으로 진행됩니다.
 
-## 이 문서를 학습하는 방법
+### Docker
 
 “머신러닝 엔지니어를 위한 MLOps” 는 모든 컴포넌트들을 Docker로 실행됩니다.
 
@@ -71,26 +74,31 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 이런 동일한 환경을 제공하기 위해서  Containerization 은 머신러닝에서 중요한 기술 중 하나이며 이를 대표하는 소프트웨어가 바로 Docker 입니다.
 이러한 배경으로 머신러닝 엔지니어에게 Docker를 이해하고 다룰 수 있어야 합니다. 머신러닝 엔지니어에게 필요한 수준의 docker를 다루고 이해할 수 있게하기 위해서 본 문서에서는 로컬 환경에서 실행되는 스크립트 작성 후 이를 docker에서도 실행할 수 있는 순서로 진행됩니다.
 
+## 이 문서를 학습하는 방법
+
+### Architecture
+
 본 문서에 있는 다음과 같은 구조로 작성되어 있습니다.
 
-1. “목표" 및 "스펙 명세서"
-2. 각 장의 전체 코드를 확인할 수 있는 경로
-3. 스펙 명세서를 작성하기 위한 코드와 그에 대한 해설
+1. 각 장에서 학습해 할 목표
+2. 목표를 구현하기 위한 스펙 명세서
+3. 각 장의 전체 코드를 확인할 수 있는 경로
+4. 스펙 명세서를 작성하기 위한 코드와 그에 대한 해설
 
 예를 들어서 다음에 학습할 장은 아래와 같이 되어 있습니다.
 
 <BrowserWindow url="https://mlops-for-mle.github.io/tutorial/docs/database/db-server-creation">
 
-<details>
-<summary>목표 및 스펙 명세서</summary>
-<CodeDescription>
-
-### 목표
+#### 목표
 
 1. Docker 를 이용해 postgres server 를 생성합니다.
 2. 생성된 DB 의 role name 과 attributes 를 확인합니다.
 
-### 스펙 명세서
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+#### 스펙 명세서
 
 1. Docker 를 설치합니다.
 2. Postgres 서버를 생성합니다.
