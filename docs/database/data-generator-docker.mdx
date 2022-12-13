@@ -194,11 +194,11 @@ CMD ["localhost"]
 docker build [OPTIONS] PATH | URL | -
 ```
 
-이미지 이름은 `ch-1-data-generator` 로 하겠습니다.
+이미지 이름은 `data-generator` 로 하겠습니다.
 
 ```bash
 # terminal-command
-docker build . -t ch-1-data-generator
+docker build . -t data-generator
 ```
 
 이미지가 생성되었는지 확인해 보겠습니다.
@@ -208,13 +208,13 @@ docker build . -t ch-1-data-generator
 docker image ls
 ```
 
-위 명령어를 실행하면 아래와 같이 `ch-1-data-generator` 가 있음을 확인할 수 있습니다.
+위 명령어를 실행하면 아래와 같이 `data-generator` 가 있음을 확인할 수 있습니다.
 
 ```bash
 # terminal-command
 docker image ls
 REPOSITORY                  TAG       IMAGE ID       CREATED         SIZE
-ch-1-data-generator         latest    96d8fa213c74   5 hours ago     635MB
+data-generator         latest    96d8fa213c74   5 hours ago     635MB
 ```
 
 #### 1.2.3 Run
@@ -223,14 +223,14 @@ ch-1-data-generator         latest    96d8fa213c74   5 hours ago     635MB
 
 ```bash
 # terminal-command
-docker run ch-1-data-generator
+docker run data-generator
 ```
 
 실행할 경우 아래와 같이 에러 메세지와 함께 컨테이너가 종료됩니다.
 
 ```bash
 # terminal-command
-docker run ch-1-data-generator
+docker run data-generator
 Traceback (most recent call last):
   File "/usr/app/create_table.py", line 26, in <module>
     db_connect = psycopg2.connect(
@@ -262,7 +262,7 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 
 로컬 파이썬 스크립트를 실행시키면 정상적으로 실행이됩니다.
 
-그럼 왜 `ch-1-data-generator` 를 실행시키는 컨테이너에서는 접근할 수 없다고 나올까요? 이를 위해서는 Docker 의 네트워크에 대해서 이해할 필요가 있습니다.
+그럼 왜 `data-generator` 를 실행시키는 컨테이너에서는 접근할 수 없다고 나올까요? 이를 위해서는 Docker 의 네트워크에 대해서 이해할 필요가 있습니다.
 
 ## 2. Docker Network
 
@@ -286,7 +286,8 @@ docker run -d \
   postgres:14.0
 ```
 
-이 때 `-p` 옵션은 포트 포워딩을 의미합니다. 위의 5432:5432 를 해석하면 localhost 의 5432 포트를 DB container 의 5432 로 연결하라는 뜻입니다. 이러한 연결이 있었기 때문에 로컬에서는 DB에 접근이 가능했습니다.
+이 때 `-p` 옵션은 포트 포워딩을 의미합니다. 위의 5432:5432 를 해석하면 DB container 의 5432 포트를 localhost 의 5432 포트로 연결하라는 뜻입니다.  
+즉, `localhost:5432` 에 대한 접근은 컨테이너 내부의 5432 포트에 대한 접근과 같습니다. 이러한 연결이 있었기 때문에 로컬에서는 DB에 접근이 가능했습니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -294,7 +295,9 @@ docker run -d \
 [그림 1-3] Container Networking Disconneted
 </div>
 
-[그림 1-3] 는 `ch-1-data-generator` 의 컨테이너를 실행시켰을 때의 도식입니다. 이 때 `ch-1-data-generator` 컨테이너에게 `localhost:5432` 는 자기 자신의 컨테이너 내부입니다. 그렇기 때문에 DB 를 찾지 못하게 됩니다.
+[그림 1-3] 는 `data-generator` 의 컨테이너를 실행시켰을 때의 도식입니다.
+이 때 `data-generator` 컨테이너 입장에서 `localhost:5432` 는 아무 것도 열려있지 않는 비어있는 포트입니다.
+그렇기 때문에 DB 를 찾지 못한다는 에러와 함께 종료가 됩니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -305,8 +308,9 @@ docker run -d \
 이를 해결하기 위해서는 [그림 1-4] 처럼 두 컨테이너 간에 통신할 수 있도록 연결해 주어야 합니다.
 
 ### 2.2 Connect Network
+두 컨테이너를 연결시키는 방법 중 하나로 docker network 를 사용할 수 있습니다.
 
-1. 컨테이너간 통신할 수 있는 네트워크를 생성합니다.
+1. 우선, 컨테이너간 통신할 수 있는 네트워크를 생성합니다.
     
     ```bash
     # terminal-command
@@ -320,17 +324,19 @@ docker run -d \
     docker network connect my-network postgres-server
     ```
     
-3. 이제 다시 `ch-1-data-generator` 를 실행합니다.
+3. 이제 다시 `data-generator` 를 실행합니다.
     <CodeDescription>
 
     ```bash
     # terminal-command
-    docker run --name data-generator --network "my-network" ch-1-data-generator "postgres-server"
+    docker run --name data-generator --network "my-network" data-generator "postgres-server"
     ```
     
     - `--network` 옵션에 위에서 생성한 네트워크 이름을 입력합니다.
-    - 컨테이너늘 시작할 때 이미지 이름의 뒤에 입력된 값은 Dockerfile 의 `ENTRYPOINT` 를 수정합니다.
-        - 앞선 장에서 connector 를 생성할 때 host 를 받는 부분을 수정 했었는데 바로 이 경우를 위해서 입니다. 이제 컨테이너 끼리의 통신은 `localhost` 가 아닌 각 컨테이너의 이름이 host 가 됩니다. 우리가 띄운 DB 컨테이너의 이름은 `postgres-server` 이기 때문에 argument 로 `postgres-server` 를 입력합니다.
+    - 컨테이너를 시작할 때 이미지 이름의 뒤에 입력된 값은 Dockerfile 의 `ENTRYPOINT` 를 수정합니다.
+        - 앞선 장에서 connector 를 생성할 때 host 를 받는 부분을 수정 했었는데 바로 이 경우를 위해서 입니다.
+        이제 컨테이너간의 통신은 `localhost` 가 아닌 각 컨테이너의 이름이 host 가 됩니다.
+        이때 앞서 띄운 DB 컨테이너의 이름은 `postgres-server` 이기 때문에 argument 로 `postgres-server` 를 입력합니다.
 
     </CodeDescription>
 
@@ -371,8 +377,9 @@ docker run -d \
 
 다만 이 방법은 여러 불편함이 있습니다.
 
-우선 통신을 위해서는 컨테이너의 이름을 알아야 합니다. 그리고 이 컨테이너 이름을 다른 곳에 환경 변수로 전달해야 합니다.
-그런데 Docker 에서 컨테이너 이름을 지정하지 않는 경우 랜덤하게 생성되며 여러 개를 띄울 경우 이름 짓기가 어려워 집니다.
+우선 통신을 위해서는 컨테이너의 이름을 알아야 합니다.
+그리고 서로 연결이 필요한 컨테이너에게 다른 컨테이너의 이름을 전달해주어야 합니다.
+이름을 지정해 어느정도 해소할 수 있으나 컨테이너가 예상하지 못한 이유로 종료될 경우 사용된 이름을 점유하고 있어서 다시 실행하기 위해서는 종료된 컨테이너를 지워야 합니다.
 
 또한 컨테이너가 실행되는 순서를 보장할 수 없습니다. 예를 들어서 DB가 실행되기 전에 데이터를 삽입을 시도하면 해당 컨테이너는 오류와 함께 실행이 종료됩니다.
 
