@@ -6,7 +6,7 @@ description: 📌 생성한 테이블에 iris data row 한 줄을 삽입합니�
 # 3) Data Insertion
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-
+import Highlight from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -35,7 +35,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
 
 ```js
 ch1
@@ -55,7 +55,7 @@ ch1
 
 ### 1.1 Iris 데이터 불러오기
 
-Iris 데이터 를 불러온 뒤, 이전 장에서 생성된 테이블의 column 이름과 일치하도록 `rename` 함수를 이용해 수정합니다.
+Iris 데이터 를 불러온 뒤,  <Highlight color="#6A77D7">2) Table Creation </Highlight> 챕터에서 생성된 테이블의 column 이름과 일치하도록 `rename` 함수를 이용해 수정합니다.
 
 ```python
 import pandas as pd
@@ -275,7 +275,7 @@ python insert_data.py
     mydatabase=#
     ```
     
-2. 앞선 장에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2. `2) Table Creation` 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```sql
     mydatabase=# select * from iris_data;
@@ -285,4 +285,4 @@ python insert_data.py
     (1 row)
     ```
     
-    이 전 장과는 다르게 데이터가 한 줄 추가된 것을 확인할 수 있습니다.
+    `2) Table Creation` 챕터과는 다르게 데이터가 한 줄 추가된 것을 확인할 수 있습니다.

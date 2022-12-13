@@ -6,7 +6,7 @@ description: 📌 mlflow 에 저장된 모델을 불러올 수 있는 스크립�
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import WorkflowImage from './img/model-registry-9.png';
-
+import Highlight from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -26,7 +26,7 @@ import WorkflowImage from './img/model-registry-9.png';
     - `mlflow` 를 활용해 모델을 불러오는 방법은 두 가지가 있습니다.
         1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
         2. [MLFLow pyfunc load_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.load_model)
-    - 이번 장에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.sklean.load_model` 을 사용합니다.
+    - 이번 챕터에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.sklean.load_model` 을 사용합니다.
 2. 불러온 모델을 활용해 저장해두었던 학습 데이터의 결과를 추론합니다.
 
 
@@ -37,7 +37,7 @@ import WorkflowImage from './img/model-registry-9.png';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch3/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch3/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch3) 에서 확인할 수 있습니다.
 
 ```js
 ch3
@@ -62,11 +62,11 @@ ch3
 
 ## 1.  모델 불러오기
 
-앞 장에서 작성한 코드로 학습된 모델을 서버로 부터 로드하는 코드를 작성합니다.
+<Highlight color="#6A77D7">2) Save Model to Registry</Highlight> 챕터에서 작성한 코드로 학습된 모델을 서버로 부터 로드하는 코드를 작성합니다.
 
 ### 1.1 환경 변수 설정
 
-앞 장과 같이 mlflow 에 접근하기 위한 환경 변수를 설정합니다.
+<Highlight color="#6A77D7">2) Save Model to Registry</Highlight> 챕터과 같이 mlflow 에 접근하기 위한 환경 변수를 설정합니다.
 
 ```python
 import os
@@ -81,7 +81,7 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 #### 1.2.1 `sklearn` 모델 불러오기
 
-앞 장에서 저장했던 모델을 불러오기 위해, `mlflow.sklearn.load_model` 함수를 사용해 저장된 모델을 불러옵니다. 모델을 포함하고 있는 `run_id` 와 모델을 저장 할 때 설정했던 모델 이름을 받을 수 있도록 외부 변수를 설정합니다.
+<Highlight color="#6A77D7">2) Save Model to Registry</Highlight> 챕터에서 저장했던 모델을 불러오기 위해, `mlflow.sklearn.load_model` 함수를 사용해 저장된 모델을 불러옵니다. 모델을 포함하고 있는 `run_id` 와 모델을 저장 할 때 설정했던 모델 이름을 받을 수 있도록 외부 변수를 설정합니다.
 
 ```python
 parser = ArgumentParser()
@@ -127,7 +127,7 @@ print(model_pipeline)
 
 ### 1.3 추론 코드 작성하기
 
-앞 장에서 저장했던 데이터인 `data.csv` 파일로 부터 데이터를 불러옵니다.
+<Highlight color="#6A77D7">2) Save Model to Registry</Highlight> 챕터에서 저장했던 데이터인 `data.csv` 파일로 부터 데이터를 불러옵니다.
 
 ```python
 df = pd.read_csv("data.csv")
@@ -141,7 +141,7 @@ y = df["target"]
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 ```
 
-`02. Model Development` 챕터와 같이 결과를 계산 하고 출력합니다.
+<Highlight color="#6A77D7">02. Model Development</Highlight> 파트와 같이 결과를 계산 하고 출력합니다.
 
 ```python
 train_pred = model_pipeline.predict(X_train)

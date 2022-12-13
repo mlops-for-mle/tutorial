@@ -6,7 +6,7 @@ description: 📌 생성된 DB 에 query 를 작성하여 테이블을 생성합
 # 2) Table Creation
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-
+import Highlight from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -42,7 +42,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
 
 ```js
 ch1
@@ -88,7 +88,7 @@ db_connect = psycopg2.connect(
 ```
 
 여기서 기억해야할 것은 일반적으로 DB 연결 시 `user`, `password`, `host`, `port`, `database` 총 5가지의 정보가 필요합니다.
-이전 장에서 DB 를 생성할 때 입력한 `myuser`, `mypassword`, `localhost`, `5432`, `mydatabase` 를 입력합니다.
+ <Highlight color="#6A77D7">1) DB Server Creation</Highlight> 챕터에서 DB 를 생성할 때 입력한 `myuser`, `mypassword`, `localhost`, `5432`, `mydatabase` 를 입력합니다.
 
 ### 1.2 Table creation query
 
