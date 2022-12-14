@@ -21,7 +21,33 @@ import ArchitectureImage from './img/kafka-15.png';
 
 ### 스펙 명세서
 
-TBD
+1. sink 후 데이터를 저장할 postgres 서버를 생성합니다.
+    - `POSTGRES_USER` : `sinkuser`
+    - `POSTGRES_PASSWORD` : `sinkpassword`
+    - `POSTGRES_DB` : `sinkdatabase`
+    - Port Forwarding : `5433:5432`
+2. sink connect에 사용할 json 파일로 만듭니다.
+    ```json
+    {
+        "name": "postgres-sink-connector",
+        "config": {
+            "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+            "connection.url": "jdbc:postgresql://target-postgres-server:5432/targetdatabase",
+            "connection.user": "targetuser",
+            "connection.password": "targetpassword",
+            "table.name.format": "iris_data",
+            "topics": "postgres-source-iris_data",
+            "auto.create": false,
+            "auto.evolve": false,
+            "tasks.max": 2
+       }
+    }
+    ```
+2. curl 명령어를 이용하여 POST method 로 sink connector 를 생성합니다.
+    - URL : `http://localhost:8083/connectors`
+    - Header : `"Content-Type: application/json"`
+3. postgres 서버에 접속해 쌓인 데이터를 확인합니다.
+
 
 </CodeDescription>
 </details>

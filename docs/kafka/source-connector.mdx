@@ -20,20 +20,25 @@ import ArchitectureImage from './img/kafka-14.png';
 
 ### 스펙 명세서
 
-1. 아래의 설정들을 json 파일로 만듭니다.
-    - `"name"` : `"postgres-source-connector"`
-    - `"config"`
-        - `"connector.class"` : `"io.confluent.connect.jdbc.JdbcSourceConnector"` ,
-        - `"connection.url"` : `"jdbc:postgresql://postgres-server:5432/mydatabase"` ,
-        - `"connection.user"` : `"myuser"` ,
-        - `"connection.password"` : `"mypassword"` ,
-        - `"table.whitelist"` : `"iris_data"` ,
-        - `"topic.prefix"` : `"postgres-source-"` ,
-        - `"topic.creation.default.partitions"` : 1,
-        - `"topic.creation.default.replication.factor"` : 1,
-        - `"mode"` : `"incrementing"` ,
-        - `"incrementing.column.name"` : `"id"` ,
-        - `"tasks.max"` : 2
+1. source connect에 사용할 json 파일로 만듭니다.
+    ```json
+    {
+        "name": "postgres-source-connector",
+        "config": {
+            "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+            "connection.url": "jdbc:postgresql://postgres-server:5432/mydatabase",
+            "connection.user": "myuser",
+            "connection.password": "mypassword",
+            "table.whitelist": "iris_data",
+            "topic.prefix": "postgres-source-",
+            "topic.creation.default.partitions": 1,
+            "topic.creation.default.replication.factor": 1,
+            "mode": "incrementing",
+            "incrementing.column.name": "id",
+            "tasks.max": 2
+        }
+    }
+    ```
 2. curl 명령어를 이용하여 POST method 로 source connector 를 생성합니다.
     - URL : `http://localhost:8083/connectors`
     - Header : `"Content-Type: application/json"`
@@ -139,19 +144,16 @@ EOF
     - connector 를 생성하기 위한 class 를 설정합니다.  
     - 이번 챕터에서는 JDBC source connector 를 사용하기 때문에 `io.confluent.connect.jdbc.JdbcSourceConnector` 를 입력합니다.
   - `connection.url` : 
-    - DB 에 접근하기 위한 주소를 설정합니다.  
-    - 이번 챕터에서는 <Part>01. Database</Part> 파트에서 띄워두었던 postgres-server 의 URL 인 `jdbc:postgresql://postgres-server:5432/mydatabase` 을 입력합니다.
+    - Source DB 에 접근하기 위한 주소로 <Part>01. Database</Part> 파트에서 띄워두었던 postgres-server 의 URL 인 `jdbc:postgresql://postgres-server:5432/mydatabase` 을 입력합니다.
   - `connection.user` : 
-    - DB 에 접속하기 위한 user name 을 설정합니다.  
-    - 이번 챕터에서는 `myuser` 를 입력합니다.
+    - Source DB 에 접속하기 위한 user name 인 `myuser` 를 입력합니다.
   - `connection.password` : 
-    - DB 에 접속하기 위한 password 를 설정합니다.  
-    - 이번 챕터에서는 `mypassword` 를 입력합니다.
+    - Source DB 에 접속하기 위한 password 인 `mypassword` 를 입력합니다.
   - `table.whitelist` : 
     - 데이터를 poll 할 테이블의 목록을 설정합니다. 복수 개의 테이블에서 데이터를 가져오는 경우 콤마(,)를 통해서 작성할 수 있습니다.  
     - 이번 챕터에서는 한 개의 테이블만 가져올 것이기 때문에 현재 postgres-server 에 있는 `iris_data` 테이블만 적어줍니다.
   - `topic.prefix` : 
-    -  topic 생성 시 이름 앞에 붙일 prefix 를 설정합니다. 여기서 작성한 prefix 와 테이블명이 최종 topic의 이름이 됩니다.  
+    - topic 생성 시 이름 앞에 붙일 prefix 를 설정합니다. 여기서 작성한 prefix 와 테이블명이 최종 topic의 이름이 됩니다.  
     - 이번 챕터에서는 `postgres-source-` 라는 prefix 를 사용하겠습니다.
   - `topic.creation.default.partitions` : 
     - topic 자동 생성을 위해 반드시 설정되어야 하는 값입니다.
