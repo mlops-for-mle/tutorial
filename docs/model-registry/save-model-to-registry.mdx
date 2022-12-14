@@ -6,7 +6,7 @@ description: 📌 모델을 학습하고 mlflow server 에 저장합니다.
 # 2) Save Model to Registry
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-import Highlight from '@site/src/components/Highlight';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -19,11 +19,11 @@ import Highlight from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. <Highlight color="#6A77D7">02. Model Development</Highlight> 파트에서 사용한 코드를 이용해 모델을 학습합니다.
+1. <Part>02. Model Development</Part> 파트에서 사용한 코드를 이용해 모델을 학습합니다.
 2. 학습이 끝난 모델을 mlflow 의 built-in method 를 사용해 mlflow server 에 저장합니다.
     - Python의 `mlflow` 패키지를 이용합니다.
         - `pip install mlflow`
-    - `mlflow` 를 활용해 모델을 <Highlight color="#6A77D7">1) MLflow Setup</Highlight> 챕터에서 띄운 mlflow server 에 저장합니다.
+    - `mlflow` 를 활용해 모델을 <Chapter>1) MLflow Setup</Chapter> 챕터에서 띄운 mlflow server 에 저장합니다.
     - `mlflow` 를 활용해 모델을 저장하는 방법은 두 가지가 있습니다.
         - artifact 처럼 다루기 [[MLFLow log_artifact](https://mlflow.org/docs/latest/python_api/mlflow.html#mlflow.log_artifact)]
         - built-in method 사용하기
@@ -78,7 +78,7 @@ pip install boto3==1.26.8 mlflow==1.30.0 scikit-learn
 
 #### 1.1.1 `db_train.py`
 
-<Highlight color="#6A77D7">02. Model Development</Highlight> 파트의 <Highlight color="#6A77D7">3) Load Data from Database</Highlight> 챕터에서 작성한 `db_train.py` 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
+<Part>02. Model Development</Part> 파트의 <Chapter>3) Load Data from Database</Chapter> 챕터에서 작성한 `db_train.py` 코드의 `# 3. save model` 부분을 변경하여 모델을 업로드하는 코드를 작성합니다.
 작성한 `db_train.py` 코드는 다음과 같습니다.
 
 ```python  title="db_train.py"

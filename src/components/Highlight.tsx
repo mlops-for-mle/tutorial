@@ -7,17 +7,34 @@
 
 import React, {type ReactNode} from 'react';
 
-export default function Highlight({
+
+export function Part({
   children,
-  color,
 }: {
   children: ReactNode;
-  color: string;
 }): JSX.Element {
   return (
     <span
       style={{
-        backgroundColor: color,
+        backgroundColor: '#9747FF',
+        borderRadius: '2px',
+        color: '#fff',
+        padding: '0.2rem',
+      }}>
+      {children}
+    </span>
+  );
+}
+
+export function Chapter({
+  children,
+}: {
+  children: ReactNode;
+}): JSX.Element {
+  return (
+    <span
+      style={{
+        backgroundColor: '#6A77D7',
         borderRadius: '2px',
         color: '#fff',
         padding: '0.2rem',
