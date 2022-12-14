@@ -3,7 +3,7 @@ sidebar_position: 2
 description: 📌 Docker Compose 를 이용해 zookeeper 와 Kafka broker 를 띄워봅니다.
 ---
 
-# 2. Producer & Consumer
+# 2) Producer & Consumer
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
@@ -343,4 +343,10 @@ Consumer 에서 아래의 메시지가 전달됨을 확인할 수 있습니다.
 ```bash
 hello
 this is mlops for mle
+```
+
+모든 과정이 종료되었으면 zookeeper 와 broker 를 종료합니다.
+
+```bash
+$ docker compose down -v
 ```
