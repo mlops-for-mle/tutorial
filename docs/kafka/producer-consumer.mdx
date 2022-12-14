@@ -62,31 +62,28 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
 
 ```js
 ch7
 ├── Makefile
-├── docker
-│   ├── connect
-│   │   └── Dockerfile
-│   ├── sink
-│   │   ├── Dockerfile
-│   │   └── create_table.py
-│   └── source
-│       ├── Dockerfile
-│       └── data_generator.py
+├── README.md
+├── connect.Dockerfile
+├── create_table.py
+├── kafka-docker-compose.yaml
 // highlight-next-line
-├── docker-compose.yaml
+├── naive-docker-compose.yaml
 ├── sink_connector.json
-└── source_connector.json
+├── source_connector.json
+├── target-docker-compose.yaml
+└── target.Dockerfile
 ```
 
 </BrowserWindow>
 
 ## 1. Zookeeper & Kafka Broker setup
 
-Zookeeper 와 Kafka Broker 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
+Zookeeper 와 Kafka Broker 를 띄우는 `naive-docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
 
 ### 1.1 Zookeeper service
 
@@ -94,7 +91,7 @@ Zookeeper 와 Kafka Broker 를 띄우는 `docker-compose.yaml` 파일을 작성�
 
 <CodeDescription>
 
-```yaml  title="docker-compose.yaml"
+```yaml  title="naive-docker-compose.yaml"
 version: "3"
 
 services:
@@ -122,7 +119,7 @@ services:
 
 <CodeDescription>
 
-```yaml  title="docker-compose.yaml"
+```yaml  title="naive-docker-compose.yaml"
 broker:
     image: confluentinc/cp-kafka:7.3.0
     container_name: broker
@@ -157,9 +154,9 @@ broker:
 
 ### 1.3 전체 코드
 
-최종적인 `docker-compose.yaml` 구성은 아래와 같습니다.
+최종적인 `naive-docker-compose.yaml` 구성은 아래와 같습니다.
 
-```yaml  title="docker-compose.yaml"
+```yaml  title="naive-docker-compose.yaml"
 version: "3"
 
 services:
@@ -194,7 +191,7 @@ services:
 
 ```bash
 # terminal-command
-docker compose up -d
+docker compose -p naive -f naive-docker-compose.yaml up -d
 ```
 
 `docker ps` 를 입력하여 잘 띄워졌는지 확인합니다.

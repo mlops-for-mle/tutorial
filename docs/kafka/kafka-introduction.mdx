@@ -17,23 +17,20 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
 
 ```js
 ch7
 ├── Makefile
-├── docker
-│   ├── connect
-│   │   └── Dockerfile
-│   ├── sink
-│   │   ├── Dockerfile
-│   │   └── create_table.py
-│   └── source
-│       ├── Dockerfile
-│       └── data_generator.py
-├── docker-compose.yaml
+├── README.md
+├── connect.Dockerfile
+├── create_table.py
+├── kafka-docker-compose.yaml
+├── naive-docker-compose.yaml
 ├── sink_connector.json
-└── source_connector.json
+├── source_connector.json
+├── target-docker-compose.yaml
+└── target.Dockerfile
 ```
 
 </BrowserWindow>

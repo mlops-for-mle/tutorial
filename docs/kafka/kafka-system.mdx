@@ -1,16 +1,82 @@
 ---
-sidebar_position: 3
-description: 📌 Kafka 의 connect 와 connector 에 대해 알아봅니다.
+sidebar_position: 4
+description: 📌 Docker Compose 를 이용해 zookeeper, kafka broker, schema-registry, connect 를 띄워봅니다.
 ---
 
-# 3) Connect & Connector
+# 4) Kafka System
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
 ## 목표
 
-1. Kafka 의 connect 와 connector 에 대해 알아봅니다.
+1. Docker Compose 를 이용해 zookeeper, kafka broker, schema-registry, connect 를 띄워봅니다.
+
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+### 스펙 명세서
+
+1. Zookeeper 와 kafka broker 를 띄우는 `docker-compose` 파일을 작성합니다.
+    - Zookeeper
+        - Service name : `zookeeper`
+        - Image : `confluentinc/cp-zookeeper:7.3.0`
+        - Container name : `zookeeper`
+        - Port : `2181:2181`
+        - Environment
+            - `ZOOKEEPER_SERVER_ID` : `1`
+            - `ZOOKEEPER_CLIENT_PORT` : `2181`
+    - Broker
+        - Service name : `broker`
+        - Image : `confluentinc/cp-kafka:7.3.0`
+        - Container name : `broker`
+        - Port : `9092:9092`
+        - Environment
+            - `KAFKA_BROKER_ID` : `1`
+            - `KAFKA_ZOOKEEPER_CONNECT` : `zookeeper:2181`
+            - `KAFKA_ADVERTISED_LISTENERS` : `PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092`
+            - `KAFKA_LISTENER_SECURITY_PROTOCOL_MAP` : `PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT`
+            - `KAFKA_INTER_BROKER_LISTENER_NAME` : `PLAINTEXT`
+            - `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR` : `1`
+            - `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS` : `0`
+    - Schema-registry
+        - Service name : `schema-registry`
+        - Image : `confluentinc/cp-schema-registry:7.3.0`
+        - Container name : `schema-registry`
+        - Port : `8081:8081`
+        - Environment
+            - `SCHEMA_REGISTRY_HOST_NAME` : `schema-registry`
+            - `SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS` : `broker:29092`
+            - `SCHEMA_REGISTRY_LISTENERS` : `http://schema-registry:8081`
+    - Connect
+        - Service name : `connect`
+        - Image : `confluentinc/cp-connect:7.3.0` 를 이용한 Dockerfile
+            - Environment
+                - `CONNECT_PLUGIN_PATH` : `“/usr/share/java,/usr/share/confluent-hub-components”`
+            - Run
+                - `confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5`
+                - `confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2`
+                - `confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0`
+        - Container name : `connect`
+        - Port : `8083:8083`
+        - Environment
+            - `CONNECT_BOOTSTRAP_SERVERS` : `schema-registry`
+            - `CONNECT_BOOTSTRAP_SERVERS` : `broker:29092`
+            - `CONNECT_REST_ADVERTISED_HOST_NAME` : `connect`
+            - `CONNECT_GROUP_ID` : `docker-connect-group`
+            - `CONNECT_CONFIG_STORAGE_TOPIC` : `docker-connect-configs`
+            - `CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR` : `1`
+            - `CONNECT_OFFSET_STORAGE_TOPIC` : `docker-connect-offsets`
+            - `CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR` : `1`
+            - `CONNECT_STATUS_STORAGE_TOPIC` : `docker-connect-status`
+            - `CONNECT_STATUS_STORAGE_REPLICATION_FACTOR` : `1`
+            - `CONNECT_KEY_CONVERTER` : `org.apache.kafka.connect.storage.StringConverter`
+            - `CONNECT_VALUE_CONVERTER` : `org.apache.kafka.connect.json.JsonConverter`
+            - `CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL` : `http://schema-registry:8081`
+
+</CodeDescription>
+</details>
 
 ---
 
@@ -24,6 +90,7 @@ ch7
 ├── README.md
 ├── connect.Dockerfile
 ├── create_table.py
+// highlight-next-line
 ├── kafka-docker-compose.yaml
 ├── naive-docker-compose.yaml
 ├── sink_connector.json
