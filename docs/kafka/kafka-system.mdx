@@ -7,6 +7,7 @@ description: 📌 Docker Compose 를 이용해 zookeeper, kafka broker, schema-r
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
+import ArchitectureImage from './img/kafka-13.png';
 
 ## 목표
 
@@ -18,7 +19,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. Zookeeper 와 kafka broker 를 띄우는 `docker-compose` 파일을 작성합니다.
+1. Zookeeper 와 kafka broker 를 띄우는 `kafka-docker-compose.yaml` 파일을 작성합니다.
     - Zookeeper
         - Service name : `zookeeper`
         - Image : `confluentinc/cp-zookeeper:7.3.0`
@@ -74,6 +75,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
             - `CONNECT_KEY_CONVERTER` : `org.apache.kafka.connect.storage.StringConverter`
             - `CONNECT_VALUE_CONVERTER` : `org.apache.kafka.connect.json.JsonConverter`
             - `CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL` : `http://schema-registry:8081`
+2. `kafka-docker-compose.yaml` 을 실행합니다.
+3. `docker ps` 명령어를 이용하여 잘 띄워졌는지 확인합니다.
 
 </CodeDescription>
 </details>
@@ -88,6 +91,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 ch7
 ├── Makefile
 ├── README.md
+// highlight-next-line
 ├── connect.Dockerfile
 ├── create_table.py
 // highlight-next-line
@@ -101,153 +105,288 @@ ch7
 
 </BrowserWindow>
 
-## 1. Connect & Connector
+## 0. 환경 설정
+:::caution
 
-### 1.1 Producer & Consumer 의 한계
+📌 이번 챕터를 진행하기 위해서는 위해서 앞서 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 실행된 docker compose 를 종료해야 합니다.
+:::
 
-Kafka 는 이전 장처럼 producer 와 consumer client 를 통해 메시지 파이프라인을 쉽게 구성할 수 있었습니다.
+아래 명령어를 통해 종료합니다.
 
-하지만 실제 시스템에서는 어떨까요? 아래의 예제를 살펴보겠습니다.  
-[그림 7-5] 처럼 어떠한 DB server 1에서 DB server 2로 데이터를 전달하는 시스템을 가정해보겠습니다.
+```bash
+# terminal-command
+docker compose -p ch7-naive down -v
+```
 
-<div style={{textAlign: 'center'}}>
+## 1. Architecture
 
-![Single Message System](./img/kafka-5.png)  
-[그림7-5] Single Message System
-
-</div>
-
-DB server 1 로부터 데이터를 publish 하는 producer 가 있고, 데이터를 kafka 의 어떤 topic 으로 보낸 뒤, consumer 가 DB server 2에 데이터 보내기 위해 subscribe 하는 과정입니다.
-
-그렇다면 이렇게 전달할 DB 들이 100개, 1000개, 10000개가 있다면 어떨까요? 아마도 아래의 과정처럼 producer 와 consumer 를 100개, 1000개, 10000개로 만들어야 할 것입니다.
+[그림 7-13]은 이번 실습에서 다룰 서비스들의 다이어그램입니다.
 
 <div style={{textAlign: 'center'}}>
 
-![Multiple Message System](./img/kafka-6.png)  
-[그림7-6] Multiple Message System
+<img src={ArchitectureImage} style={{scale: '80%'}}/>
+[그림7-13] Kafka System
 
 </div>
 
-하지만 메시지 파이프라인 구성을 위해 매번 producer 와 consumer 를 개발하는 것은 쉽지 않습니다.
-특히, 비슷한 data system 이 많아지면 많아질수록 producer 와 consumer 를 개발하는 데에는 비용도 계속 들고 반복 작업이 많아질 수 있습니다.
+각각의 service 에 대해 알아보겠습니다.
 
-따라서, 더 간편하고 효율적으로 메시지 파이프라인을 구축하는 방법으로 kafka 에서는 **connect** 와 **connector** 라는 것이 탄생하게 되었습니다.
+- **Kafka Cluster** : source connector 에서 데이터를 받아 topic 에 저장하고, sink connector 로 넘겨줄 kafka cluster 입니다. broker 는 multi broker 가 아닌 single broker 를 사용하겠습니다.
+- **Zookeeper** : broker server 의 상태 감지를 위해 사용되는 zookeeper server 입니다.
+- **Schema Registry** : 메시지의 schema 를 저장하기 위한 schema registry server 입니다.
+- **Kafka Connect** : connector 를 띄우기 위한 connect server 입니다.
 
-### 1.2 Connect & Connector 소개
+이제 service 를 하나씩 구체적으로 살펴보겠습니다.
 
-Connect 는 data system 과 kafka 간의 데이터를 확장 가능하고, 안전한 방법으로 streaming 하기 위한 도구입니다.
-Connect 를 사용하기 위해서는 데이터를 어디로부터 가져오는지, 어디에다가 전달해야 하는지를 알려주는 connector 를 정의해야 합니다.
-여기서 connector 란 메시지 파이프라인에 대한 추상 객체이며, task 들을 관리합니다.
+## 2. Kafka Cluster
 
-Connect 와 connector 의 역할을 살펴보면, connect 는 “**프레임워크**” 이고 connector 는 그 안에서 돌아가는 “**플러그인**” 입니다.
-따라서 connect 프레임워크를 실행하고 특정 connector 플러그인을 실행시키면 메시지 파이프라인을 쉽게 구축할 수 있습니다. 이렇게 구축된 connect 와 connector 를 실행함으로써 개발 비용을 줄이고 반복 작업도 줄일 수 있게 됩니다.
+### 2.1 Zookeeper & Broker
 
-Connector 에는 아래와 같은 두 가지 종류의 connector 가 존재합니다.
+zookeeper 와 broker 를 띄우는 코드는 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 작성한 내용을 사용합니다.
 
-- **Source connector** : source system 의 데이터를 broker 의 topic 으로 publish 하는 connector. 즉, producer 의 역할을 하는 connector 입니다.
-- **Sink connector** : broker 의 topic 에 있는 데이터를 subscribe 해서 target system 에 전달하는 connector. 즉, consumer 의 역할을 하는 connector 입니다.
+```yaml  title="kafka-docker-compose.yaml"
+version: "3"
 
-각각의 connector 에 관한 설정 (property) 명세를 connect 에 전달하면, 구성된 connector 는 주기적으로 메시지를 확인하고, 새로운 메시지가 있으면 파이프라인을 통해 흘려보냅니다.
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
+  broker:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+```
 
-앞서 예제로 다뤘던 [그림7-5] 에 대해서 DB server 1에서 DB server 2로 데이터를 전달하는 시스템을 다시 살펴보면 [그림 7-7]과 같은 흐름으로 생각할 수 있습니다.
+### 2.2 Schema-registry
 
-<div style={{textAlign: 'center'}}>
+다음으로 schema-registry 를 띄우는 코드에 대해 알아보겠습니다.
 
-![Single Connector System](./img/kafka-7.png)
-[그림7-7] Single Connector System
+<CodeDescription>
 
-</div>
+```yaml  title="kafka-docker-compose.yaml"
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.3.0
+    container_name: schema-registry
+    depends_on:
+      - broker
+    ports:
+      - 8081:8081
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: broker:29092
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
+```
 
-DB 들이 100개, 1000개, 10000개로 늘어난다면 어떻게 될까요? 아마도 [그림 7-8]처럼 source connector 와 sink connector 를 100개, 1000개, 10000개로 만들어야 할 것입니다.
+- `image` : schema-registry 를 띄울 때 쓰이는 image 를 명시합니다. 여기서는 `confluentinc/cp-schema-registry:7.3.0` 를 이용하도록 하겠습니다.
+- `container_name` : container 의 이름을 지정합니다. 여기서는 `schema-registry` 로 사용하겠습니다.
+- `depends_on` : service 간의 종속성을 설정합니다. 여기서는 `broker` 가 먼저 띄워진 다음에 schema-registry 띄워져야함으로 `broker` 를 적어줍니다.
+- `ports` : schema-registry 의 port 를 지정합니다. 여기서는 `8081:8081` 을 사용하겠습니다.
+- `environment` : schema-registry 의 환경 변수를 지정합니다.
+    - `SCHEMA_REGISTRY_HOST_NAME` : schema-registry 의 host name 을 지정합니다. 여기서는 `schema-registry` 로 지정하겠습니다.
+    - `SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS` : bootstrap 으로 띄워진 broker server 를 지정합니다. 여기서는 `<broker service name>:<broker service internal port>` 인 `broker:29092` 을 사용하겠습니다.
+    - `SCHEMA_REGISTRY_LISTENERS` : 외부에서 접속할 리스너를 설정합니다. 여기서는 `http://schema-registry:8081` 으로 설정하겠습니다.
 
+</CodeDescription>
 
-<div style={{textAlign: 'center'}}>
+### 2.3 Connect
 
-![Multiple Connector System](./img/kafka-8.png)  
-[그림7-8] Multiple Connector System
+다음으로 connect 를 띄우는 코드에 대해 알아보겠습니다.
 
-</div>
+Connect 의 경우 image 를 build 하기 위한 `Dockerfile` 이 필요합니다.
+Dockerfile 은 아래와 같이 작성할 수 있습니다.
 
-그렇다면 앞서 다뤘던 producer 와 consumer 를 만드는 것보다 source connector 와 sink connector 를 만드는 것의 장점이 무엇일까요? 
+<CodeDescription>
 
-바로 connector 에 대한 설정파일만 있으면 개발 비용 없이 간단하게 띄울 수 있다는 것입니다.
-Source connector 의 경우, connector 의 type, 연결할 URL, user 와 password, table 이름, topic 의 partition 수, replication factor 수 등을 설정해주면 connect 에서 instance 로 생성할 수 있습니다.
-이렇게 생성된 connector 들이 100개, 1000개, 10000개의 producer 를 개발하는 것보다는 훨씬 비용이 적고 간편합니다.
+```docker  title="connect.Dockerfile"
+# connect.Dockerfile
+FROM confluentinc/cp-kafka-connect:7.3.0
 
-### 1.3 Schema registry
+ENV CONNECT_PLUGIN_PATH="/usr/share/java,/usr/share/confluent-hub-components"
 
-마지막으로 connect 와 같이 쓰이는 schema registry 에 대해 알아보겠습니다.
-앞서 <Chapter> 1) Kafka Introduction </Chapter> 챕터에서 알아본 것과 같이 kafka 는 decoupling 이라는 특징을 가지고 있습니다.
-Producer 와 consumer 가 존재하고, 서로 의존적이지 않고 완벽하게 분리되어 있습니다.
-또한 broker 는 메시지를 한 번 저장하면 이후에는 수정할 수 없습니다.
+RUN confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5 &&\
+  confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2 &&\
+  confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0
+```
 
-이처럼 kafka 의 구조적인 특징과 내부 구조로 인해 kafka 운영에서는 [그림 7-9]와 같은 상황이 발생할 수 있습니다.
+- `FROM` : base image 를 지정합니다. 여기서는 `confluentinc/cp-kafka-connect:7.3.0` 을 사용하겠습니다.
+- `ENV` : image 를 만들 때 사용할 환경 변수를 설정합니다. Connect 에서는 플러그인의 path 를 설정해주어야합니다. 여기서는 base image 에 있는 `/usr/share/java` path 와 `/usr/share/confluent-hub-components` path 를 플러그인 path 로 설정합니다. 합쳐서  `"/usr/share/java,/usr/share/confluent-hub-components"` 플러그인 path 로 사용하겠습니다.
+- `RUN` : 다음으로 image 를 만들 때 실행할 코드를 지정합니다. 여기서는 JDBC connector 를 사용할 것이며, PostgreSQL 에 접근이 가능한 connector 를 설치해야합니다. 또한 value schema 의 converter 는 json converter 를 사용하겠습니다. 따라서 환경 변수로 설정한 플러그인 path 를 통해 아래의 3가지 명령어를 사용하여 connector 와 converter 에 필요한 기능들을 설치합니다.
+    - `confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5`
+    - `confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2`
+    - `confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0`
 
-<div style={{textAlign: 'center'}}>
+</CodeDescription>
 
-![Consume Fail](./img/kafka-9.png)  
-[그림7-9] Consume Fail
+앞서 작성한 Dockerfile 을 이용한 connect 의 코드는 아래와 같습니다.
 
-</div>
+<CodeDescription>
 
-[그림 7-9] 상황은 다음과 같습니다.
-1. Producer 1과 2는 각자 broker 의 topic A 에 메시지를 보냅니다.
-2. Consumer 는 topic A 에서 데이터를 읽습니다.
-3. 이때, producer 2가 schema 를 변경하여 메시지 (4번)를 발행합니다.
-4. 하지만 consumer 는 이 상황을 알지 못하기 때문에, 4번 메시지를 구독하여 처리하는 과정에서 메시지를 읽어드리지 못하고 장애가 발생합니다.
+```yaml  title="kafka-docker-compose.yaml"
+  connect:
+    build:
+      context: .
+      dockerfile: connect.Dockerfile
+    container_name: connect
+    depends_on:
+      - broker
+      - schema-registry
+    ports:
+      - 8083:8083
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: broker:29092
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_GROUP_ID: docker-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
+```
 
-위와 같은 상황 처럼 결국 구조적인 결합도는 낮췄지만 내부적인 결합도는 여전히 가지고 있게 됩니다.
+- `build` : `Dockerfile` 을 build 하기 위해 `Dockerfile` 이 있는 경로와 `Dockerfile` 의 이름을 설정합니다.
+- `container_name` : container 의 이름을 지정합니다. 여기서는 `connect` 로 사용하겠습니다.
+- `depends_on` : service 간의 종속성을 설정합니다. 여기서는 `broker` 와 `schema-registry` 가 먼저 띄워진 다음에 connect 가 띄워져야함으로 `broker` 와 `schema-registry` 를 적어줍니다.
+- `ports` : connect 의 port 를 지정합니다. 여기서는 `8083:8083` 을 사용하겠습니다.
+- `environment` : connect 의 환경 변수를 지정합니다.
+    - `CONNECT_BOOTSTRAP_SERVERS` : bootstrap 으로 띄워진 broker server 를 지정합니다. 여기서는 `<broker service name>:<broker service internal port>` 인 `broker:29092` 을 사용하겠습니다.
+    - `CONNECT_REST_ADVERTISED_HOST_NAME` : kafka broker 에서 bootstrap 으로 띄워진 server 를 지정합니다. 여기서는 `<broker service name>:<broker service internal port>` 인 `broker:29092` 을 사용하겠습니다.
+    - `CONNECT_GROUP_ID` : connect cluster 그룹에서 각각의 connect 를 식별할 때 필요한 ID 를 지정합니다. 여기서는 `docker-connect-group` 으로 설정하겠습니다.
+    - `CONNECT_CONFIG_STORAGE_TOPIC` : connector config 를 저장할 broker 의 topic 명을 설정합니다. 여기서는 `docker-connect-status` 를 사용하겠습니다.
+    - `CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR` : config 를 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다. 여기서는 1로 설정하겠습니다.
+    - `CONNECT_OFFSET_STORAGE_TOPIC` : connector offset 을 저장할 broker 의 topic 명을 설정합니다. 여기서는 `docker-connect-offsets` 를 사용하겠습니다.
+    - `CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR` : offset 을 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다. 여기서는 1로 설정하겠습니다.
+    - `CONNECT_STATUS_STORAGE_TOPIC` : connector 와 task 의 상태를 저장할 broker 의 topic 명을 설정합니다. 여기서는 `docker-connect-status` 을 사용하겠습니다.
+    - `CONNECT_STATUS_STORAGE_REPLICATION_FACTOR` : 상태를 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다. 여기서는 1로 설정하겠습니다.
+    - `CONNECT_KEY_CONVERTER` : key 에 대한 converter 를 설정합니다. 여기서는 string converter 를 사용하겠습니다. 그래서 `org.apache.kafka.connect.storage.StringConverter` 를 기입해줍니다.
+    - `CONNECT_VALUE_CONVERTER` : value 에 대한 converter 를 설정합니다. 여기서는 json converter 를 사용하겠습니다. 그래서 `org.apache.kafka.connect.json.JsonConverter` 를 기입해줍니다.
+    - `CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL` : value converter 에 대한 schema registry url 를 설정합니다. 여기서는 앞서 살펴본 schema registry 의 service name 과 port 인 `http://schema-registry:8081` 를 기입해줍니다.
 
-이러한 문제에 더하여 동일한 schema 의 메시지가 계속 들어오는 경우, 같은 schema 를 계속해서 저장해야하기 때문에 메시지의 크기가 커지며, schema 가 중복이 되어 불필요한 데이터 용량을 차지하게 됩니다.
+</CodeDescription>
 
-이러한 구조적인 결합도를 낮추고 불필요한 데이터 용량을 줄이기 위해 kafka 에서는 **schema registry** 를 사용합니다.
-**Schema registry** 란 메시지의 schema 를 저장해주는 일종의 저장소입니다.
+### 2.4 전체 코드
 
-다음은 kafka connector 가 만들어 내는 메시지 구조입니다.
+모든 service 를 띄우는 코드는 아래와 같습니다.
 
-<div style={{textAlign: 'center'}}>
+```yaml
+# kafka-docker-compose.yaml
+version: "3"
 
-![Connector](./img/kafka-10.png)  
-[그림7-10] Connector
+services:
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.3.0
+    container_name: zookeeper
+    ports:
+      - 2181:2181
+    environment:
+      ZOOKEEPER_SERVER_ID: 1
+      ZOOKEEPER_CLIENT_PORT: 2181
 
-</div>
+  broker:
+    image: confluentinc/cp-kafka:7.3.0
+    container_name: broker
+    depends_on:
+      - zookeeper
+    ports:
+      - 9092:9092
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 
-메시지는 key 와 value 로 구성되어 있으며, 각 key 와 value 는 schema 와 payload 로 구성되어 있습니다.
-기서 key 는 PK 와 같이 데이터를 식별할 수 있는 정보가 들어있고, value 는 데이터의 전체 값이 들어있습니다.
-payload 는 데이터 값이 저장되며, schema 에는 이 데이터 값의 데이터 타입이 명시되어 있습니다.
+  schema-registry:
+    image: confluentinc/cp-schema-registry:7.3.0
+    container_name: schema-registry
+    depends_on:
+      - broker
+    ports:
+      - 8081:8081
+    environment:
+      SCHEMA_REGISTRY_HOST_NAME: schema-registry
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: broker:29092
+      SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
 
-[그림 7-11]은 producer, schema registry, kafka 간의 관계를 나타냅니다. 
+  connect:
+    build:
+      context: .
+      dockerfile: connect.Dockerfile
+    container_name: connect
+    depends_on:
+      - broker
+      - schema-registry
+    ports:
+      - 8083:8083
+    environment:
+      CONNECT_BOOTSTRAP_SERVERS: broker:29092
+      CONNECT_REST_ADVERTISED_HOST_NAME: connect
+      CONNECT_GROUP_ID: docker-connect-group
+      CONNECT_CONFIG_STORAGE_TOPIC: docker-connect-configs
+      CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_OFFSET_STORAGE_TOPIC: docker-connect-offsets
+      CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_STATUS_STORAGE_TOPIC: docker-connect-status
+      CONNECT_STATUS_STORAGE_REPLICATION_FACTOR: 1
+      CONNECT_KEY_CONVERTER: org.apache.kafka.connect.storage.StringConverter
+      CONNECT_VALUE_CONVERTER: org.apache.kafka.connect.json.JsonConverter
+      CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
 
-<div style={{textAlign: 'center'}}>
+networks:
+  default:
+    name: mlops-network
+    external: true
+```
 
-![Connector](./img/kafka-11.png)  
-[그림7-11] Schema Registry Architecture
+## 3. 실행
 
-</div>
+### 3.1 실행
 
-[그림 7-11] 에서 각 컴포넌트가 작동하는 순서는 다음과 같습니다.
-1. Producer 에서 kafka 의 serializer (또는 converter) 에게 메시지를 보냅니다.
-2. Serializer 는 메시지를 받아 메시지의 schema 를 schema registry 에 보냅니다.
-3. 이어서 schema ID 를 받고, schema ID 와 data 를 kafka 에게 보냅니다.
-4. Connect 와 connector 를 이용할 때는 serializer 를 직접 구현할 필요없이 connect 를 띄울 때 환경 변수로 적어주면 됩니다. 
- 
-앞서 살펴봤던 schema 중복 문제는 schema registry 에 key 와 value 에 명시된 schema 를 따로 저장하기 때문에 connector 가 schema 대신 schema registry 의 schema ID 를 명시하여 해결할 수 있게 됩니다.
-Schema ID 를 쓰면 메세지의 크기가 줄어들어 불필요한 데이터의 용량도 줄일 수 있습니다.
+`docker compose` 명령어를 이용하여 위에서 작성한 서비스들을 띄워봅니다.
 
-또한 앞서 발생했던 내부적인 결합도 문제는 schema registry 에서 제공하는 기능 중 하나인 **schema 호환성 규칙 강제 기능**으로 해결할 수 있습니다.
-Schema 호환성 규칙 강제란 ****schema 를 등록하여 사용할 수 있지만, schema 버전 간의 호환성을 강제함으로써 일종의 규칙을 세우는 것입니다.
+<CodeDescription>
 
-<div style={{textAlign: 'center'}}>
+```bash
+# terminal-command
+docker compose -p ch7-kafka -f kafka-docker-compose.yaml up -d
+```
 
-![Forward](./img/kafka-12.png)  
-[그림7-12] Forward
+- `-p` : project name 을 `ch7-kafka` 로 사용합니다.
+- `-f` :file name 은 위에서 작성한 파일 이름인 `kafka-docker-compose.yaml`을 적어줍니다.
 
-</div>
+</CodeDescription>
 
-[그림 7-12]은 여러 호환성 중 Forward 라는 호환성을 갖는 경우에 대한 예시입니다.
+### 3.2 실행 확인
 
-1. Consumer 는 version 1로 메시지를 처리하고 있습니다.
-2. 그리고 “Gender” 라는 필드가 버전 2에서 추가되었고, consumer 는 version 2 의 schema 를 메시지를 구독하여 처리합니다.
-3. 이때, **consumer 는 새로 추가된 필드를 제외하고, 기존 version 1에 맞춰 메시지를 처리합니다.** 
+`docker ps` 명령어를 이용하여 service 들이 잘 띄워졌는지 확인합니다.
 
-이렇게 schema 의 호환성 규칙을 강제하여 schema 가 다른 메시지도 읽을 수 있도록 만듭니다.  
+```bash
+# terminal-command
+docker ps
+CONTAINER ID   IMAGE                                   COMMAND                  CREATED          STATUS                             PORTS                                        NAMES
+2fe161195b13   ch7-kafka-connect                       "/etc/confluent/dock…"   41 seconds ago   Up 39 seconds (health: starting)   0.0.0.0:8083->8083/tcp, 9092/tcp             connect
+4b98228b7e77   confluentinc/cp-schema-registry:7.3.0   "/etc/confluent/dock…"   41 seconds ago   Up 39 seconds                      0.0.0.0:8081->8081/tcp                       schema-registry
+505d3a4d6fdb   confluentinc/cp-kafka:7.3.0             "/etc/confluent/dock…"   41 seconds ago   Up 40 seconds                      0.0.0.0:9092->9092/tcp                       broker
+7f4a6f51837c   confluentinc/cp-zookeeper:7.3.0         "/etc/confluent/dock…"   42 seconds ago   Up 40 seconds                      2888/tcp, 0.0.0.0:2181->2181/tcp, 3888/tcp   zookeeper
+```

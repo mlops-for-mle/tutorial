@@ -1,0 +1,281 @@
+---
+sidebar_position: 5
+description: 📌 DConnect 에 source connector 를 띄워봅니다.
+---
+
+# 5) Source Connector
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
+import ArchitectureImage from './img/kafka-14.png';
+
+## 목표
+
+1. Connect 에 source connector 를 띄워봅니다.
+2. Topic 에 쌓인 데이터를 확인합니다.
+
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+### 스펙 명세서
+
+1. 아래의 설정들을 json 파일로 만듭니다.
+    - `"name"` : `"postgres-source-connector"`
+    - `"config"`
+        - `"connector.class"` : `"io.confluent.connect.jdbc.JdbcSourceConnector"` ,
+        - `"connection.url"` : `"jdbc:postgresql://postgres-server:5432/mydatabase"` ,
+        - `"connection.user"` : `"myuser"` ,
+        - `"connection.password"` : `"mypassword"` ,
+        - `"table.whitelist"` : `"iris_data"` ,
+        - `"topic.prefix"` : `"postgres-source-"` ,
+        - `"topic.creation.default.partitions"` : 1,
+        - `"topic.creation.default.replication.factor"` : 1,
+        - `"mode"` : `"incrementing"` ,
+        - `"incrementing.column.name"` : `"id"` ,
+        - `"tasks.max"` : 2
+2. curl 명령어를 이용하여 POST method 로 source connector 를 생성합니다.
+    - URL : `http://localhost:8083/connectors`
+    - Header : `"Content-Type: application/json"`
+3. kafkacat 을 이용하여 topic 에 쌓인 데이터를 확인합니다.
+
+</CodeDescription>
+</details>
+
+---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
+
+해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+
+```js
+ch7
+├── Makefile
+├── README.md
+├── connect.Dockerfile
+├── create_table.py
+├── kafka-docker-compose.yaml
+├── naive-docker-compose.yaml
+├── sink_connector.json
+// highlight-next-line
+├── source_connector.json
+├── target-docker-compose.yaml
+└── target.Dockerfile
+```
+
+</BrowserWindow>
+
+## 1. Architecture
+[그림 7-14]은 이번 실습에서 다룰 서비스들의 다이어그램입니다.
+
+<div style={{textAlign: 'center'}}>
+
+<img src={ArchitectureImage} style={{scale: '80%'}}/>
+[그림7-14] Kafka System
+
+</div>
+
+- **Data Generator Server** : 챕터 1에서 띄웠던 data generator server 입니다. 데이터를 계속해서 생성하고 postgres server 에 생성된 데이터를 추가합니다.
+- **Postgres Server** : 챕터 1에서 띄웠던 postgres server 와 동일합니다. 생성된 데이터를 저장합니다.
+- **Source Connector** : 데이터를 source DB server 에서 가져와서 broker 의 topic 에게 전달할 connector 입니다.
+
+## 2. Source Connector
+
+### 2.1 생성
+
+Source connector 는 connect 의 REST API 를 이용하여 생성합니다.  
+우선 아래 명령어를 통해 Source connector 를 띄울 수 있는 `source_connector.json` 을 생성합니다.
+
+```bash
+# terminal-command
+cat <<EOF > source_connector.json
+{
+    "name": "postgres-source-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+        "connection.url": "jdbc:postgresql://source-postgres-server:5432/sourcedatabase",
+        "connection.user": "sourceuser",
+        "connection.password": "sourcepassword",
+        "table.whitelist": "iris_data",
+        "topic.prefix": "postgres-source-",
+        "topic.creation.default.partitions": 1,
+        "topic.creation.default.replication.factor": 1,
+        "mode": "incrementing",
+        "incrementing.column.name": "id",
+        "tasks.max": 2
+    }
+}
+EOF
+```
+
+생성하는 json 에 대한 설명은 다음과 같습니다.
+
+<CodeDescription>
+
+```json  title="source_connector.json"
+{
+    "name": "postgres-source-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSourceConnector",
+        "connection.url": "jdbc:postgresql://postgres-server:5432/mydatabase",
+        "connection.user": "myuser",
+        "connection.password": "mypassword",
+        "table.whitelist": "iris_data",
+        "topic.prefix": "postgres-source-",
+        "topic.creation.default.partitions": 1,
+        "topic.creation.default.replication.factor": 1,
+        "mode": "incrementing",
+        "incrementing.column.name": "id",
+        "tasks.max": 2
+    }
+}
+```
+
+- `name` : 
+  - connector 의 이름을 정합니다.  
+  - 이번 챕터에서는 `postgres-source-connector` 를 사용하겠습니다.
+- config
+  - `connector.class` : 
+    - connector 를 생성하기 위한 class 를 설정합니다.  
+    - 이번 챕터에서는 JDBC source connector 를 사용하기 때문에 `io.confluent.connect.jdbc.JdbcSourceConnector` 를 입력합니다.
+  - `connection.url` : 
+    - DB 에 접근하기 위한 주소를 설정합니다.  
+    - 이번 챕터에서는 <Part>01. Database</Part> 파트에서 띄워두었던 postgres-server 의 URL 인 `jdbc:postgresql://postgres-server:5432/mydatabase` 을 입력합니다.
+  - `connection.user` : 
+    - DB 에 접속하기 위한 user name 을 설정합니다.  
+    - 이번 챕터에서는 `myuser` 를 입력합니다.
+  - `connection.password` : 
+    - DB 에 접속하기 위한 password 를 설정합니다.  
+    - 이번 챕터에서는 `mypassword` 를 입력합니다.
+  - `table.whitelist` : 
+    - 데이터를 poll 할 테이블의 목록을 설정합니다. 복수 개의 테이블에서 데이터를 가져오는 경우 콤마(,)를 통해서 작성할 수 있습니다.  
+    - 이번 챕터에서는 한 개의 테이블만 가져올 것이기 때문에 현재 postgres-server 에 있는 `iris_data` 테이블만 적어줍니다.
+  - `topic.prefix` : 
+    -  topic 생성 시 이름 앞에 붙일 prefix 를 설정합니다. 여기서 작성한 prefix 와 테이블명이 최종 topic의 이름이 됩니다.  
+    - 이번 챕터에서는 `postgres-source-` 라는 prefix 를 사용하겠습니다.
+  - `topic.creation.default.partitions` : 
+    - topic 자동 생성을 위해 반드시 설정되어야 하는 값입니다.
+    source connector를 실행했을 때 topic이 존재하지 않는다면 자동으로 topic을 생성할 수 있습니다.
+    이때 한 가지 조건이 존재하는데 먼저 설정파일에서 `topic.creation.enable=true` 로 설정해야 합니다. (이 값의 default 값은 true 이므로 따로 설정하지 않아도 됩니다.)
+    이렇게 하면 자동으로 default 라는 이름으로 topic create group 이 생성되는데, 이 그룹이 topic 생성을 담당합니다.
+    이 config 는 default 그룹에서 topic 을 자동 생성할 때 partition 을 몇 개로 설정할 지를 정합니다.  
+    - 이번 챕터에서는 1로 설정해줍니다.
+  - `topic.creation.default.replication.factor` : 
+    - 위와 마찬가지로 topic 자동 생성을 위해 반드시 설정되어야 하는 값입니다.
+    이 config 는 default 그룹으로 topic 을 자동 생성할 때 replication factor 를 몇 개로 설정할 지를 정합니다.  
+    - 이번 챕터에서는 1로 설정해줍니다. 
+      - 추가적으로 사용자가 default 그룹 이외의 그룹을 만들 수 있으며, 그룹마다 partition 과 replication factor 를 설정할 수 있습니다.
+      그리고 include, exclude 옵션을 통해서 사용자가 생성한 그룹으로 topic을 생성할 지, 제외할 지를 선택할 수 있습니다.
+      현재는 필요없는 설정이므로 따로 그룹을 만들지는 않았습니다.
+  - `mode` : 
+    - 테이블에 변경이 발생했을 때 어떤 방식으로 데이터를 poll 할지 설정합니다.
+      - mode 는 총 4개로 **bulk, timestamp, incrementing, timestamp+incrementing** 가 있습니다.
+        1. `bulk` 를 사용하면 이벤트가 발생한 테이블의 내용을 모두 poll 합니다.
+        2. `timestamp` 는 timestamp column 을 통해서 들어온 row 를 신규로 판단하고, 해당 데이터만 poll 합니다.
+        3. `incrementing`은 incrementing column을 통해서 들어온 row 를 신규로 판단하고, 해당 데이터만 poll 합니다. 여기서 주의해야할 점은 incrementing 모드의 경우에 "삭제(delete)" 와 "수정(update)" 에 대해선 작동하지 않는다는 점입니다. 따라서 수정과 삭제 정보도 poll 하고 싶다면 shadow 테이블을 만들어야 합니다.
+        4. `timestamp+incrementing` 은 timestamp column 과 incrementing column 2개의 column 을 사용하여 들어온 row 를 신규로 판단하고, 해당 데이터만 poll 합니다.  
+    - 이번 챕터에서는 `incrementing` 을 사용하겠습니다.
+  - `incrementing.column.name` : 
+    - incrementing column 의 이름을 설정합니다.
+    - 이번 챕터에서는 `id` 로 설정해줍니다. 이렇게 되면 id 라는 column 을 보고 어떤 row 부터 poll 할 지 판단합니다. 참고로 설정한 column 의 유형이 varchar 인 경우 에러가 납니다.
+  - `tasks.max` : 
+    - connector 에서 task 의 수를 얼마나 가져갈 지를 설정합니다.
+    - 이번 챕터에서는 2로 설정해주겠습니다.
+- <Chapter>2) Producer & Consumer</Chapter> 챕터와는 다르게 source connector 생성 시 자동으로 topic 을 띄워주기에 추가적으로 topic 을 생성하는 명령어를 입력하지 않습니다.
+
+</CodeDescription>
+
+이제 작성된 json 파일을 curl 을 이용하여 connect 의 REST API 에 POST method 로 보냅니다.
+
+```bash
+# terminal-command
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d @source_connector.json
+```
+
+실행하면 아래와 같이 출력됩니다.
+
+```bash
+{"name":"postgres-source-connector","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector","connection.url":"jdbc:postgresql://postgres-server:5432/mydatabase","connection.user":"myuser","connection.password":"mypassword","table.whitelist":"iris_data","topic.prefix":"postgres-source-","topic.creation.default.partitions":"1","topic.creation.default.replication.factor":"1","mode":"incrementing","incrementing.column.name":"id","tasks.max":"2","name":"postgres-source-connector"},"tasks":[],"type":"source"}%
+```
+
+### 2.2 생성 확인
+
+아래의 GET method 로 현재 connector 목록을 확인할 수 있습니다. 앞서 생성한 connector 가 잘 있는지 확인합니다.
+
+```bash
+# terminal-command
+curl -X GET http://localhost:8083/connectors
+```
+
+실행하면 아래와 같이 출력됩니다.
+
+```bash
+["postgres-source-connector"]%
+```
+
+이어서 `postgres-source-connector` 의 추가 정보를 확인합니다.
+
+```bash
+# terminal-command
+curl -X GET http://localhost:8083/connectors/postgres-source-connector
+```
+
+실행하면 아래와 같이 출력됩니다.
+
+```bash
+{"name":"postgres-source-connector","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSourceConnector","mode":"incrementing","incrementing.column.name":"id","topic.prefix":"postgres-source-","topic.creation.default.partitions":"1","connection.password":"mypassword","connection.user":"myuser","tasks.max":"2","topic.creation.default.replication.factor":"1","name":"postgres-source-connector","connection.url":"jdbc:postgresql://postgres-server:5432/mydatabase","table.whitelist":"iris_data"},"tasks":[],"type":"source"}%
+```
+
+### 2.3 Topic 에 쌓인 데이터 확인
+
+이제 topic 에 데이터 잘 쌓이고 있는지를 확인해보겠습니다. 여기서는 `kafkacat` 을 이용하여 확인합니다.
+
+설치는 [공식 홈페이지](https://github.com/edenhill/kcat)를 참고하세요.
+- Linux
+  ```bash
+  # terminal-command
+  apt-get install kafkacat
+  ```
+- MacOS
+  ```bash
+  # terminal-command
+  brew install kcat
+  ```
+
+`kcat` 명령어를 이용하여 모든 topic 리스트를 확인합니다.
+
+```bash
+# terminal-command
+kcat -L -b localhost:9092
+```
+
+중간에 `postgres-source-iris_data` topic 이 생성된 것을 볼 수 있습니다.
+
+```bash
+.
+.
+.
+topic "postgres-source-iris_data" with 1 partitions:
+    partition 0, leader 1, replicas: 1, isrs: 1
+.
+.
+.
+```
+
+`kcat` 명령어를 이용하여 `postgres-source-iris_data` topic 에 쌓인 데이터를 확인합니다.
+
+```bash
+# terminal-command
+kcat -b localhost:9092 -t postgres-source-iris_data
+```
+
+실행하면 아래와 같이 데이터가 쌓이고 있는 것을 확인할 수 있습니다.
+
+```bash
+{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"double","optional":true,"field":"sepal_length"},{"type":"double","optional":true,"field":"sepal_width"},{"type":"double","optional":true,"field":"petal_length"},{"type":"double","optional":true,"field":"petal_width"},{"type":"int32","optional":true,"field":"target"}],"optional":false,"name":"iris_data"},"payload":{"id":187,"sepal_length":6.5,"sepal_width":3.0,"petal_length":5.8,"petal_width":2.2,"target":2}}
+{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"double","optional":true,"field":"sepal_length"},{"type":"double","optional":true,"field":"sepal_width"},{"type":"double","optional":true,"field":"petal_length"},{"type":"double","optional":true,"field":"petal_width"},{"type":"int32","optional":true,"field":"target"}],"optional":false,"name":"iris_data"},"payload":{"id":188,"sepal_length":6.0,"sepal_width":2.2,"petal_length":5.0,"petal_width":1.5,"target":2}}
+{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"double","optional":true,"field":"sepal_length"},{"type":"double","optional":true,"field":"sepal_width"},{"type":"double","optional":true,"field":"petal_length"},{"type":"double","optional":true,"field":"petal_width"},{"type":"int32","optional":true,"field":"target"}],"optional":false,"name":"iris_data"},"payload":{"id":189,"sepal_length":7.0,"sepal_width":3.2,"petal_length":4.7,"petal_width":1.4,"target":1}}
+{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"double","optional":true,"field":"sepal_length"},{"type":"double","optional":true,"field":"sepal_width"},{"type":"double","optional":true,"field":"petal_length"},{"type":"double","optional":true,"field":"petal_width"},{"type":"int32","optional":true,"field":"target"}],"optional":false,"name":"iris_data"},"payload":{"id":190,"sepal_length":6.9,"sepal_width":3.2,"petal_length":5.7,"petal_width":2.3,"target":2}}
+{"schema":{"type":"struct","fields":[{"type":"int32","optional":false,"field":"id"},{"type":"double","optional":true,"field":"sepal_length"},{"type":"double","optional":true,"field":"sepal_width"},{"type":"double","optional":true,"field":"petal_length"},{"type":"double","optional":true,"field":"petal_width"},{"type":"int32","optional":true,"field":"target"}],"optional":false,"name":"iris_data"},"payload":{"id":191,"sepal_length":5.6,"sepal_width":2.7,"petal_length":4.2,"petal_width":1.3,"target":1}}
+% Reached end of topic postgres-source-iris_data [0] at offset 191
+```

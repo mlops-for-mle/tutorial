@@ -20,7 +20,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ### 스펙 명세서
 
-1. Zookeeper 와 kafka broker 를 띄우는 `docker-compose` 파일을 작성합니다.
+1. Zookeeper 와 kafka broker 를 띄우는 `naive-docker-compose.yaml` 파일을 작성합니다.
     - Zookeeper
         - Service name : `zookeeper`
         - Image : `confluentinc/cp-zookeeper:7.3.0`
@@ -42,7 +42,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
             - `KAFKA_INTER_BROKER_LISTENER_NAME` : `PLAINTEXT`
             - `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR` : `1`
             - `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS` : `0`
-2. `docker-compose.yaml` 을 실행합니다.
+2. `naive-docker-compose.yaml` 을 실행합니다.
 3. `docker compose exec` 명령어를 이용하여 topic 을 생성합니다.
     - Topic name : `topic-test`
     - Partition count : 1
@@ -191,7 +191,7 @@ services:
 
 ```bash
 # terminal-command
-docker compose -p naive -f naive-docker-compose.yaml up -d
+docker compose -p ch7-naive -f naive-docker-compose.yaml up -d
 ```
 
 `docker ps` 를 입력하여 잘 띄워졌는지 확인합니다.
@@ -345,5 +345,6 @@ this is mlops for mle
 모든 과정이 종료되었으면 zookeeper 와 broker 를 종료합니다.
 
 ```bash
-$ docker compose down -v
+# terminal-command
+docker compose -p ch7-naive down -v
 ```
