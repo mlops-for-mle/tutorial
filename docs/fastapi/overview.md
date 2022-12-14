@@ -4,10 +4,10 @@ description: 📌 Overview of FastAPI Chapter
 ---
 
 # 0) Overview
-이번 챕터에서는 모델을 서빙하기에 앞서 이에 필요한 API 의 개념에 대해 학습합니다.
+이번 파트에서는 모델을 서빙하기에 앞서 이에 필요한 API 의 개념에 대해 학습합니다.
 실습을 위해서는 Python 언어를 이용해서 API 를 만들 수 있는 웹 프레임워크 FastAPI 를 사용합니다.
 
-이번 챕터에서 구현할 workflow 는 다음과 같습니다.
+이번 파트에서 구현할 workflow 는 다음과 같습니다.
 
 <div style={{textAlign: 'center'}}>
 

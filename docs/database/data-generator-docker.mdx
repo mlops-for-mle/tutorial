@@ -6,6 +6,7 @@ description: 📌 Docker 위에서 데이터를 생성하기 위한 준비로써
 # 5) Data Generator on Docker
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
+import Highlight from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -18,7 +19,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ### 스펙 명세서
 
-1. 이전 장에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
+1.  <Highlight color="#6A77D7">4) Data Insertion Loop </Highlight> 챕터에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
     - Container 에서 psql 을 이용하여 DB 에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
 2. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
@@ -32,7 +33,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
 
-해당 챕터의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
 
 ```js
 ch1
@@ -53,7 +54,7 @@ ch1
 
 ### 1.1 `data_generator.py`
 
-앞선 장에서 작성한 코드들을 모아서 데이터를 생성하는 `data_generator.py` 를 작성합니다.
+ <Highlight color="#6A77D7">4) Data Insertion Loop </Highlight> 챕터에서 작성한 코드들을 모아서 데이터를 생성하는 `data_generator.py` 를 작성합니다.
 
 ```python  title="data_generator.py"
 # data_generator.py
@@ -276,7 +277,7 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 [그림 1-2] Localhost Networking
 </div>
 
-[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계입니다. 앞선 장에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
+[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계입니다.  <Highlight color="#6A77D7">1) DB Server Creation </Highlight> 챕터에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
 
 ```bash
 # terminal-command
@@ -334,7 +335,7 @@ docker run -d \
     
     - `--network` 옵션에 위에서 생성한 네트워크 이름을 입력합니다.
     - 컨테이너를 시작할 때 이미지 이름의 뒤에 입력된 값은 Dockerfile 의 `ENTRYPOINT` 를 수정합니다.
-        - 앞선 장에서 connector 를 생성할 때 host 를 받는 부분을 수정 했었는데 바로 이 경우를 위해서 입니다.
+        - 위에서 connector 를 생성할 때 host 를 받는 부분을 수정 했었는데 바로 이 경우를 위해서 입니다.
         이제 컨테이너간의 통신은 `localhost` 가 아닌 각 컨테이너의 이름이 host 가 됩니다.
         이때 앞서 띄운 DB 컨테이너의 이름은 `postgres-server` 이기 때문에 argument 로 `postgres-server` 를 입력합니다.
 
@@ -356,7 +357,7 @@ docker run -d \
     mydatabase=#
     ```
     
-2. 앞선 장에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2.  <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```bash
     # terminal-command
