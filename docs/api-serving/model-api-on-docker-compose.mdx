@@ -88,6 +88,8 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
 
 이제 Model API service 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
 
+<CodeDescription>
+
 ```yaml title="docker-compose.yaml"
 version: "3"
 
@@ -100,14 +102,10 @@ services:
       - 8000:8000
     container_name: api-with-model
 ```
-
-- `version` : `docker compose` 의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
-- `services` : `docker compose` 에 묶일 서비스들을 의미합니다.
-- `build` : `Dockerfile` 을 build 하기 위해 `Dockerfile` 이 있는 경로를 설정합니다.
-    - `context` : `Dockerfile` 이 있는 절대경로 또는 상대경로를 설정합니다.
-    - `dockerfile` : `context` 에서 설정한 경로에 있는 `Dockerfile` 의 파일명을 입력합니다.
 - `ports` : host 와 container 의 port 를 설정합니다. 형식은 `host:container` 으로 사용되며, 여기서는 `8000:8000` 로 설정하겠습니다.
 - `container_name` : 컨테이너의 이름을 설정합니다. Model API service 의 컨테이너 이름은 `api-with-model` 로 설정하겠습니다.
+
+</CodeDescription>
 
 이제 완성된 `docker-compose.yaml` 파일을 다음의 명령어를 통해 실행하여 Model API service 를 작동시킵니다.
 
@@ -146,6 +144,5 @@ curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -
 
 ```bash
 # terminal-command
-curl -X POST http://localhost:8000/predict -H "Content-Type: application/json" -d '{"sepal_length": 6.7, "sepal_width": 3.3, "petal_length": 5.7, "petal_width": 2.1}'
 {"iris_class":2}
 ```
