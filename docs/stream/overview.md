@@ -4,10 +4,15 @@ description: 📌 Overview of Stream Chapter
 ---
 
 # 0) Overview
-<aside>
-⚠️ **해당 챕터는 `01. Database` 의 DB와 `06. API Serving` 의 API, `07. Kafka` 의 target DB 를 이용합니다. 앞선 3가지 과정을 수행한 결과들을 가지고 해당 파트를 진행해 주세요.**
 
-</aside>
+import { Chapter, Part } from '@site/src/components/Highlight';
+
+:::caution
+
+📌  해당 파트는 <Part>01. Database</Part> 의 DB와 <Part>06. API Serving</Part> 의 API, <Part>07. Kafka</Part> 의 target DB 를 이용합니다.
+📌  앞선 3가지 과정을 수행한 결과들을 가지고 해당 파트를 진행해 주세요.  
+
+:::
 
 이번 파트에서는 `**04. Model Deployment**` 에서 소개한 Event-Response 방식을 구현하기 합니다.  
 `**07. Kafka**` 에서 띄워진 target DB 와 `**postgres-source-iris_data**` 토픽을 활용해 `**06. API Serving**` 을 통해 추론 결과를 전달 받도록 kafka consumer를 커스터마이징 하여 target DB에 값을 저장합니다.  
