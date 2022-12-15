@@ -180,7 +180,7 @@ API 를 이용해 동기화를 하거나 마스터 선출 등의 작업을 쉽�
 Zookeeper 의 데이터는 분산 작업을 제어하기 위해 트리 형태의 데이터 저장소에 snapshot 을 저장합니다.
 
 #### 3.5.2 Zookeeper Ensemble
-Zookeeper ensemble 이란 zookeeper 서버의 클러스터를 뜻하고, zookeeper 서버에 문제가 생겼을 경우, 과반수 이상의 데이터를 기준으로 일관성을 맞추기 때문에 클러스터는 보통 홀수로 구축하며 최소 3개로 구축해야하며 일반적인 경우라면 5개를 권장합니다.
+위의 그림에서 zookeeper ensemble 이란 zookeeper 서버의 클러스터를 뜻합니다. 하나의 zookeeper 서버에 문제가 생겼을 경우, zookeeper 서버들에 쌓이는 데이터를 기준으로 일관성을 맞추기 때문에 클러스터는 보통 홀수로 구축하며 최소 3개로 구축해야하며 일반적인 경우라면 5개를 권장합니다. 
 
 Zookeeper 에서도 파티션처럼 하나의 leader (write) 서버가 있고, 나머지 follower (read) 서버가 있습니다.
 
