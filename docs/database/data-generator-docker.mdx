@@ -6,7 +6,7 @@ description: 📌 Docker 위에서 데이터를 생성하기 위한 준비로써
 # 5) Data Generator on Docker
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-import Highlight from '@site/src/components/Highlight';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -19,7 +19,7 @@ import Highlight from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1.  <Highlight color="#6A77D7">4) Data Insertion Loop </Highlight> 챕터에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
+1.  <Chapter>4) Data Insertion Loop </Chapter> 챕터에서 작성한 script 를 build 할 수 있는 `Dockerfile` 을 작성합니다.
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
     - Container 에서 psql 을 이용하여 DB 에 접근할 수 있도록 `postgresql-client` 를 설치합니다.
 2. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
@@ -54,7 +54,7 @@ ch1
 
 ### 1.1 `data_generator.py`
 
- <Highlight color="#6A77D7">4) Data Insertion Loop </Highlight> 챕터에서 작성한 코드들을 모아서 데이터를 생성하는 `data_generator.py` 를 작성합니다.
+ <Chapter>4) Data Insertion Loop </Chapter> 챕터에서 작성한 코드들을 모아서 데이터를 생성하는 `data_generator.py` 를 작성합니다.
 
 ```python  title="data_generator.py"
 # data_generator.py
@@ -277,7 +277,7 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 [그림 1-2] Localhost Networking
 </div>
 
-[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계입니다.  <Highlight color="#6A77D7">1) DB Server Creation </Highlight> 챕터에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
+[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계입니다.  <Chapter>1) DB Server Creation </Chapter> 챕터에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
 
 ```bash
 # terminal-command
@@ -357,7 +357,7 @@ docker run -d \
     mydatabase=#
     ```
     
-2.  <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2.  <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```bash
     # terminal-command

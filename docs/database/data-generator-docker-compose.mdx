@@ -6,7 +6,7 @@ description: 📌 DB container 와 data generator container 를 함께 띄우기
 # 6) Data Generator on Docker Compose
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-import Highlight from '@site/src/components/Highlight';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -82,7 +82,7 @@ ch1
 :::caution
 
 📌 이번 챕터에서는 Docker Compose 를 이용해 컨테이너를 띄우는 법에 대해서 실습합니다.  
-📌 이를 위해서 앞서 <Highlight color="#6A77D7">1) DB Server Creation</Highlight> 챕터와 <Highlight color="#6A77D7">5) Data Generator on Docker</Highlight> 챕터에서 시작한 컨테이너를 종료해야 합니다. 
+📌 이를 위해서 앞서 <Chapter>1) DB Server Creation</Chapter> 챕터와 <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 시작한 컨테이너를 종료해야 합니다. 
 :::
  
 
@@ -95,7 +95,7 @@ docker rm --force postgres-server data-generator
 
 ## 1. `Dockerfile`
 
-<Highlight color="#6A77D7">5) Data Generator on Docker</Highlight> 챕터에서 작성한 `Dockerfile` 을 사용합니다.
+<Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 `Dockerfile` 을 사용합니다.
 
 ```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
@@ -192,7 +192,7 @@ services:
 - `build` : `Dockerfile` 을 build 하기 위해 `Dockerfile` 이 있는 경로를 설정합니다.
     - `context` : `Dockerfile` 이 있는 절대경로 또는 상대경로를 설정합니다.
     - `dockerfile` : `context` 에서 설정한 경로에 있는 `Dockerfile` 의 파일명을 입력합니다.
-- `command` : Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다.<Highlight color="#6A77D7">5) Data Generator on Docker</Highlight> 챕터에서 DB 의 host 는 컨테이너의 이름으로 주어야 한다는 것을 설명했습니다. 이를 위해서 여기서는 `["postgres-server"]` 로 덮어씁니다.
+- `command` : Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다.<Chapter>5) Data Generator on Docker</Chapter> 챕터에서 DB 의 host 는 컨테이너의 이름으로 주어야 한다는 것을 설명했습니다. 이를 위해서 여기서는 `["postgres-server"]` 로 덮어씁니다.
 - `depends_on` : `docker compose` 로 띄워지는 service 간의 종속성 순서대로 service 를 시작할 때 사용합니다. 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator server 를 실행 해야하기 때문에 postgres server 의 service 이름인 `db` 를 입력합니다.
 
 </CodeDescription>

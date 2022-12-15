@@ -6,7 +6,7 @@ description: 📌 생성된 테이블안에 데이터를 계속해서 생성하�
 # 4) Data Insertion Loop
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
-import Highlight from '@site/src/components/Highlight';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -19,7 +19,7 @@ import Highlight from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1.  <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 만듭니다.
+1.  <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 만듭니다.
 2. `psycopg2` 를 이용하여 생성된 `iris_data` 테이블에 스크립트를 실행하여 계속해서 데이터를 삽입합니다.
 3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
 
@@ -50,7 +50,7 @@ ch1
 
 ### 1.1 Generate Data
 
- <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 `insert_data.py` 스크립트에서 계속해서 데이터를 추가하는 `insert_data_loop.py` 를 작성해 보겠습니다.
+ <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 `insert_data.py` 스크립트에서 계속해서 데이터를 추가하는 `insert_data_loop.py` 를 작성해 보겠습니다.
 
 계속해서 데이터를 삽입하기 위해 while 문을 사용하겠습니다. 이 때 `while True` 를 통해 외부의 개입이 없다면 계속해서 while 문을 실행할 수 있습니다.
 
@@ -77,7 +77,7 @@ def generate_data(db_connect, df):
 
 #### 1.2.1 `insert_data_loop.py`
 
- <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 합쳐서 data generator 를 생성하도록 하겠습니다.
+ <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 합쳐서 data generator 를 생성하도록 하겠습니다.
 
 ```python  title="insert_data_loop.py"
 # insert_data_loop.py
@@ -201,7 +201,7 @@ python data_generator.py
     mydatabase=#
     ```
     
-2.  <Highlight color="#6A77D7">3) Data Insertion </Highlight> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2.  <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```bash
     # terminal-command

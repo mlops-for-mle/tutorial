@@ -30,7 +30,6 @@ export function Chapter({
   children,
 }: {
   children: ReactNode;
-  color: string;
 }): JSX.Element {
   return (
     <span
