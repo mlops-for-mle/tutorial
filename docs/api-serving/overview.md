@@ -15,7 +15,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 :::
 
-이번 파트에서는 <Part>04. Model Deployment</Part> 파트에서 소개한 Request-Response 방식을 통해 학습한 모델을 사용할 수 있도록 하려고 합니다. <Part>05. FastAPI</Part> 파트에서 학습한 FastAPI 를 이용해 데이터를 입력받아 모델의 예측값을 반환하는 REST API 를 구현해보겠습니다.
+이번 파트에서는 학습한 모델을 <Part>04. Model Deployment</Part> 파트에서 소개한 Request Driven 방식을 통해 사용하는 방법을 구현해보겠습니다. <Part>05. FastAPI</Part> 파트에서 학습한 FastAPI 를 이용해 데이터를 입력받아 모델의 예측값을 반환하는 REST API 를 구현합니다.
 
 이번 파트를 통해 완성되는 workflow 를 그림으로 나타내면 다음과 같습니다.
 
