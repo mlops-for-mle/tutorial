@@ -4,6 +4,9 @@ description: 📌 Stream serving
 ---
 
 # 1) Stream serving
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
@@ -11,11 +14,37 @@ description: 📌 Stream serving
 2. Docker-compose 를 이용하여 data subcriber 를 띄웁니다.
 3. Target DB 에 접속하여 실제 inference 한 결과가 쌓이고 있는지 확인합니다.
 
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
 ### 스펙 명세서
 
-1. TBD
+**TBD**
+
+</CodeDescription>
+</details>
 
 ---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8">
+
+해당 파트의 전체 코드는 [mlops-for-mle/ch8/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8) 에서 확인할 수 있습니다.
+
+```js
+ch8
+// highlight-next-line
+├── Dockerfile
+├── Makefile
+├── README.md
+// highlight-next-line
+├── data_subscriber.py
+├── grafana-docker-compose.yaml
+// highlight-next-line
+└── stream-docker-compose.yaml
+```
+
+</BrowserWindow>
 
 ## 1. 전체구조
 
@@ -27,7 +56,11 @@ description: 📌 Stream serving
 
 따라서 이번 챕터에서는 sink connector 없이 `kafka-python` , `requests` , `psycopg2` 를 이용하여 수동적인 과정을 구축해보겠습니다. 
 
-![image.png](https://s3-us-west-2.amazonaws.com/secure.notion-static.com/8acf2bd5-8afa-45e4-bf7e-624989bda0c7/image.png)
+<div style={{textAlign: 'center'}}>
+
+![basic workflow](./img/total-flow-diagram.png)
+[그림 8-2] Stream serving flow
+</div>
 
 docker-compose 파일에 작성될 서비스들의 다이어그램입니다. 이번 장에서는 serving 을 위한 data subscriber 를 구축해보겠습니다.
 
@@ -155,14 +188,14 @@ Print 문과 출력된 형태를 통해 메시지에 있는 topic, partition, of
 
 `payload` 키 값의 형태를 보면 `'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}` 와 같이 나오는 것을 볼 수 있습니다.
 
+
 ### 2.2 API 호출
 
 다음 과정은 받아진 데이터를 `API Serving` 챕터에서 띄워진 API server 에 전달하고 model 의 inference 결과를 받는 것입니다.
 
 `API Serving` 챕터에서 띄워둔 API server 의 schema 를 살펴보겠습니다. 
 
-```python
-# schemas.py
+```python title="schemas.py"
 from pydantic import BaseModel
 
 class PredictIn(BaseModel):
@@ -229,8 +262,7 @@ insert_data(db_connect, response)
 
 앞서 살펴봤던 모든 코드들은 다음과 같습니다.
 
-```python
-# data_subscriber.py
+```python title="data_subscriber.py"
 from json import loads
 
 import psycopg2
@@ -308,7 +340,7 @@ if __name__ == "__main__":
 
 Data subscriber 코드를 docker 에서 실행할 `Dockerfile` 입니다.
 
-```docker
+```docker title="Dockerfile"
 FROM amd64/python:3.9-slim
 
 WORKDIR /usr/app
@@ -325,8 +357,7 @@ ENTRYPOINT ["python", "data_subscriber.py"]
 
 `Dockerfile` 을 이용하여 docker-compose 를 구성하면 아래와 같습니다.
 
-```yaml
-# stream-docker-compose.yaml
+```yaml title="stream-docker-compose.yaml"
 version: "3"
 
 services:

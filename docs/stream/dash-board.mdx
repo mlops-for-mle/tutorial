@@ -10,7 +10,11 @@ description: 📌 모델 추론 결과를 모니터링 하는 대시보드를 �
 1. Grafana dashboard 를 통해 실시간으로 데이터를 모니터링 하는 대시보드를 작성합니다.
 2. Grafana의 기본적인 사용 방법을 이해합니다.
 
-## 스펙 명세서
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+### 스펙 명세서
 
 1. 실시간 모니터링 대시보드인 Grafana 를 정의하고 `docker compose` 를 활용해 서비스를 띄웁니다.
     - `GF_SECURITY_ADMIN_USER` : `dashboarduser`
@@ -27,6 +31,28 @@ description: 📌 모델 추론 결과를 모니터링 하는 대시보드를 �
     - `user` : `targetuser`
     - `password` : `targetpassword`
     - `database` : `targetdatabase`
+
+</CodeDescription>
+</details>
+
+---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8">
+
+해당 파트의 전체 코드는 [mlops-for-mle/ch8/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8) 에서 확인할 수 있습니다.
+
+```js
+ch8
+├── Dockerfile
+├── Makefile
+├── README.md
+├── data_subscriber.py
+// highlight-next-line
+├── grafana-docker-compose.yaml
+└── stream-docker-compose.yaml
+```
+
+</BrowserWindow>
 
 ## 1. Grafana dashboard
 
