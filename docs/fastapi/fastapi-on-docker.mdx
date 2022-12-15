@@ -144,6 +144,7 @@ fb72ccf8fb47   ch5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 1
 
 ## 2. API 서버 접속하여 작동 확인
 
+### 2.1 작동 확인
 이제 FastAPI 를 통해 만든 API 서버가 잘 작동하는지 확인해 보겠습니다.
 API 서버 컨테이너를 실행할 때 포트 포워딩을 `8000` 번에서 `8000` 번으로 했으므로 `8000` 번 포트로 접속하면 API 서버로 접속할 수 있습니다.
 FastAPI 에서 제공하는 [Interactive API docs](https://fastapi.tiangolo.com/tutorial/first-steps/#interactive-api-docs) 에 접속하려면 URL 뒤에 `/docs` 를 붙이면 됩니다.
@@ -157,4 +158,13 @@ FastAPI 에서 제공하는 [Interactive API docs](https://fastapi.tiangolo.com/
 
 </div>
 
-이 화면에서 앞서 수행한 시나리오와 같은 다양한 작업을 해 보면, 만든 API 가 제대로 작동하는 것을 확인할 수 있습니다.
+[그림 5-4]의 화면에서 앞서 수행한 시나리오와 같은 다양한 작업을 해 보면, 만든 API 가 제대로 작동하는 것을 확인할 수 있습니다.
+
+### 2.2 컨테이너 종료
+
+작동이 잘 되는 것을 확인한 후에는 다음 실습을 위해 컨테이너를 종료해 줍니다. 다음의 명령어를 통해 종료할 수 있습니다.
+
+```bash
+# terminal-command
+docker rm --force api-server
+```
