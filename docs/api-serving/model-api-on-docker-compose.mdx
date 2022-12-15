@@ -68,8 +68,8 @@ FROM amd64/python:3.9-slim
 
 WORKDIR /usr/app
 
-RUN pip install -U pip \
-    && pip install mlflow==1.30.0 pandas scikit-learn "fastapi[all]"
+RUN pip install -U pip &&\
+    pip install mlflow==1.30.0 pandas scikit-learn "fastapi[all]"
 
 COPY schemas.py schemas.py
 COPY app.py app.py
@@ -84,9 +84,9 @@ CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
 - `COPY` : API 를 작동시키는데 필요한 `.py` 파일들과 모델이 저장된 디렉토리 `sk_model` 을 컨테이너 내부로 복사합니다. API 에서 사용할 모델 파일을 직접 넣어줌으로써 이미지를 실행했을 때에는 별도의 모델 정보를 필요로 하지 않게 됩니다.
 - `CMD` : 컨테이너가 실행될 때 수행할 명령어의 기본값을 적어줍니다. 여기에서는 `uvicorn` 을 이용해 `app.py` 에서 만든 FastAPI 의 객체 `app` 을 실행합니다.
 
-## 2. Docker-compose
+## 2. Docker Compose
 
-이제 Model API service 를 띄우는 `docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
+이제 Model API service 를 띄우는 `docker-compose.yaml` 파일을 작성하겠습니다.
 
 <CodeDescription>
 
@@ -96,14 +96,20 @@ version: "3"
 services:
   api-with-model:
     build:
-      context: ./
+      context: .
       dockerfile: Dockerfile
     ports:
       - 8000:8000
     container_name: api-with-model
+
+networks:
+  default:
+    name: mlops-network
+    external: true
 ```
 - `ports` : host 와 container 의 port 를 설정합니다. 형식은 `host:container` 으로 사용되며, 여기서는 `8000:8000` 로 설정하겠습니다.
 - `container_name` : 컨테이너의 이름을 설정합니다. Model API service 의 컨테이너 이름은 `api-with-model` 로 설정하겠습니다.
+- `networks`: 서비스들을 연결할 도커 네트워크를 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
 
 </CodeDescription>
 
