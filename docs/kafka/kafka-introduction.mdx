@@ -105,20 +105,20 @@ ch7
 - 메시지를 안정적으로 주고받기 위한 인터넷 프로토콜
 
 #### Kafka
-뒤이어 살펴볼 Kafka 는 “AMQP 를 구현한 MOM 시스템” 이라고 볼 수 있습니다.
+- 뒤이어 살펴볼 Kafka 는 “AMQP 를 구현한 MOM 시스템” 이라고 볼 수 있습니다.
 
 ## 2. Kafka
 ### 2.2 Features
 
 Kafka 는 open-source distributed event streaming platform 입니다.  
-여기서 event streaming 이란 데이터베이스, 센서, 모바일기기, 어플리케이션 등과 같은 곳에서 발생하는 데이터를 event stream 형태로 저장해서 나중에 검색할 수 있도록 하는 것을 말합니다.
-다시 말해, 발생하는 데이터를 실시간으로 처리하고 필요에 따라서 다른 기술 (다른 target system)로 event stream 을 라우팅 해주는 것을 말합니다. 
+여기서 **event streaming** 이란 데이터베이스, 센서, 모바일기기, 어플리케이션 등과 같은 곳에서 발생하는 데이터를 event stream 형태로 저장해서 나중에 검색할 수 있도록 하는 것을 말합니다.
+다시 말해, 발생하는 데이터를 실시간으로 처리하고 필요에 따라서 데이터가 또 다른 서버 (target system)로 event stream 을 라우팅 해주는 것을 말합니다. 
 
 Kafka 의 주요 특징은 다음과 같습니다.
 
 1. **Event streaming platform** : Event stream 을 실시간으로 처리하고 계속 쌓이는 데이터를 지속적으로 보관하다가 그 데이터를 쓰려고 하는 다른 target system 들이 가져갈 수 있도록 제공합니다.
-1. **Publish/Subscribe (Pub/Sub) pattern** : 다른 system 에서 data 를 가져와서 Kafka 에 `publish` (발행, 저장) 하거나 Kafka 로부터 data 를 `subscribe` (구독, 읽기) 할 수 있는 기능을 제공합니다.
-1. **Decoupling** : pub/sub pattern 으로 인해 Kafka 에서는 `producer` 와 `consumer` 가 존재하고, 서로 의존적이지 않고 완벽하게 분리되어 있습니다.
+2. **Publish/Subscribe (Pub/Sub) pattern** : 다른 system 에서 data 를 가져와서 Kafka 에 `publish` (발행, 저장) 하거나 Kafka 로부터 data 를 `subscribe` (구독, 읽기) 할 수 있는 기능을 제공합니다.
+3. **Decoupling** : Kafka 에서는 pub/sub pattern 을 구현하기 위해 `producer` 와 `consumer` 가 존재합니다. 두 객체는 서로 의존적이지 않고 완벽하게 분리되어 있습니다.
     - `Producer` : Kafka 에 event 를 `publish` 하는 client application
     - `Consumer` : Kafka 로부터 event 를 `subscribe` 하는 client application
 
@@ -142,8 +142,8 @@ Kafka 의 주요 특징은 다음과 같습니다.
 프로세스를 구동하는 방법 (노드의 프로세스, 도커 컨테이너) 따라 다양한 방법으로 클러스터를 구성할 수 있는데 주로 단일 브로커가 아닌 다중 브로커를 사용합니다.
 만약, 브로커가 여러 개일 경우, 각각의 브로커들을 ID 로 식별합니다.
 
-브로커의 주요 역할은 **토픽**(**topic) 내의 파티션(partition) 들을 분산, 유지 및 관리**입니다.  
-브로커 내부에는 여러 토픽들이 생성될 수 있고, 이러한 토픽들에 의해 생성된 파티션들이 보관하는 데이터에 대해 분산 저장을 해주거나 장애 발생 시 안전하게 데이터를 사용할 수 있도록 도와주는 역할을 합니다.
+브로커의 주요 역할은 **토픽**(**topic) 내의 파티션(partition) 들의 분산, 유지 및 관리**입니다.  
+브로커 내부에는 여러 토픽들이 생성될 수 있고, 이러한 토픽들에 의해 파티션들이 생성되게 됩니다. 브로커는 파티션의 데이터를 분산하여 저장 해주기 때문에 시스템에 예기치 못한 장애 발생 하더라도 분산된 데이터를 통해 안전하게 데이터를 사용할 수 있도록 해줍니다.
 브로커의 중요한 특징 중 하나는 토픽의 일부 파티션들을 포함하고 있지만, 데이터의 일부분인 파티션을 갖을 뿐 전체 데이터를 갖고 있지는 않습니다. 
 
 ### 3.2 Kafka Cluster
@@ -155,7 +155,7 @@ Kafka 클러스터(cluster) 는 여러 개의 브로커로 이루어진 집합�
 토픽(Topic)이란 브로커에서 event (data) 를 관리하는 “**기준**” 또는 어떤 event 를 저장할 지를 정하는 “**주제**” 입니다.
 
 토픽은 파일 시스템의 “**폴더**” 와 같고, event 는 폴더 속의 “**파일**” 과 같습니다. 전통적인 메시징 시스템과는 다르게 message (event) 들을 subscribe 해서 받아보더라도 그 message 는 삭제되지는 않습니다.
-대신 토픽마다 지정된 기준에 따라 event 를 유지할 지 정할 수 있는데, 이 때 기준은 정해진 기간일 수도 정해진 용량일 수도 있습니다.
+대신 토픽마다 지정된 기준에 따라 event 를 유지할 지 정할 수 있는데, 이 때 설정된 기간 또는 용량에 따라 event를 유지 합니다.
 
 ### 3.4 Partition
 
