@@ -7,6 +7,7 @@ description: 📌 Overview of Stream Chapter
 
 import { Chapter, Part } from '@site/src/components/Highlight';
 
+
 :::caution
 
 📌  해당 파트는 <Part>01. Database</Part> 의 DB와 <Part>06. API Serving</Part> 의 API, <Part>07. Kafka</Part> 의 target DB 를 이용합니다.
@@ -14,8 +15,16 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 :::
 
-이번 파트에서는 `**04. Model Deployment**` 에서 소개한 Event-Response 방식을 구현하기 합니다.  
-`**07. Kafka**` 에서 띄워진 target DB 와 `**postgres-source-iris_data**` 토픽을 활용해 `**06. API Serving**` 을 통해 추론 결과를 전달 받도록 kafka consumer를 커스터마이징 하여 target DB에 값을 저장합니다.  
-또한, 원본 데이터와 예측 결과 값을 실시간 시각화 대시보드인 grafana 를 통해서 Stream serving 이 잘 되고 있는지 모니터링 할 수 있도록 합니다.  
-  
-이번 장을 통해 완성되는 workflow 는 다음과 같습니다.
+이번 파트에서는 <Part>*04. Model Deployment</Part> 에서 소개한 **Event-Response** 방식을 구현 해봅니다.
+<Part>07. Kafka</Part> 에서 띄워진 postgres-source-iris_data 토픽과 target DB 를 활용합니다.
+토픽으로 부터 데이터를 불러와 <Part>06. API Serving</Part> 의 REST API 의 입력으로 전달하고 추론 결과를 반환 받을 수 있도록 kafka consumer를 커스터마이징 합니다. 
+
+그렇게 얻어진 결과값은 target DB에 값을 저장 되도록 합니다. 또한, 원본 데이터와 예측 결과 값을 실시간 시각화 대시보드인 grafana 를 통해서 Stream serving 이 잘 되고 있는지 모니터링 할 수 있도록 합니다.
+
+이번 파트를 통해 완성되는 workflow 는 다음과 같습니다.
+
+<div style={{textAlign: 'center'}}>
+
+![basic workflow](./img/total-flow-diagram.png)
+[그림 8-1] Stream serving flow
+</div>
