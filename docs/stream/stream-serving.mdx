@@ -5,13 +5,13 @@ description: 📌 Stream serving
 
 # 1) Stream serving
 
-## 목표
+### 목표
 
 1. Serving 을 위한 data subscriber 코드를 작성합니다.
 2. Docker-compose 를 이용하여 data subcriber 를 띄웁니다.
 3. Target DB 에 접속하여 실제 inference 한 결과가 쌓이고 있는지 확인합니다.
 
-## 스펙 명세서
+### 스펙 명세서
 
 1. TBD
 
@@ -115,8 +115,8 @@ consumer = KafkaConsumer(
 
 `KafkaConsumer` 에 들어가는 인자들을 살펴보겠습니다.
 
-- `*topics` : 데이터를 가져오고 싶은 topic 들을 넣습니다. 여기서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 적어줍니다.
-- `bootstrap_servers` : bootstrap server 로 띄워져있는 broker 의 <broker service name : broker service internal port> 을 넣습니다. 여기서는 `broker:29092` 를 적습니다.
+- `topics` : 데이터를 가져오고 싶은 topic 들을 넣습니다. 여기서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 적어줍니다.
+- `bootstrap_servers` : bootstrap server 로 띄워져있는 broker 의 <broker service name : broker service internal port\> 을 넣습니다. 여기서는 `broker:29092` 를 적습니다.
 - `auto_offset_reset` : topic 에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 2가지 설정이 있으며, `earliest` 는 가장 초기 offset 값, `latest` 는 가장 마지막 offset 값입니다. 여기서는 첫번째 데이터부터 가져오고 싶기 때문에 `earliest` 를 적어줍니다.
 - `group_id`  : consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다. 여기서는 `iris-data-consumer-group` 로 지정하겠습니다.
 - `value_deserializer` : source connector (또는 produceer) 에서 serialization 된 value 값을 deserialization 할 때 어떤 deserializer 를 사용할 지를 설정합니다. 앞서 `Kafka` 챕터에서  connect 를 띄울 때 value converter 로서 json converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다. 여기서는 데이터를 가져와서 json deserializer 를 이용하여 deserialization 을 해주어야 함으로, lambda function 과 json 의 loads 를 이용하여 `lambda x: loads(x)` 로 넣어줍니다.
