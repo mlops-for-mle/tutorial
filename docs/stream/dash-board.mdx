@@ -4,11 +4,13 @@ description: 📌 모델 추론 결과를 모니터링 하는 대시보드를 �
 ---
 
 # 2) Dashboard
+import CodeDescription from '@site/src/components/CodeDescription';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
 1. Grafana dashboard 를 통해 실시간으로 데이터를 모니터링 하는 대시보드를 작성합니다.
-2. Grafana의 기본적인 사용 방법을 이해합니다.
+2. Grafana 에 원본 데이터와 추론 결과 값을 시각화 하며 사용 방법을 이해합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -60,7 +62,13 @@ Grafana 는 멀티플랫폼 오픈 소스 애널리틱스 및 인터랙티브 �
 
 Grafana 의 다양한 종류의 차트를 활용해 상황에 맞는 대시보드를 구현 할 수 있습니다. 또한 오픈소스이기 때문에 자체적인 Grafana 커뮤니티도 활성화 되어 필요한 정보나, 만들어진 대시보드를 활용 할 수도 있습니다. 또한 여러가지 데이터 소스로 부터 데이터를 받아 시각화 할 수 있습니다.
 
-Grafana dashboard 는 [그림 8-x] 의 형태로 존재합니다.
+Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
+
+<div style={{textAlign: 'center'}}>
+
+  ![MLflow ui](./img/grafana-shape.png)  
+  [그림 8-3] Grafana 대시보드 구성도
+</div>
 
 - `dashboard` : 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 표시 할 기간 등을 정할 수 있습니다.
 - `panel` : `dashboard` 안에 포함되어있는 차트를 의미하며 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
@@ -74,6 +82,8 @@ Grafana 의 스펙을 `grafana-docker-compose.yaml` 에 정의 합니다.
 - Grafana 의 dashboard panel 을 새로고침 하는 최소주기를 환경 변수를 통해 설정 합니다.
 
 Grafana 는 메타 데이터를 관리하기 위한 Database 를 정의해서 사용 할 수 있습니다. 정의 되지 않은 경우 기본값으로 서버에 포함되어있는 SQLite3 를 사용 합니다. 이번에는 별도의 설정없이, 기본적으로 제공되는 SQLite3 를 사용 하겠습니다.
+
+<CodeDescription>
 
 ```yaml
 version: "3"
@@ -96,24 +106,21 @@ services:
     - `GF_SECURITY_ADMIN_PASSWORD` : grafana 에 접속하기 위한 admin 유저의 접속 패스워드 입니다. 설정하지 않는 경우 기본값은 `admin` 입니다. 여기서에서는 `dashboardpassword` 라는 값으로 설정 하겠습니다.
     - `GF_DASHBOARDS_MIN_REFRESH_INTERVAL` : grafana 에서 대시보드를 만들 때 실시간으로 패널들을 그리기 위한 새로고침이 필요하게 되는데, 해당 주기의 최소값을 변경합니다. 설정하지 않는 경우 `5s` 의 값을 가지며, 5초 이하의 주기로 새로고침 하도록 설정을 할 수 없게 됩니다.
 
-### 1.2 Network setup
-
 ```yaml
 networks:
   default:
     name: mlops-network
     external: true
 ```
+- `networks`: 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part>에서 생성한 mlops-network 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 <Part>01. Database 파트</Part>에서 생성한 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
 
-**TBD: 종섭님이 넣어주시면 복붙 할 것**
+</CodeDescription>
 
-### 1.3 Grafana docker compose
+### 1.2 Grafana docker compose
 
 - 작성한 내용을 하나로 모으면 다음과 같습니다.
 
-`**grafana-docker-compose.yaml**`
-
-```yaml
+```yaml title="grafana-docker-compose.yaml"
 version: "3"
 
 services:
@@ -132,8 +139,6 @@ networks:
     external: true
 ```
 
-### 1.4 Grafana Server 띄우기
-
 - 완성된 파일을 통해 Grafana server 를 띄웁니다.
 - 앞 장의 data-subscriber 와는 독립적인 서비스이기 때문에 `-p` 옵션으로 프로젝트 이름을, `-f` 옵션으로 사용하고자 하는 파일을 명시해 줍니다.
 
@@ -141,47 +146,164 @@ networks:
 $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 ```
 
-### 1.2 Grafana Dashboard 만들기
+### 1.3 Grafana Dashboard 만들기
 
 - 서비스가 띄워졌다면, [localhost:3000](http://localhost:3000) 을 통해 grafana에 접속하여 설정했던 아이디와 패스워드로 접속합니다.
+    <div style={{textAlign: 'center'}}>
+
+    ![MLflow ui](./img/grafana-intro.png)  
+    [그림 8-4] Grafana 접속 화면
+    </div>
+    <div style={{textAlign: 'center'}}>
+
+    ![MLflow ui](./img/grafana-after-login.png)  
+    [그림 8-5] Grafana 로그인 후 화면
+    </div>
 - 접속이 잘 되었다면 왼쪽 사이드바의 `네모 모양 > New dashboard` 버튼을 눌러줍니다.
+    <div style={{textAlign: 'center'}}>
+
+    ![MLflow ui](./img/grafana-click-new.png)  
+    [그림 8-6] Grafana 새 대시보드 생성
+    </div>
+    <div style={{textAlign: 'center'}}>
+
+    ![MLflowui](./img/grafana-initial-dashboard.png)  
+    [그림 8-7] Grafana 대시보드 초기 화면
+    </div>
 - 먼저 Dashboard 에 대한 설정을 해보겠습니다.
     - 오른쪽 위의 톱니바퀴 ⚙️ 버튼을 클릭합니다.
+    <div style={{textAlign: 'center'}}>
+
+    ![MLflow ui](./img/grafana-click-gear.png)  
+    [그림 8-8] Grafana 톱니바퀴 클릭
+    </div>
+
     - 대시보드의 정보들을 설정합니다.
-        - `General` 필드에서 이름, 명세, 태그 등의 정보를 기록 할 수 있습니다.
-        - 대시보드의 이름은 `Iris classification` 으로 합니다.
-        - `Time options` 필드에서 시간대, 한 주의 시작 등의 정보를 정할 수 있습니다.
-        - `Auto refresh` 영역에 `1s,` 를 추가하여 다음과 같이 만들어 줍니다.
-        - `Refresh live dashboards` 토글을 클릭해 실시간으로 패널이 업데이트 되도록 해줍니다.
+        - `General`
+            - 대시보드의 이름은 `Iris classification` 으로 합니다.
+        - `Time options`
+            - `Auto refresh` 영역에 `1s,` 를 추가하여 다음과 같이 만들어 줍니다.
+            - `Refresh live dashboards` 토글을 클릭해 실시간으로 패널이 업데이트 되도록 해줍니다.
         - 오른쪽 위의 `Save dashboard` 버튼을 클릭하고, `General` 폴더에 저장합니다.
+    
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-dashboard-setup.png)  
+[그림 8-9] Grafana 대시보드 설정
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-save-dashboard.png)  
+[그림 8-10] Grafana 대시보드 저장
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-after-save.png)  
+[그림 8-11] Grafana 대시보드 저장 후
+</div>
 
 ## 2. Source database 그리기
 
 ### 2.1 Data source 연결하기
 
 - 왼쪽 아래 톱니바퀴 `⚙️ 버튼 > Data sources` 를 클릭합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-1.png)  
+[그림 8-12] Grafana 데이터 소스 연결 진입
+</div>
+
 - `Add data source` 버튼을 클릭하고, PostgreSQL 을 검색하여 클릭합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-2.png)  
+[그림 8-13] Grafana 데이터 소스 연결 클릭
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-3.png)    
+[그림 8-14] Grafana 데이터 소스 검색 1
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-4.png)  
+[그림 8-15] Grafana 데이터 소스 검색 2
+</div>
+
 - 데이터 소스의 이름, `01. Database` 에서 띄워 두었던 원본 데이터 베이스의 정보를 입력합니다. `Default` 로 체크되어있는 토글은 해제해 줍니다. 작성이 끝나고 `Save & test` 버튼을 누릅니다.
+    - `Name` : `Source-database`
     - `Host` : `postgres-server:5432`
     - `Database` : `mydatabase`
     - `User` : `myuser`
     - `Password` : `mypassword`
     - `TLS/SSL Mode` : `disable`
     - `Version` : `14.0`
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-5.png)  
+[그림 8-16] Grafana 데이터 소스 설정
+</div>
+
 - 데이터 소스 연결이 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-6.png)  
+[그림 8-17] Grafana 데이터 소스 연결 확인
+</div>
 
 ### 2.2 Panel 만들기
 
 - `네모 모양 > Browse` 를 클릭하여 다음 화면으로 이동합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-panel-1.png)  
+[그림 8-18] Grafana 대시보드로 이동 1
+</div>
+
 - 그러면 아까 만들어 두었던 `Iris classification` dashboard 를 확인 할 수 있습니다. 클릭하여 이동합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-panel-2.png)  
+[그림 8-19] Grafana 대시보드로 이동 2
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-panel-3.png)  
+[그림 8-20] Grafana 대시보드로 이동 3
+</div>
+
 - 이제 우측 상단의 차트 📊 버튼을 클릭하여 패널을 생성 합니다.
 - 생성된 패널에서 `Add a new panel` 옵션을 선택합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-add-panel-1.png)  
+[그림 8-21] Grafana 패널 생성
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-add-panel-2.png)  
+[그림 8-22] Grafana 패널 생성 2
+</div>
+
 - 패널의 정보를 설정합니다.
-    - Information - 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 - 패널의 이름, 차트의 종류 등을 설정 합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
         - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 여기서는, `Iris source data` 라고 설정하겠습니다.
-    - Query - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
-        - `Data source` : *`위에서 설정한 이름`*
+    - 하단 탭 - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+        - `Data source` : `Source-database`
         - `Table` : `iris_data`
         - `Column` : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
             - `timestamp`
@@ -191,14 +313,47 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
             - `petal_width`
         - `Run query` 버튼 오른쪽의 `Code` 버튼을 클릭하고 `Limit` 부분을 지워줍니다.
         - `Run query` 버튼을 클릭합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-set-panel-1.png)  
+[그림 8-23] Grafana 패널 설정
+</div>
+
 - 작업이 마무리 되었으면 오른쪽 위의 `Save` 버튼을 통해 패널을 저장합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-save-panel-1.png)  
+[그림 8-24] Grafana 패널 저장
+</div>
+
 - 저장이 완료되면 왼쪽 위의 화살표 ⬅️ 버튼을 눌러 뒤로 이동합니다.
 - 이제 대시보드의 패널 새로고침 주기 및 패널 시각화 기간을 설정합니다.
     - 오른쪽 위의 `🕙 Last 6 hours` 를 클릭하여 패널에 시각화 할 기간을 명세합니다.
     - 1초 단위로 데이터가 생성 되기 때문에, 30초를 모니터링 하기 위해서 `From` 부분을 `now-30s` 로 바꿔주겠습니다. 바꾸고 난 다음 `Apply time range` 버튼을 클릭 합니다.
     - 오른쪽 위의 🔄 버튼을 누르고 설정했던 `1s` 를 클릭합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-set-time-1.png)  
+[그림 8-25] Grafana 시각화 기간 설정
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-set-time-2.png)  
+[그림 8-26] Grafana 새로고침 주기 설정
+</div>
+
 - 실시간 모니터링을 확인하고 수정된 dashboard 를 오른쪽 위의 💾 버튼을 클릭하여 저장합니다.
     - 저장시에 **`save current time range as dashboard default`** 를 체크 합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-set-time-3.png)  
+[그림 8-27] Grafana 대시보드 저장
+</div>
 
 ## 3. Inference database 그리기
 
@@ -208,27 +363,68 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 - 왼쪽 아래 톱니바퀴 `⚙️ 버튼 > Data sources` 를 클릭합니다.
 - `Add data source` 버튼을 클릭하고, PostgreSQL 을 검색하여 클릭합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source2-1.png)  
+[그림 8-28] Grafana 추론 결과 데이터 소스 이동
+</div>
+
 - 데이터 소스의 이름, `01. Database` 에서 띄워 두었던 원본 데이터 베이스의 정보를 입력합니다. `Default` 로 체크되어있는 토글은 해제해 줍니다. 작성이 끝나고 `Save & test` 버튼을 누릅니다.
+    - `Name` : `Inference-database`
     - `Host` : `target-postgres-server:5432`
     - `Database` : `targetdatabase`
     - `User` : `targetuser`
     - `Password` : `targetpassword`
     - `TLS/SSL Mode` : `disable`
     - `Version` : `14.0`
-- 데이터 소스 연결이 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source2-2.png)  
+[그림 8-29] Grafana 추론 결과 데이터 소스 설정
+</div>
+
+- 마찬가지로 데이터 소스 연결이 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-data-source-6.png)  
+[그림 8-30] Grafana 추론 결과 데이터 소스 연결 확인
+</div>
 
 ### 2.1 Panel 만들기
 
 - `네모 모양 > Browse` 를 클릭하여 다음 화면으로 이동합니다.
 - `Iris classification` dashboard 클릭하여 이동합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-move-to-board-1.png)  
+[그림 8-31] Grafana 대시 보드로 이동
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-move-to-board-2.png)  
+[그림 8-32] Grafana 대시 보드로 이동 2
+</div>
+
 - 완성해 두었던 `Iris source data` 패널을 확인하고, 오른쪽 상단의 차트 📊 버튼을 클릭하여 패널을 생성 합니다.
 - 생성된 패널에서 `Add a new panel` 옵션을 선택합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-add-panel2.png)  
+[그림 8-33] Grafana 추론 패널 생성
+</div>
+
 - 패널의 정보를 설정합니다.
-    - Information - 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 - 패널의 이름, 차트의 종류 등을 설정 합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
         - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 여기서는, `Iris inference result` 라고 설정하겠습니다.
-    - Query - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
-        - `Data source` : *`위에서 설정한 이름`*
+    - 하단 탭 - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+        - `Data source` : `Inference-database`
         - `Table` : `iris_prediction`
         - `Column` : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
             - `timestamp`
@@ -237,3 +433,26 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
         - `Run query` 버튼을 클릭합니다.
 - 작업이 마무리 되었으면 오른쪽 위의 `Save` 버튼을 통해 패널을 저장합니다.
 - 저장이 완료되면 왼쪽 위의 화살표 ⬅️ 버튼을 눌러 뒤로 이동합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-set-panel2.png)  
+[그림 8-34] Grafana 추론 패널 설정
+</div>
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-save-panel2.png)  
+[그림 8-35] Grafana 추론 패널 저장
+</div>
+
+
+
+## 3. 완성 된 대시보드 확인
+ 앞서 설정해둔 대시보드의 시각화 기간과 새로고침 주기는 다시 설정 하지 않아도 적용 됩니다. 최종 시각화 결과를 확인 합니다.
+
+<div style={{textAlign: 'center'}}>
+
+![MLflow ui](./img/grafana-final-result.gif)  
+[그림 8-36] Grafana 최종 완성 대시보드
+</div>
