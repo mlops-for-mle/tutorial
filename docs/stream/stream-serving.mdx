@@ -1,0 +1,474 @@
+---
+sidebar_position: 1
+description: 📌 Serving 을 위한 data subscriber 코드를 작성합니다.
+---
+
+# 1) Stream serving
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
+
+### 목표
+
+1. Serving 을 위한 data subscriber 코드를 작성합니다.
+2. Docker-compose 를 이용하여 data subcriber 를 띄웁니다.
+3. Target DB 에 접속하여 실제 inference 한 결과가 쌓이고 있는지 확인합니다.
+
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+### 스펙 명세서
+
+1. `kafka-python` 패키지를 이용해 Kafka Topic 에서 데이터를 가져올 수 있는 consumer 를 생성합니다.
+2. 예측값을 저장할 `iris_prediction` 테이블을 target postgres server 에 생성합니다.
+3. `request` 패키지를 이용해 API 에 예측을 요청하고 응답을 받습니다.
+4. 응답받은 예측값을 `iris_prediction` 테이블에 삽입합니다.
+
+</CodeDescription>
+</details>
+
+---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8">
+
+해당 파트의 전체 코드는 [mlops-for-mle/ch8/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8) 에서 확인할 수 있습니다.
+
+```js
+ch8
+// highlight-next-line
+├── Dockerfile
+├── Makefile
+├── README.md
+// highlight-next-line
+├── data_subscriber.py
+├── grafana-docker-compose.yaml
+// highlight-next-line
+└── stream-docker-compose.yaml
+```
+
+</BrowserWindow>
+
+## 0. 패키지 설치
+
+이번 장에서 사용할 패키지들입니다.
+
+```bash
+# terminal-command
+pip install kafka-python requests psycopg2-binary
+```
+- `kafka-python` : python 에서 kafka 를 SDK 형태로 사용하도록 도와주는 kafka python client 패키지 입니다. Consumer 를 구현할 때 사용합니다.
+- `requests` : python 으로 HTTP 통신이 필요한 프로그램을 작성할 때 가장 많이 사용되는 패키지입니다. API 를 호출할 때 사용합니다.
+
+## 1. Architecture
+
+이번 챕터에서 구현할 서비스들은 [그림 8-2]와 같습니다.
+
+<div style={{textAlign: 'center'}}>
+
+![Stream serving flow](./img/stream-2.png)
+[그림 8-2] Stream serving flow
+</div>
+<p>
+<Part>07. Kafka</Part> 파트에서는 source connector 와 sink connector 를 생성하여 source DB 에서 target DB 로 데이터를 전달하는 과정을 살펴봤습니다.
+<Part>08. Stream</Part> 파트에서는 다시 model deployment 관점으로 돌아와서 kafka 를 어떻게 쓸지 살펴보겠습니다.<br></br>
+</p>
+<p>
+<Part>07. Kafka</Part> 파트와 동일하게 zookeeper, broker, connect 를 사용하며 source connector 를 사용하여 데이터를 publish 하는 과정도 동일합니다.
+달라지는 점은 sink connector 를 대신해서 직접 kafka 의 python SDK 를 이용하여 consumer 를 구현하는 것입니다.
+</p>
+<p>
+왜 직접 구현해서 사용해야 할까요?<br></br>
+<Part>07. Kafka</Part> 에서 사용한 sink connector 를 살펴 보면, JSON 파일틀 통해 사전에 정의 된 양식에 맞추어 생성한 후 사용합니다.
+하지만, <Part>08. Stream</Part> 에서는 <Part>06. API serving</Part> 에서는 request 를 보내고 response 를 받는 과정이 존재합니다.
+source DB 에서 데이터를 받아 <Part>06. API serving</Part> 에서 만든 REST API 로 request 를 보내주어야하며, model 의 inference 결과를 response 로 받게 됩니다.
+받은 결과를 target DB 에 전달하는 이 과정을 담당해주는 코드가 필요합니다.
+</p>
+
+따라서 이번 챕터에서는 sink connector 없이 `kafka-python`, `requests`, `psycopg2` 를 이용하여 커스터마이징한 Consumer 를 구축해보겠습니다. 
+
+
+## 2. Data Subscriber
+
+이번에 구현할 data subscriber 의 절차는 다음과 같습니다.
+
+1. `psycopg2` 패키지를 이용하여 Target DB 에 접근하여 테이블을 생성합니다.
+2. `kafka-python` 패키지를 이용하여 broker 의 topic 에 있는 데이터를 subscribe 하는 consumer 를 생성합니다.
+3. `requests` 패키지를 이용하여 consumer 를 통해 받은 데이터를 `API Serving` 챕터에서 띄운 API server 에 model 의 input 인 request 를 보내고 model 의 inference 결과인 response 를 받습니다.
+4. `psycopg2` 패키지를 이용하여 받은 response 를 target DB 에 추가합니다.
+
+
+### 2.1 Create Prediction Table
+
+먼저, 예측값을 저장할 테이블 생성을 하겠습니다.  
+전반적인 코드는 <Part>01. Database</Part> 파트와 동일하며 다른 내용은 아래와 같습니다.
+
+<CodeDescription>
+
+```python  title="data_subscriber.py"
+import psycopg2
+
+def create_table(db_connect):
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS iris_prediction (
+        id SERIAL PRIMARY KEY,
+        timestamp timestamp,
+        iris_class int
+    );"""
+    print(create_table_query)
+    with db_connect.cursor() as cur:
+        cur.execute(create_table_query)
+        db_connect.commit()
+
+if __name__ == "__main__":
+    db_connect = psycopg2.connect(
+        user="targetuser",
+        password="targetpassword",
+        host="target-postgres-server",
+        port=5432,
+        database="targetdatabase",
+    )
+    create_table(db_connect)
+```
+
+- <var>Connection</var> :
+
+    - <var>user</var> : <code>targetuser</code>
+    - <var>password</var> : <code>targetpassword</code>
+    - <var>host</var> : <code>target-postgres-server</code>
+    - <var>port</var> : <code>5432</code>
+    - <var>database</var> : <code>targetdatabase</code>
+- <var>Table name</var> : <code>iris_prediction</code>
+- <var>Schema</var> : 
+
+    - <code>id (PK)</code>, <code>timestamp (timestamp)</code>, <code>iris_class (int)</code>
+
+</CodeDescription>
+
+### 2.2 Consumer
+
+다음으로, consumer 를 생성하겠습니다.  
+`kafka-python` 패키지를 이용하여 `KafkaConsumer` 의 instance 를 만들어보겠습니다.
+
+<CodeDescription>
+
+```python  title="data_subscriber.py"
+from json import loads
+from kafka import KafkaConsumer
+
+consumer = KafkaConsumer(
+    "postgres-source-iris_data",
+    bootstrap_servers="broker:29092",
+    auto_offset_reset="earliest",
+    enable_auto_commit=True,
+    group_id="iris",
+    value_deserializer=lambda x: loads(x.decode("utf-8")),
+)
+```
+- <var>topics</var>:
+
+    - 데이터를 가져오고 싶은 topic 들을 넣습니다.
+    - 이번 챕터에서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 작성합니다.
+- <var>bootstrap_servers</var> :
+
+    - bootstrap server 로 띄워져있는 broker 의 `broker_service_name:broker_service_internal_port` 을 넣습니다.
+    - 이번 챕터에서는 `broker:29092` 를 작성합니다.
+- <var>auto_offset_reset</var> :
+
+    - topic 에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 2가지 설정이 있으며, `earliest` 는 가장 초기 offset 값, `latest` 는 가장 마지막 offset 값입니다.
+    - 이번 챕터에서는 첫번째 데이터부터 가져오고 싶기 때문에 `earliest` 를 작성합니다.
+- <var>group_id</var> : 
+
+    - consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다.
+    - 이번 챕터에서는 `iris-data-consumer-group` 로 지정하겠습니다.
+- <var>value_deserializer</var> :
+
+    - source connector (또는 produceer) 에서 serialization 된 value 값을 deserialization 할 때 어떤 deserializer 를 사용할 지를 설정합니다.
+    - <Part>07. Kafka</Part>파트에서는 connect 를 띄울 때 value converter 로서 json converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
+    - 이번 챕터에서는 데이터를 가져와서 json deserializer 를 이용하여 deserialization 을 해주어야 함으로, lambda function 과 json 의 loads 를 이용하여 `lambda x: loads(x)` 를 작성합니다.
+
+</CodeDescription>
+
+이렇게 만들어진 consumer instance 는 for 문을 이용하여 topic 에 있는 데이터를 계속해서 가져올 수 있습니다.
+
+```python  title="data_subscriber.py"
+for msg in consumer:
+    print(
+        f"Topic : {msg.topic}\n"
+        f"Partition : {msg.partition}\n"
+        f"Offset : {msg.offset}\n"
+        f"Key : {msg.key}\n"
+        f"Value : {msg.value}\n",
+    )
+# Topic : postgres-source-iris_data
+# Partition : 0
+# Offset : 133
+# Key : None
+# Value : {'schema': {'type': 'struct', 'fields': [{'type': 'int32', 'optional': False, 'field': 'id'}, {'type': 'string', 'optional': True, 'field': 'timestamp'}, {'type': 'double', 'optional': True, 'field': 'sepal_length'}, {'type': 'double', 'optional': True, 'field': 'sepal_width'}, {'type': 'double', 'optional': True, 'field': 'petal_length'}, {'type': 'double', 'optional': True, 'field': 'petal_width'}, {'type': 'int32', 'optional': True, 'field': 'target'}], 'optional': False, 'name': 'iris_data'}, 'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}}
+# 
+# Topic : postgres-source-iris_data
+# Partition : 0
+# Offset : 134
+# Key : None
+# Value : {'schema': {'type': 'struct', 'fields': [{'type': 'int32', 'optional': False, 'field': 'id'}, {'type': 'string', 'optional': True, 'field': 'timestamp'}, {'type': 'double', 'optional': True, 'field': 'sepal_length'}, {'type': 'double', 'optional': True, 'field': 'sepal_width'}, {'type': 'double', 'optional': True, 'field': 'petal_length'}, {'type': 'double', 'optional': True, 'field': 'petal_width'}, {'type': 'int32', 'optional': True, 'field': 'target'}], 'optional': False, 'name': 'iris_data'}, 'payload': {'id': 135, 'timestamp': '2022-12-15 04:49:42.27', 'sepal_length': 6.2, 'sepal_width': 2.9, 'petal_length': 4.3, 'petal_width': 1.3, 'target': 1}}
+#
+# Topic : postgres-source-iris_data
+# Partition : 0
+# Offset : 135
+# Key : None
+# Value : {'schema': {'type': 'struct', 'fields': [{'type': 'int32', 'optional': False, 'field': 'id'}, {'type': 'string', 'optional': True, 'field': 'timestamp'}, {'type': 'double', 'optional': True, 'field': 'sepal_length'}, {'type': 'double', 'optional': True, 'field': 'sepal_width'}, {'type': 'double', 'optional': True, 'field': 'petal_length'}, {'type': 'double', 'optional': True, 'field': 'petal_width'}, {'type': 'int32', 'optional': True, 'field': 'target'}], 'optional': False, 'name': 'iris_data'}, 'payload': {'id': 225, 'timestamp': '2022-12-15 04:51:14.238', 'sepal_length': 6.7, 'sepal_width': 3.1, 'petal_length': 4.4, 'petal_width': 1.4, 'target': 1}}
+```
+
+Print 문과 출력된 형태를 통해 메시지에 있는 topic, partition, offset, key, value 을 볼 수 있습니다. 앞으로 사용할 데이터는 value 에 있는 `payload` 키 값입니다.
+
+`payload` 키 값의 형태를 보면 아래와 같이 나오는 것을 볼 수 있습니다.
+
+```json
+'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}
+``` 
+
+
+### 2.3 Call API
+#### 2.3.1 Check Schema
+
+다음 과정은 받아진 데이터를 <Part>06. API Serving</Part> 파트에서 띄워진 API server 에 전달하고 model 의 inference 결과를 받는 것입니다.<br></br>
+<Part>06. API Serving</Part> 파트에서 띄워둔 API server 의 schema 를 살펴보겠습니다. 
+
+```python title="schemas.py"
+from pydantic import BaseModel
+
+class PredictIn(BaseModel):
+    sepal_length: float
+    sepal_width: float
+    petal_length: float
+    petal_width: float
+
+class PredictOut(BaseModel):
+    iris_class: int
+```
+
+#### 2.3.2 Request to API
+
+API server 에 request 로 전달할 값들에는 `sepal_length`, `sepal_width`, `petal_length`, `petal_width` 만 전달해야합니다.
+따라서 value 값의 payload 에서 필요없는 column 들은 삭제를 해줍니다.
+
+```python  title="data_subscriber.py"
+msg.value["payload"].pop("id")
+msg.value["payload"].pop("target")
+ts = msg.value["payload"].pop("timestamp")
+```
+
+timestamp 의 경우, source DB 에서 나온 timestamp 를 target DB 에 넣어줄 것이기 때문에 똑같이 삭제는 하되, `ts` 변수로 할당해줍니다.
+
+이제 `requests` 패키지에 있는 POST request 를 이용하여 payload 값들을 보내고 response 를 받습니다. 
+
+<CodeDescription>
+
+```python  title="data_subscriber.py"
+response = requests.post(
+    url="http://api-with-model:8000/predict",
+    json=msg.value["payload"],
+    headers={"Content-Type": "application/json"},
+).json()
+response["timestamp"] = ts
+```
+
+- <var>url</var> : 
+
+    - API server 의 endpoint 를 설정합니다.
+    - 이번 챕터에서는 API server 의 host name 과 port number, 그리고 POST method 인 predict 를 합하여 `"http://api-with-model:8000/predict"` 로 넣어줍니다.
+- <var>json</var> : 
+
+    - request 로 보낼 인자값들을 명시합니다.
+    - 이번 챕터에서는 value 값에 있는 payload 값인 `msg.value["payload"]` 를 넣어줍니다.
+- <var>headers</var> : 
+
+    - client 에서 server 로 request 를 보낼 때 부가적인 정보를 전송할 수 있도록 설정합니다.
+    - 이번 챕터에서는 보낼 때 json 형식으로 보낼 것이기 때문에 `{"Content-Type": "application/json"}`` header 로 적어줍니다.
+- Response 를 받고 난 뒤에 아까 남겨두었던 `ts` 변수를 response 에 넣어줍니다.
+
+</CodeDescription>
+
+
+### 2.4 Insert Prediction to Prediction Table
+
+마지막으로 <Part>01. Database</Part> 에서 사용했던 `insert_data` method 를 이용하여 response 에 담긴 데이터를 target DB 에 추가합니다.
+
+```python  title="data_subscriber.py"
+def insert_data(db_connect, data):
+    insert_row_query = f"""
+    INSERT INTO iris_prediction
+        (timestamp, iris_class)
+        VALUES (
+            '{data["timestamp"]}',
+            {data["iris_class"]}
+        );"""
+    print(insert_row_query)
+    with db_connect.cursor() as cur:
+        cur.execute(insert_row_query)
+        db_connect.commit()
+
+insert_data(db_connect, response)
+```
+
+### 2.5 전체 코드
+
+앞서 살펴봤던 모든 코드들은 다음과 같습니다.
+
+```python title="data_subscriber.py"
+from json import loads
+
+import psycopg2
+import requests
+from kafka import KafkaConsumer
+
+def create_table(db_connect):
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS iris_prediction (
+        id SERIAL PRIMARY KEY,
+        timestamp timestamp,
+        iris_class int
+    );"""
+    print(create_table_query)
+    with db_connect.cursor() as cur:
+        cur.execute(create_table_query)
+        db_connect.commit()
+
+def insert_data(db_connect, data):
+    insert_row_query = f"""
+    INSERT INTO iris_prediction
+        (timestamp, iris_class)
+        VALUES (
+            '{data["timestamp"]}',
+            {data["iris_class"]}
+        );"""
+    print(insert_row_query)
+    with db_connect.cursor() as cur:
+        cur.execute(insert_row_query)
+        db_connect.commit()
+
+def subscribe_data(db_connect, consumer):
+    for msg in consumer:
+        print(
+            f"Topic : {msg.topic}\n"
+            f"Partition : {msg.partition}\n"
+            f"Offset : {msg.offset}\n"
+            f"Key : {msg.key}\n"
+            f"Value : {msg.value}\n",
+        )
+
+        msg.value["payload"].pop("id")
+        msg.value["payload"].pop("target")
+        ts = msg.value["payload"].pop("timestamp")
+
+        response = requests.post(
+            url="http://api-with-model:8000/predict",
+            json=msg.value["payload"],
+            headers={"Content-Type": "application/json"},
+        ).json()
+        response["timestamp"] = ts
+        insert_data(db_connect, response)
+
+if __name__ == "__main__":
+    db_connect = psycopg2.connect(
+        user="targetuser",
+        password="targetpassword",
+        host="target-postgres-server",
+        port=5432,
+        database="targetdatabase",
+    )
+    create_table(db_connect)
+
+    consumer = KafkaConsumer(
+        "postgres-source-iris_data",
+        bootstrap_servers="broker:29092",
+        auto_offset_reset="earliest",
+        group_id="iris-data-consumer-group",
+        value_deserializer=lambda x: loads(x),
+    )
+    subscribe_data(db_connect, consumer)
+```
+
+## 3. Docker Compose
+### 3.1 Dockerfile
+
+Data subscriber 코드를 docker 에서 실행할 `Dockerfile` 입니다.
+
+```docker  title="Dockerfile"
+FROM amd64/python:3.9-slim
+
+WORKDIR /usr/app
+
+RUN pip install -U pip &&\
+    pip install psycopg2-binary kafka-python requests
+
+COPY data_subscriber.py data_subscriber.py
+
+ENTRYPOINT ["python", "data_subscriber.py"]
+```
+
+### 3.2 Docker Compose
+
+`Dockerfile` 을 이용하여 `stream-docker-compose.yaml` 를 구성하면 아래와 같습니다.
+
+```yaml title="stream-docker-compose.yaml"
+version: "3"
+
+services:
+  data-subscriber:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: data-subscriber
+
+networks:
+  default:
+    name: mlops-network
+    external: true
+```
+- 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part> 에서 생성한 mlops-network 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 생성되어있는 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
+
+### 3.3 실행
+
+`docker compose` 명령어를 이용하여 data subscriber 서비스를 띄웁니다.
+
+<CodeDescription>
+
+```bash
+# terminal-command
+docker compose -p ch8-stream -f stream-docker-compose.yaml up -d
+```
+
+- `-p` 인 project name 은 `ch8-stream` 으로 작성합니다.
+- `-f` 인 file name 은 위에서 작성한 파일 이름인 `stream-docker-compose.yaml` 을 작성합니다.
+
+</CodeDescription>
+
+### 3.4 데이터 확인
+
+1. `psql` 로 target DB 에 접속합니다.
+
+    ```bash
+    $ PGPASSWORD=targetpassword psql -h localhost -p 5433 -U targetuser -d targetdatabase
+    psql (14.6 (Homebrew), server 14.0 (Debian 14.0-1.pgdg110+1))
+    Type "help" for help.
+
+    targetdatabase=#
+    ```
+
+2. Select 문을 작성하여 데이터를 확인합니다.
+
+    ```bash
+    targetdatabase=# SELECT * FROM iris_data LIMIT 100;
+    id  |        timestamp        | sepal_length | sepal_width | petal_length | petal_width | target 
+    -----+-------------------------+--------------+-------------+--------------+-------------+--------
+    1 | 2022-12-15 05:58:57.024 |          6.4 |         3.2 |          5.3 |         2.3 |      2
+    2 | 2022-12-15 05:58:58.047 |          5.2 |         4.1 |          1.5 |         0.1 |      0
+    3 | 2022-12-15 05:58:59.063 |          5.7 |         4.4 |          1.5 |         0.4 |      0
+    4 | 2022-12-15 05:59:00.07  |          6.5 |           3 |          5.5 |         1.8 |      2
+    5 | 2022-12-15 05:59:01.079 |          6.7 |         3.1 |          4.4 |         1.4 |      1
+    6 | 2022-12-15 05:59:02.094 |          5.2 |         3.4 |          1.4 |         0.2 |      0
+    7 | 2022-12-15 05:59:03.102 |          6.7 |           3 |            5 |         1.7 |      1
+    8 | 2022-12-15 05:59:04.127 |          5.5 |         2.3 |            4 |         1.3 |      1
+    9 | 2022-12-15 05:59:05.161 |          5.4 |         3.4 |          1.5 |         0.4 |      0
+    ```
