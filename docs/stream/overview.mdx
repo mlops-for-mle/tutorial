@@ -15,7 +15,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 :::
 
-이번 파트에서는 <Part>*04. Model Deployment</Part> 에서 소개한 **Event-Response** 방식을 구현 해봅니다.
+이번 파트에서는 <Part>04. Model Deployment</Part> 에서 소개한 **Event-Response** 방식을 구현 해봅니다.
 <Part>07. Kafka</Part> 에서 띄워진 postgres-source-iris_data 토픽과 Target DB 를 활용합니다.
 토픽으로 부터 데이터를 불러와 <Part>06. API Serving</Part> 의 REST API 의 입력으로 전달하고 추론 결과를 반환 받을 수 있도록 Kafka consumer를 커스터마이징 합니다. 
 
@@ -25,6 +25,6 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 <div style={{textAlign: 'center'}}>
 
-![basic workflow](./img/total-flow-diagram.png)
+![basic workflow](./img/stream-1.png)
 [그림 8-1] Stream serving flow
 </div>
