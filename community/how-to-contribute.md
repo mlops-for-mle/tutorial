@@ -46,5 +46,6 @@ sidebar_position: 3
         - `print(df)`
     - bash 코드는 앞에 `$` 붙이기
     - 코드는 하나씩 설명하되 마지막에 코드를 모아서 작성한다.
-3. 해설
+3. Argument
     - Argument 에 대한 해석은 최초 한번만 합니다. 이후에는 추가적인 설명이 필요하지 않을 경우 설명하지 않습니다.
+    - Argument 의 key 는 <code>&lt;var&gt;key&lt;\var&gt;</code> 로 value 는 <code>&lt;code&gt;value&lt;\code&gt;</code> 로 처리합니다.
