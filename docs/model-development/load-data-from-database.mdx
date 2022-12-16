@@ -52,8 +52,21 @@ ch2
 
 </BrowserWindow>
 
+<div style={{textAlign: 'center'}}>
 
-## 0.  패키지 설치
+![database workflow](./img/model-development-2.png)
+[그림 2-2] Database Workflow
+</div>
+
+
+:::caution
+
+📌  해당 챕터는 <Part>01. Database</Part> 파트의 DB를 이용합니다.  
+📌  DB를 띄우지 않은 경우 <Part>01. Database</Part> 을 완료하고 DB가 띄워진 상태에서 진행해주세요.
+
+:::
+
+## 0. 패키지 설치
 
 이번 챕터에서 사용할 패키지들인 `psycopg2-binary` 를 설치합니다.
 
@@ -62,8 +75,8 @@ ch2
 pip install psycopg2-binary
 ```
 
-## 1. 데이터 불러오기
-
+## 1. Load Data
+### 1.1 Query
 `id` column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
 
 ```sql
@@ -84,17 +97,29 @@ mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 (...)
 ```
 
+### 1.2 Python
 `pandas.read_sql` 는 입력 argument로 Query문과 DB Connection을 받습니다.
 
 postgres 에 연결할 수 있는 db connection을 생성 후 쿼리문과 db 커넥션을 이용해 데이터를 불러옵니다.
+DB에 연결하기 위한 정보는 <Part>01. Database</Part> 의 <Chapter>6) Data Generator on Docker Compose</Chapter> 챕터에서 postgres 서버를 생성할 때 입력한 값입니다.
 
-```python
+<CodeDescription>
+
+```python  title="db_train.py"
 import pandas as pd
 import psycopg2
 
 db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
 df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
 ```
+
+- db connect 
+  - <var>host</var> : <code>localhost</code>
+  - <var>database</var> : <code>mydatabase</code>
+  - <var>user</var> : <code>myuser</code>
+  - <var>password</var> : <code>mypassword</code>
+
+</CodeDescription>
 
 추출된 데이터를 확인하면 다음과 같습니다.
 
@@ -108,17 +133,42 @@ print(df.head(5))
 # 4  3495          5.5           4.2          1.4           0.2       0
 ```
 
-## 2. 모델 파이프라인 수정
+<Chapter>2) Model Pipeline</Chapter> 에서 작성한 `base_train.py` 의 `# 1. get data` 부분을 위에서 작성한 코드로 수정합니다.
 
-### 2.1 `db_train.py`
+```python  title="db_train.py"
+# db_train.py
 
-우선 학습 및 데이터 저장을 위한 코드들을 모은 `base_train.py` 를 수정해 `db_train.py` 로 저장합니다.
+import joblib
+import pandas as pd
+import psycopg2
+from sklearn.metrics import accuracy_score
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+from sklearn.pipeline import Pipeline
+from sklearn.svm import SVC
 
-먼저  `# 1. get data` 부분을 위에서 작성한 코드로 수정합니다.
+# 1. get data
+db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
+df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
+X = df.drop(["id", "target"], axis="columns")
+y = df["target"]
+X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
+```
 
+## 2. Save Data
 그리고 사용한 데이터를 저장하는 `# 4. save data` 부분을 추가합니다.
 데이터를 저장하는 이유는 현재 데이터베이스에 계속해서 데이터가 쌓이고 있기 때문에 매번 데이터를 불러올 때마다 데이터가 바뀝니다.
 데이터가 바뀌면 모델이 정상적으로 불러왔는지 확인할 수 없기 때문에 사용한 데이터를 저장해 평가하는 부분에서 사용합니다.
+
+```python  title="db_train.py"
+# 4. save data
+df.to_csv("data.csv", index=False)
+```
+
+
+## 3. 전체 코드
+### 3.1 `db_train.py` 
+위에서 작성한 내용을 모아서 `db_train.py` 로 작성하면 아래와 같습니다.
 
 ```python  title="db_train.py"
 # db_train.py
@@ -159,10 +209,10 @@ joblib.dump(model_pipeline, "db_pipeline.joblib")
 df.to_csv("data.csv", index=False)
 ```
 
-### 2.2 `validate_save_model.py`
+### 3.2 `validate_save_model.py`
 
-다음은 저장된 모델을 검증하는 `base_validate_save_model.py` 를 수정해 `db_validate_save_model.py` 로 저장합니다 입니다.
-`# 1. reproduce data` 에서 저장된 데이터를 불러오게 수정합니다. 나머지 부분은 이 전 장과 동일합니다.
+다음은 <Chapter>2) Model Pipeline</Chapter> 챕터에서 저장된 모델을 검증하는 `base_validate_save_model.py` 를 수정해 `db_validate_save_model.py` 로 저장합니다.
+그리고 `# 1. reproduce data` 에서 저장된 데이터를 불러오게 수정합니다.
 
 ```python  title="db_validate_save_model.py"
 # db_validate_save_model.py
