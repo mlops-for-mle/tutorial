@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: 📌 DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+description: 📌 DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
 ---
 
 # 6) Data Generator on Docker Compose
@@ -11,7 +11,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 ### 목표
 
 1. Docker 를 이용하여 data generator 서버를 실행하기 위해 `Dockerfile` 을 작성합니다.
-2. DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+2. DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
 3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -514,7 +514,7 @@ mydatabase=# select * from iris_data;
 
 ### 3.2 In Data Generator Container
 
-`docker exec` 를 이용하여 data generator container 안으로 접속합니다.
+`docker exec` 를 이용하여 data generator 컨테이너 안으로 접속합니다.
 
 ```bash
 # terminal-command
@@ -522,7 +522,7 @@ docker exec -it data-generator /bin/bash
 ```
 
 그리고 `psql` 을 이용하여 DB 로 접속합니다.
-이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
+이 때 local 이 아닌 data generator 컨테이너에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
 
 ```bash
 # terminal-command
