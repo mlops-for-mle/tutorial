@@ -1,6 +1,6 @@
 ---
 sidebar_position: 4
-description: 📌 생성된 테이블안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
+description: 📌 생성된 테이블 안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
 ---
 
 # 4) Data Insertion Loop
@@ -10,7 +10,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. 생성된 테이블안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
+1. 생성된 테이블 안에 데이터를 계속해서 생성하는 스크립트를 작성합니다.
 2. DB 에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -19,8 +19,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1.  <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 만듭니다.
-2. `psycopg2` 를 이용하여 생성된 `iris_data` 테이블에 스크립트를 실행하여 계속해서 데이터를 삽입합니다.
+1.  <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 작성합니다.
+2. `psycopg2` 를 이용하여 생성된 <var>`iris_data`</var> 테이블에 스크립트를 실행하여 계속해서 데이터를 삽입합니다.
 3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
 
 </CodeDescription>
@@ -50,19 +50,17 @@ ch1
 
 ### 1.1 Generate Data
 
- <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 `insert_data.py` 스크립트에서 계속해서 데이터를 추가하는 `insert_data_loop.py` 를 작성해 보겠습니다.
-
-계속해서 데이터를 삽입하기 위해 while 문을 사용하겠습니다. 이 때 `while True` 를 통해 외부의 개입이 없다면 계속해서 while 문을 실행할 수 있습니다.
+ <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 <code>insert_data.py</code> 스크립트를 참고하여 계속해서 데이터를 추가하는 <code>insert_data_loop.py</code> 를 작성해보겠습니다.
+이 때 <code>while</code> 문을 사용하여 코드를 작성하는데, <code>while True</code> 를 통해 외부의 개입이 없다면 계속해서 while 문을 실행할 수 있습니다.
 
 ```python
 def generate_data(db_connect, df):
     while True:
-        insert_data(db_connect, df.sample(5).squeeze())
+        insert_data(db_connect, df.sample(1).squeeze())
 ```
 
-다만 위와 같이 작성할 경우 너무 빠른 시간에 데이터가 추가되기 때문에 DB 에 부하가 생길 수 있습니다.  
-이를 방지하기 위해서는 데이터를 삽입 후 잠시 대기하는 시간을 추가하겠습니다. 파이썬 스크립트를 대기시키는 것은 `time` 패키지의 `sleep` 함수를 이용하면 됩니다. 이 함수가 실행될 경우 해당 줄에서 지정된 시간만큼 대기를 합니다.  
-여기서는 1초간 멈추게 해보겠습니다.
+다만 위와 같이 작성할 경우 너무 빠른 시간에 데이터가 추가되기 때문에 DB 에 부하가 생길 수 있습니다. 부하를 방지하기 위해서는 데이터를 삽입 후 잠시 대기하는 시간을 추가하면 됩니다. 
+Python 의 `time` 패키지의 `sleep` 함수를 이용하여 데이터를 삽입하고 나서 다음 데이터를 삽입하기 전에 1초동안 대기하도록 다음과 같이 코드를 작성합니다.
 
 ```python
 import time
@@ -77,15 +75,16 @@ def generate_data(db_connect, df):
 
 #### 1.2.1 `insert_data_loop.py`
 
- <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 합쳐서 data generator 를 생성하도록 하겠습니다.
+ <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 합쳐서 data generator 를 생성해보겠습니다.
 
-```python  title="insert_data_loop.py"
+```python title="insert_data_loop.py"
 # insert_data_loop.py
 import time
 
 import pandas as pd
 import psycopg2
 from sklearn.datasets import load_iris
+
 
 def get_data():
     X, y = load_iris(return_X_y=True, as_frame=True)
@@ -98,6 +97,7 @@ def get_data():
     }
     df = df.rename(columns=rename_rule)
     return df
+
 
 def insert_data(db_connect, data):
     insert_row_query = f"""
@@ -137,7 +137,7 @@ if __name__ == "__main__":
 
 #### 1.2.2 실행
 
-Python 파일을 실행하면 아래와 같이 나옵니다.
+위에서 작성한 스크립트를 실행하면, 다음과 같이 출력되는 것을 확인할 수 있습니다.
 
 ```bash
 # terminal-command
@@ -187,9 +187,9 @@ python data_generator.py
 
 ## 2. Data 확인
 
-`psql` 을 이용하여 DB 에 접근하고, 계속해서 data 가 삽입되고 있는지 확인해 보겠습니다.
+`psql` 을 이용하여 DB 에 접속하고, 계속해서 data 가 삽입되고 있는지 확인해보겠습니다.
 
-1. psql 에 접속합니다.
+1. `psql` 을 이용하여 DB 에 접속합니다.
     
     ```bash
     # terminal-command
@@ -201,7 +201,7 @@ python data_generator.py
     mydatabase=#
     ```
     
-2.  <Chapter>3) Data Insertion </Chapter> 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2.  <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 <var><code>iris_data</code></var> 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```bash
     # terminal-command
@@ -215,4 +215,4 @@ python data_generator.py
     (4 rows)
     ```
     
-    실행을 할 때마다 계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.
+    계속해서 데이터가 추가되고 있는 것을 확인할 수 있습니다.

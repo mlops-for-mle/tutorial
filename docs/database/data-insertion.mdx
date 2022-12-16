@@ -1,6 +1,6 @@
 ---
 sidebar_position: 3
-description: 📌 생성한 테이블에 iris data row 한 줄을 삽입합니다.
+description: 📌 생성한 테이블에 iris 데이터 한 줄을 삽입합니다.
 ---
 
 # 3) Data Insertion
@@ -10,7 +10,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. 생성한 테이블에 iris data row 한 줄을 삽입합니다.
+1. 생성한 테이블에 iris 데이터 한 줄을 삽입합니다.
 2. 삽입한 데이터를 확인합니다.
 
 <details>
@@ -19,13 +19,13 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. Python 스크립트를 이용하여 DB 에 접근합니다.
-    - `user` : `myuser`
-    - `password` : `mypassword`
-    - `host` : `localhost`
-    - `port` : `5432`
-    - `database` : `mydatabase`
-2. `psycopg2` 를 이용하여 생성된 `iris_data` 테이블에 data row 한 줄을 삽입합니다.
+1. Python 스크립트를 이용하여 DB 에 접속합니다.
+    - <var>user</var> : <code>myuser</code>
+    - <var>password</var> : <code>mypassword</code>
+    - <var>host</var> : <code>localhost</code>
+    - <var>port</var> : <code>5432</code>
+    - <var>database</var> : <code>mydatabase</code>
+2. `psycopg2` 패키지를 이용하여 생성된 <var>`iris_data`</var> 테이블에 data row 1개를 삽입합니다.
 3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
 
 </CodeDescription>
@@ -55,7 +55,7 @@ ch1
 
 ### 1.1 Iris 데이터 불러오기
 
-Iris 데이터 를 불러온 뒤,  <Chapter>2) Table Creation </Chapter> 챕터에서 생성된 테이블의 column 이름과 일치하도록 `rename` 함수를 이용해 수정합니다.
+Iris 데이터 를 불러온 뒤,  <Chapter>2) Table Creation</Chapter> 챕터에서 생성된 테이블의 column 이름과 일치하도록 수정합니다.
 
 ```python
 import pandas as pd
@@ -108,9 +108,9 @@ def get_data():
     return df
 ```
 
-### 1.2 Data insertion query 작성
+### 1.2 Data Insertion Query 작성
 
-#### 1.2.1) SQL Data Insertion Query Rule
+#### 1.2.1 SQL Data Insertion Query Rule
 
 Data 를 삽입할 수 있는 query 를 작성합니다. DB 에 data 를 삽입하는 query 의 포맷은 다음과 같습니다.
 
@@ -120,9 +120,9 @@ INSRT INTO {table_name} (col_1, col_2, ...) VALUES (val_1, val_2, ...)
 
 이제 위에서 정의한 스펙 명세서에 맞춰 필요한 내용을 채워보겠습니다.
 
-#### 1.2.2) Data Insertion Query
+#### 1.2.2 Data Insertion Query
 
-`sample` 함수를 이용하여 data row 한 줄을 추출합니다.
+`sample` 함수를 이용하여 data row 1개를 추출합니다.
 
 ```python
 data = df.sample(1).squeeze()
@@ -140,7 +140,7 @@ print(data)
 # Name: 112, dtype: float64
 ```
 
-추출된 data 를 이용해 query 을 작성합니다.
+추출된 data 를 이용해 query 를 작성합니다.
 
 ```python
 insert_row_query = f"""
@@ -155,7 +155,7 @@ INSERT INTO iris_data
     );"""
 ```
 
-#### 1.2.3)  Send Query to DB
+#### 1.2.3  Send Query to DB
 
 작성한 query 를 DB 에 전달합니다.
 
@@ -166,7 +166,7 @@ with db_connect.cursor() as cur:
 
 ```
 
-#### 2.2.4) `insert_data`
+#### 2.2.4 `insert_data` 함수 작성
 
 위에서 작성한 코드를 이용해 `insert_data` 함수를 작성합니다.
 
@@ -195,11 +195,12 @@ def insert_data(db_connect, data):
 
 위에서 작성한 코드를 모아서 `insert_data.py` 로 작성합니다.
 
-```python  title="insert_data.py"
+```python title="insert_data.py"
 # insert_data.py
 import pandas as pd
 import psycopg2
 from sklearn.datasets import load_iris
+
 
 def get_data():
     X, y = load_iris(return_X_y=True, as_frame=True)
@@ -212,6 +213,7 @@ def get_data():
     }
     df = df.rename(columns=rename_rule)
     return df
+
 
 def insert_data(db_connect, data):
     insert_row_query = f"""
@@ -229,6 +231,7 @@ def insert_data(db_connect, data):
         cur.execute(insert_row_query)
         db_connect.commit()
 
+
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
         user="myuser",
@@ -243,7 +246,7 @@ if __name__ == "__main__":
 
 #### 1.3.2 실행
 
-Python 스크립트를 실행합니다.
+위에서 작성한 스크립트를 실행합니다.
 
 ```bash
 # terminal-command
@@ -261,9 +264,9 @@ python insert_data.py
 
 ## 2. Data 확인
 
-`psql` 을 이용하여 DB 에 접근하고, 삽입된 데이터를 확인해 보겠습니다.
+`psql` 을 이용하여 DB 에 접속하고, 삽입된 데이터를 확인해 보겠습니다.
 
-1. psql에 접속합니다.
+1. `psql` 을 이용하여 DB 에 접속합니다.
     
     ```bash
     # terminal-command
@@ -275,7 +278,7 @@ python insert_data.py
     mydatabase=#
     ```
     
-2. `2) Table Creation` 챕터에서 작성한 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
+2. <Chapter>2) Table Creation</Chapter> 챕터에서 작성한 <var><code>iris_data</code></var> 테이블에 있는 데이터 전체를 확인하기 위한 query 를 실행합니다.
     
     ```sql
     mydatabase=# select * from iris_data;
@@ -285,4 +288,4 @@ python insert_data.py
     (1 row)
     ```
     
-    `2) Table Creation` 챕터과는 다르게 데이터가 한 줄 추가된 것을 확인할 수 있습니다.
+    <Chapter>2) Table Creation</Chapter> 챕터와는 다르게 데이터가 한 줄 추가된 것을 확인할 수 있습니다.
