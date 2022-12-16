@@ -11,7 +11,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 ### 목표
 
 1. 생성된 DB 에 query 를 작성하여 테이블을 생성합니다.
-2. 생성된 테이블 을 확인합니다.
+2. 생성된 테이블을 확인합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -21,12 +21,12 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 1. `pandas`, `psycopg2-binary`, `scikit-learn` 패키지를 설치합니다.
 2. Python 스크립트를 이용하여 DB 에 접근합니다.
-    - user : `myuser`
-    - password : `mypassword`
-    - host : `localhost`
-    - port : `5432`
-    - database : `mydatabase`
-3. Python 에서 `psycopg2` 를 사용하여  `iris_data` 테이블을 생성합니다.
+    - <var>user</var> : <code>myuser</code>
+    - <var>password</var> : <code>mypassword</code>
+    - <var>host</var> : <code>localhost</code>
+    - <var>port</var> : <code>5432</code>
+    - <var>database</var> : <code>mydatabase</code>
+3. `psycopg2` 패키지를 사용하여  <var>`iris_data`</var> 테이블을 생성합니다.
     - 테이블은 다음과 같은 column 들을 갖고 있어야 합니다.
         
         
@@ -69,11 +69,11 @@ pip install pandas psycopg2-binary scikit-learn
 ```
 
 ## 1. 테이블 생성
-Python 에서 postgres 서버에 접근하기 위한 가장 간단한 방법은 `psycopg2` 패키지를 이용하는 것입니다.  
+Python 언어를 이용하여 postgres 서버에 접근하는 코드를 구현하는 가장 간단한 방법은 `psycopg2` 패키지를 이용하는 것입니다.  
 `psycopg2` 에 관한 자세한 내용은 [공식 문서](https://www.psycopg.org/docs/)를 참고해주세요.
 
-### 1.1 DB connection
-`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 `db_connect` connector 를 생성합니다.
+### 1.1 DB Connection
+`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 <var>`db_connect`</var> 라는 connector 인스턴스를 생성합니다.
 
 ```python
 import psycopg2
@@ -87,10 +87,11 @@ db_connect = psycopg2.connect(
 )
 ```
 
-여기서 기억해야할 것은 일반적으로 DB 연결 시 `user`, `password`, `host`, `port`, `database` 총 5가지의 정보가 필요합니다.
-<Chapter>1) DB Server Creation</Chapter> 챕터에서 DB 를 생성할 때 입력한 `myuser`, `mypassword`, `localhost`, `5432`, `mydatabase` 를 입력합니다.
+여기서 기억해야할 것은 일반적으로 DB 에 연결할 때 <var>user</var>, <var>password</var>, <var>host</var>, <var>port</var>, <var>database</var> 의 총 5가지 정보가 필요하다는 것입니다.
 
-### 1.2 Table creation query
+<Chapter>1) DB Server Creation</Chapter> 챕터에서 DB 를 생성할 때 입력한 <code>myuser</code>, <code>mypassword</code>, <code>localhost</code>, <code>5432</code>, <code>mydatabase</code> 를 입력합니다.
+
+### 1.2 Table Creation Query
 
 #### 1.2.1 SQL Table Creation Query Rule
 
@@ -172,25 +173,24 @@ CREATE TABLE IF NOT EXISTS iris_data (
 
 이제 작성한 query 를 DB 에 전달해야 합니다. 전달을 위해서는 아래의 과정을 수행하면 됩니다.
 
-1. connector 의 cursor 를 열고 cursor 에 query 를 전달합니다.
+1. Connector 의 cursor 를 열고 cursor 에 query 를 전달합니다.
     
     ```python
     cur = db_connect.cursor()
     cur.execute(create_table_query)
     ```
     
-2. 전달 된 query 를 실행하기 위해서는 connector 에서 `commit` 을 해주어야 합니다.
+2. 전달된 query 를 실행하기 위해서는 connector 에서 `commit` 을 해주어야 합니다.
     
     ```python
     db_connect.commit()
     ```
     
-3. cursor 의 사용이 끝나면 cursor 를 `close` 합니다.
+3. Cursor 의 사용이 끝나면 cursor 를 `close` 합니다.
     
     ```python
     cur.close()
     ```
-    
 
 위에서 설명한 3개의 과정은 아래처럼 하나의 프로세스로 처리할 수 있습니다.
 
@@ -200,11 +200,11 @@ with db_connect.cursor() as cur:
     db_connect.commit()
 ```
 
-with 문을 이용한 사용법에 대한 내용은 [공식 홈페이지](https://www.psycopg.org/docs/connection.html#the-connection-class)에서 다음과 같이 언급하고 있습니다.
+`with` 문을 이용한 사용법에 대한 내용은 [공식 홈페이지](https://www.psycopg.org/docs/connection.html#the-connection-class)에서 다음과 같이 언급하고 있습니다.
 
 > Connections can be used as context managers. Note that a context wraps a transaction: if the context exits with success the transaction is committed, if it exits with an exception the transaction is rolled back. Note that the connection is not closed by the context and it can be used for several contexts.
 
-#### 1.2.4 `create_table`
+#### 1.2.4 `create_table` 함수 작성
 
 위에서 작성한 코드를 이용해 `create_table` 함수를 작성합니다.
 
@@ -225,9 +225,9 @@ def create_table(db_connect):
         db_connect.commit()
 ```
 
-`create_table`  의 입력값은 `db_connect` 입니다. DB와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한번만 연결 후 연결된 connector 를 재사용하기 위함입니다.  
+`create_table`  의 입력값은 <var>`db_connect`</var> 입니다. DB 와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한 번만 연결 후 연결된 connector 를 재사용하기 위함입니다.  
 함수 내부에서는 query 가 있고 실행될 때 어떤 query 가 실행되었는지 확인하기 위해서 `print` 를 합니다.  
-마지막으로 query 를 DB에 전달하는 with 문을 추가합니다.  
+마지막으로 query 를 DB 에 전달하는 `with` 문을 추가합니다.  
 
 ### 2.3 Query 실행
 
@@ -235,9 +235,10 @@ def create_table(db_connect):
 
 위에서 작성한 코드를 모아서 `create_table.py` 로 작성합니다.
 
-```python  title="create_table.py"
+```python title="create_table.py"
 # create_table.py
 import psycopg2
+
 
 def create_table(db_connect):
     create_table_query = """
@@ -253,6 +254,7 @@ def create_table(db_connect):
     with db_connect.cursor() as cur:
         cur.execute(create_table_query)
         db_connect.commit()
+
 
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
@@ -282,11 +284,11 @@ CREATE TABLE IF NOT EXISTS iris_data (
 );
 ```
 
-## 2. Table 확인
+## 2. 테이블 확인
 
-`psql` 을 이용하여 DB 에 접근하고, 생성된 테이블을 확인해 보겠습니다.
+`psql` 을 이용하여 DB 에 접속하고, 생성된 테이블을 확인해 보겠습니다.
 
-1. 우선 psql에 접속합니다.
+1. 먼저, `psql` 을 이용하여 DB 에 접속합니다.
     
     ```bash
     # terminal-command
@@ -312,7 +314,7 @@ CREATE TABLE IF NOT EXISTS iris_data (
     
     ```
     
-3. 위 목록 중 `iris_data` 테이블에 있는 데이터 전체를 확인하기 위한 query 문을 실행한 결과입니다.
+3. 위 목록 중 <var>`iris_data`</var> 테이블에 있는 데이터 전체를 확인하기 위한 query 문을 실행한 결과입니다.
     
     ```bash
     # terminal-command
@@ -322,5 +324,5 @@ CREATE TABLE IF NOT EXISTS iris_data (
     (0 rows)
     ```
     
-    column 들이 위의 Python 스크립트에서 작성한 이름과 같은지 확인합니다.
-    또한 아직 입력한 데이터가 없기 때문에 `(0 rows)` 로 나오는 걸 확인할 수 있습니다.
+    Column 들이 위의 python 스크립트에서 작성한 이름과 같은지 확인합니다.
+    또한, 아직 입력한 데이터가 없기 때문에 `(0 rows)` 로 나오는 걸 확인할 수 있습니다.

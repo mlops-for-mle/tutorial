@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: 📌 DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+description: 📌 DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
 ---
 
 # 6) Data Generator on Docker Compose
@@ -10,8 +10,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. Docker 위에서 데이터를 생성하기 위한 준비로써 `Dockerfile` 을 작성합니다.
-2. DB container 와 data generator container 를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+1. Docker 를 이용하여 data generator 서버를 실행하기 위해 `Dockerfile` 을 작성합니다.
+2. DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
 3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -26,29 +26,26 @@ import { Chapter, Part } from '@site/src/components/Highlight';
         - Image : `postgres:14.0`
         - Container name : `postgres-server`
         - Environment
-            - `POSTGRES_USER` : `myuser`
-            - `POSTGRES_PASSWORD` : `mypassword`
-            - `POSTGRES_DB` : `mydatabase`
-            - `TZ` : `Asia/Seoul`
-        - Port : `5432:5432`
+            - <var>POSTGRES_USER</var> : <code>myuser</code>
+            - <var>POSTGRES_PASSWORD</var> : <code>mypassword</code>
+            - <var>POSTGRES_DB</var> : <code>mydatabase</code>
+        - Port forwarding : `5432:5432`
     - Data generator serivce
         - Service name : `data-generator`
         - Image : `Dockerfile`
         - Container name : `data-generator-server`
-        - Environment
-            - TZ : `Asia/Seoul`
         - Command
             - `create_table.py` 실행
             - `data_generator.py` 실행
 
-      :::info
+    :::info
 
-      Postgres server 와 data generator server를 띄울 때 어떤 service 가 먼저 띄워져야하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
+    Postgres server 서비스와 data generator 서비스를 띄울 때 어떤 서비스가 먼저 띄워져야 하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
 
-      :::
+    :::
 
 2. `docker-compose.yaml` 을 실행합니다.
-3. `psql` 을 이용하여 DB에 데이터가 계속해서 쌓이고 있는지 확인합니다.
+3. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
     - Data generator server 에서 확인합니다.
 
@@ -86,7 +83,7 @@ ch1
 :::
  
 
-다음 명령어를 통해 실행중인 postgres 서버와 data generator 를 종료시킵니다.
+다음 명령어를 통해 실행중인 postgres 서버와 data generator 서버를 종료시킵니다.
 
 ```bash
 # terminal-command
@@ -95,7 +92,7 @@ docker rm --force postgres-server data-generator
 
 ## 1. `Dockerfile`
 
-<Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 `Dockerfile` 을 사용합니다.
+<Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 <code>Dockerfile</code> 을 사용합니다.
 
 ```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
@@ -143,8 +140,8 @@ services:
 
 ### 2.1 Postgres Server Service
 
-먼저, postgres-server 서비스를 아래와 같이 yaml 형태로 작성합니다.
-postgres-server 서비스에서 사용하는 값들은 <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 값과 같은 값을 사용합니다.
+먼저, `postgres-server` 서비스를 아래와 같이 yaml 형태로 작성합니다.
+`postgres-server` 서비스에서 사용하는 값들은 <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 값과 같은 값을 사용합니다.
 
 <CodeDescription>
 
@@ -178,8 +175,8 @@ services:
 
 ### 2.2 Data Generator Service
 
-다음으로, data-generator 서비스를 아래와 같이 yaml 형태로 작성합니다.
-postgres-server 서비스와 다르게 이번에는 직접 이미지를 빌드해서 사용합니다.
+다음으로, `data-generator` 서비스를 아래와 같이 yaml 형태로 작성합니다.
+`postgres-server` 서비스와 다르게 이번에는 직접 이미지를 빌드해서 사용합니다.
 
 이미지를 빌드를 해서 사용하는 방법은 `build` 옵션에 `context` 와 `dockerfile` 의 경로를 입력하면 됩니다.
 
@@ -211,7 +208,7 @@ postgres-server 서비스와 다르게 이번에는 직접 이미지를 빌드�
 
 ### 2.3 Docker Compose Healthcheck
 
-앞서 작성한 `docker-compose.yaml` 파일을 함께 나열하면 아래와 같습니다.
+앞서 작성한 `docker-compose.yaml` 파일의 내용을 함께 나열하면 아래와 같습니다.
 
 ```yaml  title="docker-compose.yaml"
 version: "3"
@@ -248,7 +245,7 @@ Docker compose 는 `up` 명령어와 `down` 명령어를 통해 실행과 종료
 # terminal-command
 docker compose up -d
 ```
-- `-d` : Detach 모드로 실행합니다. Detach 모드란 백그라운드에서 컨테이너를 실행 후 유지시키는 모드를 의미합니다.
+- `-d` : Detached 모드로 실행합니다. Detached 모드란, 백그라운드에서 컨테이너를 실행 후 유지시키는 모드를 의미합니다.
 
 </CodeDescription>
 
@@ -301,7 +298,6 @@ services:
       POSTGRES_DB: mydatabase
     ports:
       - 5432:5432
-    restart: unless-stopped
     healthcheck:
       test: ["CMD", "pg_isready", "-q", "-U", "myuser", "-d", "mydatabase"]
       interval: 10s
@@ -323,16 +319,16 @@ services:
   - Test 할 command 를 설정합니다.
   - 이번 챕터에서는 `pg_isready` 를 이용하여 테스트를 진행하기 때문에 `["CMD", "pg_isready", "-q", "-U", "myuser", "-d", "mydatabase"]` 를 입력합니다.
 - `interval` : 
-  - Health check 간격을 설정합니다.
+  - Healthcheck 간격을 설정합니다.
   - 이번 챕터에서는 10초로 설정합니다.
 - `timeout` : 
-  - health check 의 timeout 을 설정합니다.
+  - Healthcheck 의 timeout 을 설정합니다.
   - 이번 챕터에서는 5초로 설정합니다.
 - `retries` : 
-  - timeout 의 횟수를 설정합니다.
+  - Timeout 의 횟수를 설정합니다.
   - 이번 챕터에서는 5번으로 설정합니다.
 - `condition` : 
-  - healthcheck 기능을 사용하기 위해 `depends_on` 의 parameter 로 `condition: service_healthy` 를 넣어줍니다.
+  - Healthcheck 기능을 사용하기 위해 `depends_on` 의 parameter 로 `condition: service_healthy` 를 넣어줍니다.
   - Postgres server 의 healthcheck 를 data generator server 에서 적용시키기 위해 `postgres-server` 밑에 condition 을 추가하였습니다.
 
 </CodeDescription>
@@ -347,6 +343,8 @@ services:
 docker compose up -d
 ```
 
+문제없이 잘 실행되는 것을 확인할 수 있습니다.
+
 ### 2.4 Docker Compose Network
 #### 2.4.1 Default Network
 
@@ -358,7 +356,7 @@ docker compose up -d
 docker network ls
 ```
 
-실행하면 다음과 같이 `ch1_default` 가 생성이 된 것을 확인할 수 있습니다.
+실행하면 다음과 같이 `ch1_default` 라는 이름의 네트워크가 생성된 것을 확인할 수 있습니다.
 
 ```
 NETWORK ID     NAME          DRIVER    SCOPE
@@ -395,7 +393,7 @@ docker network inspect ch1_default
     }
 ]
 ```
-이처럼 docker compose 를 사용하면 네트워크에 대해서 신경쓰지 않고 편하게 컨테이너들을 연결해서 사용할 수 있습니다.
+이처럼 docker compose 를 사용하면 네트워크에 대해서 신경쓰지 않고 편리하게 컨테이너들을 연결해서 사용할 수 있습니다.
 
 #### 2.4.2 Custom Network
 네트워크의 이름은 특별히 지정하지 않을 경우 `{디렉토리명}_default` 로 자동으로 생성이 됩니다.
@@ -424,7 +422,7 @@ networks:
     name: mlops-network
 ```
 - `default` : 서비스 전체의 기본 네트워크를 수정할 수 있습니다.
-  - `name` : 네트워크의 이름을 작성합니다. 이번 챕터에서는 `mlops-network` 로 작성하겠습니다.
+  - `name` : 네트워크의 이름을 작성합니다. 앞으로 이어지는 파트에서도 사용할 수 있도록 `mlops-network` 로 작성하겠습니다.
 
 </CodeDescription>
 
@@ -482,7 +480,7 @@ docker network ls
 
 다음과 같이 `mlops-network` 가 추가된 것을 확인할 수 있습니다.
 
-```bash
+```
 NETWORK ID     NAME            DRIVER    SCOPE
 d2a7834f5caa   bridge          bridge    local
 0d5dc37e7a9d   host            host      local
@@ -492,9 +490,9 @@ e9671c141955   mlops-network   bridge    local
 
 ## 3. 데이터 확인
 
-### 3.1 Local 에서 확인
+### 3.1 In Local
 
-`psql` 을 이용하여 DB 에 접근하고, 계속해서 data 가 삽입되고 있는지 확인합니다.
+`psql` 을 이용하여 DB 에 접속하고, 계속해서 data 가 삽입되고 있는지 확인합니다.
 
 ```bash
 # terminal-command
@@ -514,9 +512,9 @@ mydatabase=# select * from iris_data;
   6 |          4.7 |         3.2 |          1.3 |         0.2 |      0
 ```
 
-### 3.2 Data generator container 에서 확인
+### 3.2 In Data Generator Container
 
-`docker exec` 를 이용하여 data generator container 안으로 접속합니다.
+`docker exec` 를 이용하여 data generator 컨테이너 안으로 접속합니다.
 
 ```bash
 # terminal-command
@@ -524,7 +522,7 @@ docker exec -it data-generator /bin/bash
 ```
 
 그리고 `psql` 을 이용하여 DB 로 접속합니다.
-이 때 local 이 아닌 data generator container 에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
+이 때 local 이 아닌 data generator 컨테이너에서 접속해야 하기 때문에 host 를 `localhost` 에서 `postgres-server` 로 변경합니다.
 
 ```bash
 # terminal-command
