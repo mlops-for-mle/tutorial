@@ -142,6 +142,7 @@ const config = {
           },
         ],
       },
+      image: 'img/logo.png',
     }),
 };
 
