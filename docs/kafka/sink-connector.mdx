@@ -1,0 +1,339 @@
+---
+sidebar_position: 6
+description: 📌 DConnect 에 source connector 를 띄워봅니다.
+---
+
+# 6) Sink Connector
+import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
+import ArchitectureImage from './img/kafka-15.png';
+
+## 목표
+
+1. Docker-compose 를 이용하여 데이터를 전달받을 target postgres server 를 구축합니다.
+2. Connect 에 sink connector 를 생성합니다.
+3. Target postgres server 에서 데이터가 잘 전달되었는지 확인합니다.
+
+<details>
+<summary>스펙 명세서</summary>
+<CodeDescription>
+
+### 스펙 명세서
+
+1. sink 후 데이터를 저장할 postgres 서버를 생성합니다.
+    - `POSTGRES_USER` : `sinkuser`
+    - `POSTGRES_PASSWORD` : `sinkpassword`
+    - `POSTGRES_DB` : `sinkdatabase`
+    - Port Forwarding : `5433:5432`
+2. sink connect에 사용할 json 파일로 만듭니다.
+    ```json
+    {
+        "name": "postgres-sink-connector",
+        "config": {
+            "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+            "connection.url": "jdbc:postgresql://target-postgres-server:5432/targetdatabase",
+            "connection.user": "targetuser",
+            "connection.password": "targetpassword",
+            "table.name.format": "iris_data",
+            "topics": "postgres-source-iris_data",
+            "auto.create": false,
+            "auto.evolve": false,
+            "tasks.max": 2
+       }
+    }
+    ```
+2. curl 명령어를 이용하여 POST method 로 sink connector 를 생성합니다.
+    - URL : `http://localhost:8083/connectors`
+    - Header : `"Content-Type: application/json"`
+3. postgres 서버에 접속해 쌓인 데이터를 확인합니다.
+
+
+</CodeDescription>
+</details>
+
+---
+
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
+
+해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+
+```js
+ch7
+├── Makefile
+├── README.md
+├── connect.Dockerfile
+// highlight-next-line
+├── create_table.py
+├── kafka-docker-compose.yaml
+├── naive-docker-compose.yaml
+// highlight-next-line
+├── sink_connector.json
+├── source_connector.json
+// highlight-next-line
+├── target-docker-compose.yaml
+// highlight-next-line
+└── target.Dockerfile
+```
+
+</BrowserWindow>
+
+## 1. Architecture
+[그림 7-15]은 이번 실습에서 다룰 서비스들의 다이어그램입니다.
+
+<div style={{textAlign: 'center'}}>
+
+<img src={ArchitectureImage}/>
+[그림7-15] Kafka System
+
+</div>
+
+- **Target Postgres Server** : sink connector 에서 데이터를 받아 저장할 DB server 입니다.
+- **Table Creator** : target DB 에 테이블을 만드는 creator 입니다.
+- **Sink Connector** : 데이터를 broker 의 topic 에서 target DB 로 전달할 connector 입니다.
+
+## 2. Target Postgres Server
+
+### 2.1 Table creator
+
+아래의 코드는 target DB 를 띄운 다음에 테이블만 생성하는 코드입니다. 자세한 내용은 <Part>01. Database</Part> 파트를 참고해주세요.
+
+```python  title="create_table.py"
+# create_table.py
+import psycopg2
+
+def create_table(db_connect):
+    create_table_query = """
+    CREATE TABLE IF NOT EXISTS iris_data (
+        id SERIAL PRIMARY KEY,
+        sepal_length float8,
+        sepal_width float8,
+        petal_length float8,
+        petal_width float8,
+        target int
+    );"""
+    print(create_table_query)
+    with db_connect.cursor() as cur:
+        cur.execute(create_table_query)
+        db_connect.commit()
+
+if __name__ == "__main__":
+    db_connect = psycopg2.connect(
+        user="targetuser",
+        password="targetpassword",
+        host="target-postgres-server",
+        port=5432,
+        database="targetdatabase",
+    )
+    create_table(db_connect)
+```
+
+`Dockerfile` 을 이용하여 위에서 작성한 스크립트를 실행할 수 있는 이미지를 만듭니다.
+
+```docker  title=target.Dockerfile
+# target.Dockerfile
+FROM amd64/python:3.9-slim
+
+WORKDIR /usr/app
+
+RUN pip install -U pip &&\
+    pip install psycopg2-binary
+
+COPY create_table.py create_table.py
+
+ENTRYPOINT ["python", "create_table.py"]
+```
+
+### 2.2 실행
+
+Docker compose 를 이용하여 target postgres server 와 table creator 를 띄웁니다.
+
+#### 2.2.1 `target-docker-compose.yaml`
+
+전체 코드는 아래와 같습니다.
+
+```yaml  title="target-docker-compose.yaml"
+# target-docker-compose.yaml
+version: "3"
+
+services:
+  sink-postgres-server:
+    image: postgres:14.0
+    container_name: sink-postgres-server
+    ports:
+      - 5433:5432
+    environment:
+      POSTGRES_USER: sinkuser
+      POSTGRES_PASSWORD: sinkpassword
+      POSTGRES_DB: sinkdatabase
+    healthcheck:
+      test: ["CMD", "pg_isready", "-q", "-U", "sinkuser", "-d", "sinkdatabase"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  sink-table-creator:
+    platform: linux/amd64
+    build:
+      context: ./docker/sink
+      dockerfile: Dockerfile
+    container_name: sink-table-creator
+    depends_on:
+      sink-postgres-server:
+        condition: service_healthy
+
+networks:
+  default:
+    name: ch1_default
+    external: true
+```
+
+#### 2.2.2 실행
+`docker compose` 명령어를 이용하여 위에서 작성한 서비스들을 띄웁니다.
+
+<CodeDescription>
+
+```bash
+# terminal-command
+docker compose -p ch7-target -f target-docker-compose.yaml up -d
+```
+
+- `-p` : project name 을 `ch7-target` 로 사용합니다.
+- `-f` :file name 은 위에서 작성한 파일 이름인 `target-docker-compose.yaml`을 적어줍니다.
+
+</CodeDescription>
+
+## 3. Sink Connector
+
+다음으로 kafka broker 의 topic 에서 target DB 로 데이터를 전달하는 sink connector 를 생성합니다.
+
+### 3.1 생성
+
+Sink connector 는 source connector 를 띄울 때와 마찬가지로 connect 의 REST API 를 이용하여 생성합니다.
+아래 명령어를 통해 sink connector 를 띄울 수 있는 `sink_connector.json` 을 생성합니다.
+
+```bash
+# terminal-command
+cat <<EOF > sink_connector.json
+{
+    "name": "postgres-sink-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:postgresql://target-postgres-server:5432/targetdatabase",
+        "connection.user": "targetuser",
+        "connection.password": "targetpassword",
+        "table.name.format": "iris_data",
+        "topics": "postgres-source-iris_data",
+        "auto.create": false,
+        "auto.evolve": false,
+        "tasks.max": 2
+    }
+}
+EOF
+```
+
+생성하는 json 에 대한 설명은 다음과 같습니다.
+
+<CodeDescription>
+
+```json  title="sink_connector.json"
+{
+    "name": "postgres-sink-connector",
+    "config": {
+        "connector.class": "io.confluent.connect.jdbc.JdbcSinkConnector",
+        "connection.url": "jdbc:postgresql://target-postgres-server:5432/targetdatabase",
+        "connection.user": "targetuser",
+        "connection.password": "targetpassword",
+        "table.name.format": "iris_data",
+        "topics": "postgres-source-iris_data",
+        "auto.create": false,
+        "auto.evolve": false,
+        "tasks.max": 2
+    }
+}
+```
+
+- name :
+  - connector 의 이름을 정합니다.
+  - 이번 챕터에서는 `postgres-sink-connector` 를 사용하겠습니다.
+- config :
+    - `connector.class` : 
+      - connector 를 생성하기 위한 class 를 설정합니다.
+      - 이번 챕터에서는 JDBC source connector 를 사용하기 때문에 `io.confluent.connect.jdbc.JdbcSinkConnector` 를 입력합니다.
+    - `connection.url` : 
+      - DB 에 접근하기 위한 주소를 설정합니다.
+      - 이번 챕터에서는 앞서 띄워두었던 target-postgres-server 의 URL 인 `jdbc:postgresql://target-postgres-server:5432/targetdatabase` 을 입력합니다.
+    - `connection.user` : 
+      - DB 에 접속하기 위한 user name 을 설정합니다.
+      - 이번 챕터에서는 `targetuser` 를 입력합니다.
+    - `connection.password` : 
+      - DB 에 접속하기 위한 password 를 설정합니다.
+      - 이번 챕터에서는 `targetpassword` 를 입력합니다.
+    - `table.name.format` : 
+      - target 테이블의 이름에 대한 format 을 설정합니다.
+      - 이번 챕터에서는 `iris_data` 로 설정합니다.
+    - `topics` : 
+      - sink connector 가 broker 에 있는 topic 들 중에 어떤 topic 에 있는 데이터를 가져올 지 설정합니다.
+      - 이번 챕터에서는 `postgres-source-iris_data` 를 입력합니다.
+    - `auto.create` : 
+      - 테이블을 자동으로 생성할 지의 여부를 설정합니다. 이미 테이블을 생성했기 때문에 `false` 로 설정합니다.
+    - `auto.evolve` : 
+      - 테이블에 자동으로 column 을 생성할 지의 여부를 설정합니다. 이미 테이블의 schema 도 생성했기 때문에 `false` 로 설정합니다.
+    - `tasks.max` : 
+      - connector 에서 task 의 수를 얼마나 가져갈 지를 설정합니다.
+      - 이번 챕터에서는 2로 설정해주겠습니다.
+
+</CodeDescription>
+
+이제 작성된 json 파일을 curl 을 이용하여 connect 의 REST API 에 POST method 로 보냅니다.
+
+```bash
+# terminal-command
+curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json" -d @sink_connector.json
+```
+
+명령어를 실행하면 아래와 같이 출력됩니다.
+```bash
+{"name":"postgres-sink-connector","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSinkConnector","connection.url":"jdbc:postgresql://target-postgres-server:5432/targetdatabase","connection.user":"targetuser","connection.password":"targetpassword","table.name.format":"iris_data","topics":"postgres-source-iris_data","auto.create":"false","auto.evolve":"false","tasks.max":"2","name":"postgres-sink-connector"},"tasks":[],"type":"sink"}%
+```
+
+### 2.2 생성 확인
+
+아래의 GET method 로 현재 connector 목록을 확인할 수 있습니다.
+
+```bash
+# terminal-command
+curl -X GET http://localhost:8083/connectors
+```
+앞서 생성한 connector 들이 잘 있는지 확인합니다.
+
+```bash
+["postgres-sink-connector","postgres-source-connector"]%
+```
+
+이어서 `postgres-sink-connector` 의 추가 정보를 확인합니다.
+
+```bash
+# terminal-command
+curl -X GET http://localhost:8083/connectors/postgres-sink-connector
+```
+
+아래와 같이 출력됩니다.
+
+```bash
+{"name":"postgres-sink-connector","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSinkConnector","table.name.format":"iris_data","connection.password":"targetpassword","auto.evolve":"false","connection.user":"targetuser","topics":"postgres-source-iris_data","tasks.max":"2","name":"postgres-sink-connector","auto.create":"false","connection.url":"jdbc:postgresql://target-postgres-server:5432/targetdatabase"},"tasks":[{"connector":"postgres-sink-connector","task":0},{"connector":"postgres-sink-connector","task":1}],"type":"sink"}%
+```
+
+### 2.2 데이터 확인
+
+마지막으로 DB 에 데이터가 잘 쌓여있는지 확인해봅니다.
+
+1. 아래의 명령어를 이용하여 target DB 에 접속합니다.
+  ```bash
+  # terminal-command
+  PGPASSWORD=targetpassword psql -h localhost -p 5433 -U targetuser -d targetdatabase
+  ```
+2.  Select 문을 작성하여 데이터를 확인합니다.
+  ```sql
+  targetdatabase=# SELECT * FROM iris_data LIMIT 100;
+  ```
