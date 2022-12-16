@@ -20,9 +20,10 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. Kafka Topic 에서 데이터를 가져올 수 있는 코드를 작성합니다.
-2. 가져온 데이터를 API Serving 에 요청을 보내 예측값을 받습니다.
-3. 받아온 예측값을 target postgres 서버에 삽입합니다.
+1. `kafka-python` 패키지를 이용해 Kafka Topic 에서 데이터를 가져올 수 있는 consumer 를 생성합니다.
+2. 예측값을 저장할 `iris_prediction` 테이블을 target postgres server 에 생성합니다.
+3. `request` 패키지를 이용해 API 에 예측을 요청하고 응답을 받습니다.
+4. 응답받은 예측값을 `iris_prediction` 테이블에 삽입합니다.
 
 </CodeDescription>
 </details>
@@ -68,22 +69,21 @@ pip install kafka-python requests psycopg2-binary
 ![Stream serving flow](./img/stream-2.png)
 [그림 8-2] Stream serving flow
 </div>
-
+<p>
 <Part>07. Kafka</Part> 파트에서는 source connector 와 sink connector 를 생성하여 source DB 에서 target DB 로 데이터를 전달하는 과정을 살펴봤습니다.
-<Part>08. Stream</Part> 파트에서는 다시 model deployment 관점으로 돌아와서 kafka 를 어떻게 쓸지 살펴보겠습니다.
+<Part>08. Stream</Part> 파트에서는 다시 model deployment 관점으로 돌아와서 kafka 를 어떻게 쓸지 살펴보겠습니다.<br></br>
+</p>
+<p>
 <Part>07. Kafka</Part> 파트와 동일하게 zookeeper, broker, connect 를 사용하며 source connector 를 사용하여 데이터를 publish 하는 과정도 동일합니다.
 달라지는 점은 sink connector 를 대신해서 직접 kafka 의 python SDK 를 이용하여 consumer 를 구현하는 것입니다.
-<p></p>
-
-<p></p>
-왜 직접 구현해서 사용해야 할까요?
-
-<p></p>
+</p>
+<p>
+왜 직접 구현해서 사용해야 할까요?<br></br>
 <Part>07. Kafka</Part> 에서 사용한 sink connector 를 살펴 보면, JSON 파일틀 통해 사전에 정의 된 양식에 맞추어 생성한 후 사용합니다.
-하지만 <Part>08. Stream</Part> 에서는 <Part>06. API serving</Part> 에서는 request 를 보내고 response 를 받는 과정이 존재합니다.
+하지만, <Part>08. Stream</Part> 에서는 <Part>06. API serving</Part> 에서는 request 를 보내고 response 를 받는 과정이 존재합니다.
 source DB 에서 데이터를 받아 <Part>06. API serving</Part> 에서 만든 REST API 로 request 를 보내주어야하며, model 의 inference 결과를 response 로 받게 됩니다.
 받은 결과를 target DB 에 전달하는 이 과정을 담당해주는 코드가 필요합니다.
-<p></p>
+</p>
 
 따라서 이번 챕터에서는 sink connector 없이 `kafka-python`, `requests`, `psycopg2` 를 이용하여 커스터마이징한 Consumer 를 구축해보겠습니다. 
 
@@ -98,7 +98,7 @@ source DB 에서 데이터를 받아 <Part>06. API serving</Part> 에서 만든 
 4. `psycopg2` 패키지를 이용하여 받은 response 를 target DB 에 추가합니다.
 
 
-### 2.1 테이블 생성
+### 2.1 Create Prediction Table
 
 먼저, 예측값을 저장할 테이블 생성을 하겠습니다.  
 전반적인 코드는 <Part>01. Database</Part> 파트와 동일하며 다른 내용은 아래와 같습니다.
@@ -131,14 +131,17 @@ if __name__ == "__main__":
     create_table(db_connect)
 ```
 
-- Connection
-    - user : `targetuser`
-    - password : `targetpassword`
-    - host : `target-postgres-server`
-    - port : `5432`
-    - database : `targetdatabase`
-- Table name : `iris_prediction`
-- Schema : `id (PK)`, `timestamp (timestamp)`, `iris_class (int)`
+- <var>Connection</var> :
+
+    - <var>user</var> : <code>targetuser</code>
+    - <var>password</var> : <code>targetpassword</code>
+    - <var>host</var> : <code>target-postgres-server</code>
+    - <var>port</var> : <code>5432</code>
+    - <var>database</var> : <code>targetdatabase</code>
+- <var>Table name</var> : <code>iris_prediction</code>
+- <var>Schema</var> : 
+
+    - <code>id (PK)</code>, <code>timestamp (timestamp)</code>, <code>iris_class (int)</code>
 
 </CodeDescription>
 
@@ -162,16 +165,27 @@ consumer = KafkaConsumer(
     value_deserializer=lambda x: loads(x.decode("utf-8")),
 )
 ```
+- <var>topics</var>:
 
-`KafkaConsumer` 에 들어가는 인자들을 살펴보겠습니다.
+    - 데이터를 가져오고 싶은 topic 들을 넣습니다.
+    - 이번 챕터에서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 작성합니다.
+- <var>bootstrap_servers</var> :
 
-- `topics` : 데이터를 가져오고 싶은 topic 들을 넣습니다. 이번 챕터에서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 작성합니다.
-- `bootstrap_servers` : bootstrap server 로 띄워져있는 broker 의 <broker service name : broker service internal port\> 을 넣습니다. 이번 챕터에서는 `broker:29092` 를 작성합니다.
-- `auto_offset_reset` : topic 에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 2가지 설정이 있으며, `earliest` 는 가장 초기 offset 값, `latest` 는 가장 마지막 offset 값입니다. 이번 챕터에서는 첫번째 데이터부터 가져오고 싶기 때문에 `earliest` 를 작성합니다.
-- `group_id`  : consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다. 이번 챕터에서는 `iris-data-consumer-group` 로 지정하겠습니다.
-- `value_deserializer` : source connector (또는 produceer) 에서 serialization 된 value 값을 deserialization 할 때 어떤 deserializer 를 사용할 지를 설정합니다.
-    앞서 `Kafka` 챕터에서  connect 를 띄울 때 value converter 로서 json converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
-    여기서는 데이터를 가져와서 json deserializer 를 이용하여 deserialization 을 해주어야 함으로, lambda function 과 json 의 loads 를 이용하여 `lambda x: loads(x)` 를 작성합니다.
+    - bootstrap server 로 띄워져있는 broker 의 `broker_service_name:broker_service_internal_port` 을 넣습니다.
+    - 이번 챕터에서는 `broker:29092` 를 작성합니다.
+- <var>auto_offset_reset</var> :
+
+    - topic 에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 2가지 설정이 있으며, `earliest` 는 가장 초기 offset 값, `latest` 는 가장 마지막 offset 값입니다.
+    - 이번 챕터에서는 첫번째 데이터부터 가져오고 싶기 때문에 `earliest` 를 작성합니다.
+- <var>group_id</var> : 
+
+    - consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다.
+    - 이번 챕터에서는 `iris-data-consumer-group` 로 지정하겠습니다.
+- <var>value_deserializer</var> :
+
+    - source connector (또는 produceer) 에서 serialization 된 value 값을 deserialization 할 때 어떤 deserializer 를 사용할 지를 설정합니다.
+    - <Part>07. Kafka</Part>파트에서는 connect 를 띄울 때 value converter 로서 json converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
+    - 이번 챕터에서는 데이터를 가져와서 json deserializer 를 이용하여 deserialization 을 해주어야 함으로, lambda function 과 json 의 loads 를 이용하여 `lambda x: loads(x)` 를 작성합니다.
 
 </CodeDescription>
 
@@ -207,14 +221,18 @@ for msg in consumer:
 
 Print 문과 출력된 형태를 통해 메시지에 있는 topic, partition, offset, key, value 을 볼 수 있습니다. 앞으로 사용할 데이터는 value 에 있는 `payload` 키 값입니다.
 
-`payload` 키 값의 형태를 보면 `'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}` 와 같이 나오는 것을 볼 수 있습니다.
+`payload` 키 값의 형태를 보면 아래와 같이 나오는 것을 볼 수 있습니다.
+
+```json
+'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}
+``` 
 
 
-### 2.3 API 호출
+### 2.3 Call API
+#### 2.3.1 Check Schema
 
-다음 과정은 받아진 데이터를 `API Serving` 챕터에서 띄워진 API server 에 전달하고 model 의 inference 결과를 받는 것입니다.
-
-`API Serving` 챕터에서 띄워둔 API server 의 schema 를 살펴보겠습니다. 
+다음 과정은 받아진 데이터를 <Part>06. API Serving</Part> 파트에서 띄워진 API server 에 전달하고 model 의 inference 결과를 받는 것입니다.<br></br>
+<Part>06. API Serving</Part> 파트에서 띄워둔 API server 의 schema 를 살펴보겠습니다. 
 
 ```python title="schemas.py"
 from pydantic import BaseModel
@@ -228,6 +246,8 @@ class PredictIn(BaseModel):
 class PredictOut(BaseModel):
     iris_class: int
 ```
+
+#### 2.3.2 Request to API
 
 API server 에 request 로 전달할 값들에는 `sepal_length`, `sepal_width`, `petal_length`, `petal_width` 만 전달해야합니다.
 따라서 value 값의 payload 에서 필요없는 column 들은 삭제를 해줍니다.
@@ -253,17 +273,24 @@ response = requests.post(
 response["timestamp"] = ts
 ```
 
-보낼 때 쓰이는 인자들은 다음과 같습니다.
+- <var>url</var> : 
 
-- `url` : API server 의 endpoint 를 설정합니다. 여기서는 API server 의 host name 과 port number, 그리고 POST method 인 predict 를 합하여 `"http://api-with-model:8000/predict"` 로 넣어줍니다.
-- `json` : request 로 보낼 인자값들을 명시합니다. 여기서는 value 값에 있는 payload 값인 `msg.value["payload"]` 를 넣어줍니다.
-- `headers` : client 에서 server 로 request 를 보낼 때 부가적인 정보를 전송할 수 있도록 설정합니다. 여기서는 보낼 때 json 형식으로 보낼 것이기 때문에 `{"Content-Type": "application/json"}` header 로 적어줍니다.
+    - API server 의 endpoint 를 설정합니다.
+    - 이번 챕터에서는 API server 의 host name 과 port number, 그리고 POST method 인 predict 를 합하여 `"http://api-with-model:8000/predict"` 로 넣어줍니다.
+- <var>json</var> : 
+
+    - request 로 보낼 인자값들을 명시합니다.
+    - 이번 챕터에서는 value 값에 있는 payload 값인 `msg.value["payload"]` 를 넣어줍니다.
+- <var>headers</var> : 
+
+    - client 에서 server 로 request 를 보낼 때 부가적인 정보를 전송할 수 있도록 설정합니다.
+    - 이번 챕터에서는 보낼 때 json 형식으로 보낼 것이기 때문에 `{"Content-Type": "application/json"}`` header 로 적어줍니다.
+- Response 를 받고 난 뒤에 아까 남겨두었던 `ts` 변수를 response 에 넣어줍니다.
 
 </CodeDescription>
 
-Response 를 받고 난 뒤에 아까 남겨두었던 `ts` 변수를 response 에 넣어줍니다.
 
-### 2.4 Target DB 에 데이터 추가
+### 2.4 Insert Prediction to Prediction Table
 
 마지막으로 <Part>01. Database</Part> 에서 사용했던 `insert_data` method 를 이용하여 response 에 담긴 데이터를 target DB 에 추가합니다.
 
@@ -363,8 +390,8 @@ if __name__ == "__main__":
 ```
 
 ## 3. Docker Compose
+### 3.1 Dockerfile
 
-### 3.1
 Data subscriber 코드를 docker 에서 실행할 `Dockerfile` 입니다.
 
 ```docker  title="Dockerfile"
@@ -405,13 +432,19 @@ networks:
 
 `docker compose` 명령어를 이용하여 data subscriber 서비스를 띄웁니다.
 
+<CodeDescription>
+
 ```bash
-$ docker compose -p ch8-stream -f stream-docker-compose.yaml up -d
+# terminal-command
+docker compose -p ch8-stream -f stream-docker-compose.yaml up -d
 ```
 
-이때 `-p` 인 project name 은 `ch8-stream` 으로 정하고, `-f` 인 file name 은 위에서 작성한 파일 이름을 적어줍니다.
+- `-p` 인 project name 은 `ch8-stream` 으로 작성합니다.
+- `-f` 인 file name 은 위에서 작성한 파일 이름인 `stream-docker-compose.yaml` 을 작성합니다.
 
-## 3. 데이터 확인
+</CodeDescription>
+
+### 3.4 데이터 확인
 
 1. `psql` 로 target DB 에 접속합니다.
 
