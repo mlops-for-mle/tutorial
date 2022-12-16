@@ -15,14 +15,9 @@ MacOS를 기준으로 설명하겠습니다.
 $ brew install npm
 ```
 
-`yarn`을 설치합니다.
+필요한 패키지들을 설치합니다.
 ```bash
-$ npm install --global yarn
-```
-
-`docusaurus`를 설치합니다.
-```bash
-$ yarn add docusaurus --dev
+$ npm install
 ```
 
 ### Check local build
@@ -42,4 +37,4 @@ $ pre-commit run --all-files
 ```
 
 ## How to Contribute?
-TBD
+[How to contribute](community/how-to-contribute.md)
