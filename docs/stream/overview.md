@@ -16,10 +16,10 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 :::
 
 이번 파트에서는 <Part>*04. Model Deployment</Part> 에서 소개한 **Event-Response** 방식을 구현 해봅니다.
-<Part>07. Kafka</Part> 에서 띄워진 postgres-source-iris_data 토픽과 target DB 를 활용합니다.
-토픽으로 부터 데이터를 불러와 <Part>06. API Serving</Part> 의 REST API 의 입력으로 전달하고 추론 결과를 반환 받을 수 있도록 kafka consumer를 커스터마이징 합니다. 
+<Part>07. Kafka</Part> 에서 띄워진 postgres-source-iris_data 토픽과 Target DB 를 활용합니다.
+토픽으로 부터 데이터를 불러와 <Part>06. API Serving</Part> 의 REST API 의 입력으로 전달하고 추론 결과를 반환 받을 수 있도록 Kafka consumer를 커스터마이징 합니다. 
 
-그렇게 얻어진 결과값은 target DB에 값을 저장 되도록 합니다. 또한, 원본 데이터와 예측 결과 값을 실시간 시각화 대시보드인 grafana 를 통해서 Stream serving 이 잘 되고 있는지 모니터링 할 수 있도록 합니다.
+그렇게 얻어진 결과 값은 Target DB 에 값을 저장 되도록 합니다. 또한, 원본 데이터와 예측 결과 값을 실시간 시각화 대시보드인 Grafana 를 통해서 Stream serving 이 잘 되고 있는지 모니터링 할 수 있도록 합니다.
 
 이번 파트를 통해 완성되는 workflow 는 다음과 같습니다.
 

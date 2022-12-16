@@ -5,6 +5,7 @@ description: 📌 모델 추론 결과를 모니터링 하는 대시보드를 �
 
 # 2) Dashboard
 import CodeDescription from '@site/src/components/CodeDescription';
+import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
@@ -66,12 +67,12 @@ Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
 
 <div style={{textAlign: 'center'}}>
 
-  ![MLflow ui](./img/grafana-shape.png)  
+  ![gf_img](./img/grafana-shape.png)  
   [그림 8-3] Grafana 대시보드 구성도
 </div>
 
-- `dashboard` : 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 표시 할 기간 등을 정할 수 있습니다.
-- `panel` : `dashboard` 안에 포함되어있는 차트를 의미하며 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
+- `dashboard` : 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화 할 기간 등을 정할 수 있습니다.
+- `panel` : `dashboard` 안에 포함되어있는 차트를 의미합니다. 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
 
 ### 1.1 Grafana Server setup
 
@@ -112,13 +113,13 @@ networks:
     name: mlops-network
     external: true
 ```
-- `networks`: 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part>에서 생성한 mlops-network 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 <Part>01. Database 파트</Part>에서 생성한 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
+- `networks`: 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part> 에서 생성한 mlops-network 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 생성되어있는 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
 
 </CodeDescription>
 
 ### 1.2 Grafana docker compose
 
-- 작성한 내용을 하나로 모으면 다음과 같습니다.
+- 위에서 작성한 내용을 하나로 모으면 다음과 같습니다.
 
 ```yaml title="grafana-docker-compose.yaml"
 version: "3"
@@ -140,10 +141,11 @@ networks:
 ```
 
 - 완성된 파일을 통해 Grafana server 를 띄웁니다.
-- 앞 장의 data-subscriber 와는 독립적인 서비스이기 때문에 `-p` 옵션으로 프로젝트 이름을, `-f` 옵션으로 사용하고자 하는 파일을 명시해 줍니다.
+- <Chapter>Stream serving</Chapter> 의 data-subscriber 와는 독립적인 서비스이기 때문에 `-p` 옵션으로 프로젝트 이름을, `-f` 옵션으로 사용하고자 하는 파일을 명시해 줍니다.
+- `project_name` 은 `ch8-dashboard`, `file` 은 `grafana-docker-compose.yaml` 으로 지정합니다.
 
 ```bash
-$ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
+$ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
 ```
 
 ### 1.3 Grafana Dashboard 만들기
@@ -151,56 +153,56 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 - 서비스가 띄워졌다면, [localhost:3000](http://localhost:3000) 을 통해 grafana에 접속하여 설정했던 아이디와 패스워드로 접속합니다.
     <div style={{textAlign: 'center'}}>
 
-    ![MLflow ui](./img/grafana-intro.png)  
+    ![gf_img_4](./img/grafana-intro.png)  
     [그림 8-4] Grafana 접속 화면
     </div>
     <div style={{textAlign: 'center'}}>
 
-    ![MLflow ui](./img/grafana-after-login.png)  
+    ![gf_img_5](./img/grafana-after-login.png)  
     [그림 8-5] Grafana 로그인 후 화면
     </div>
-- 접속이 잘 되었다면 왼쪽 사이드바의 `네모 모양 > New dashboard` 버튼을 눌러줍니다.
+- 접속이 잘 되었다면 왼쪽 사이드바의 `네모 모양 > New dashboard` 버튼을 클릭합니다.
     <div style={{textAlign: 'center'}}>
 
-    ![MLflow ui](./img/grafana-click-new.png)  
+    ![gf_img_6](./img/grafana-click-new.png)  
     [그림 8-6] Grafana 새 대시보드 생성
     </div>
     <div style={{textAlign: 'center'}}>
 
-    ![MLflowui](./img/grafana-initial-dashboard.png)  
+    ![gf_img_7](./img/grafana-initial-dashboard.png)  
     [그림 8-7] Grafana 대시보드 초기 화면
     </div>
 - 먼저 Dashboard 에 대한 설정을 해보겠습니다.
     - 오른쪽 위의 톱니바퀴 ⚙️ 버튼을 클릭합니다.
     <div style={{textAlign: 'center'}}>
 
-    ![MLflow ui](./img/grafana-click-gear.png)  
+    ![gf_img_8](./img/grafana-click-gear.png)  
     [그림 8-8] Grafana 톱니바퀴 클릭
     </div>
 
     - 대시보드의 정보들을 설정합니다.
-        - `General`
+        - **General**
             - 대시보드의 이름은 `Iris classification` 으로 합니다.
-        - `Time options`
-            - `Auto refresh` 영역에 `1s,` 를 추가하여 다음과 같이 만들어 줍니다.
-            - `Refresh live dashboards` 토글을 클릭해 실시간으로 패널이 업데이트 되도록 해줍니다.
+        - **Time options**
+            - `Auto refresh` 영역에 `1s,` 를 추가하여 [그림 8-9]와 같이 만들어 줍니다.
+            - `Refresh live dashboards` 토글을 클릭해 실시간으로 패널의 시간 축이 업데이트 되도록 해줍니다.
         - 오른쪽 위의 `Save dashboard` 버튼을 클릭하고, `General` 폴더에 저장합니다.
     
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-dashboard-setup.png)  
+![gf_img_9](./img/grafana-dashboard-setup.png)  
 [그림 8-9] Grafana 대시보드 설정
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-save-dashboard.png)  
+![gf_img_10](./img/grafana-save-dashboard.png)  
 [그림 8-10] Grafana 대시보드 저장
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-after-save.png)  
+![gf_img_11](./img/grafana-after-save.png)  
 [그림 8-11] Grafana 대시보드 저장 후
 </div>
 
@@ -212,7 +214,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-1.png)  
+![gf_img_12](./img/grafana-data-source-1.png)  
 [그림 8-12] Grafana 데이터 소스 연결 진입
 </div>
 
@@ -220,19 +222,19 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-2.png)  
+![gf_img_13](./img/grafana-data-source-2.png)  
 [그림 8-13] Grafana 데이터 소스 연결 클릭
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-3.png)    
+![gf_img_14](./img/grafana-data-source-3.png)    
 [그림 8-14] Grafana 데이터 소스 검색 1
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-4.png)  
+![gf_img_15](./img/grafana-data-source-4.png)  
 [그림 8-15] Grafana 데이터 소스 검색 2
 </div>
 
@@ -247,7 +249,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-5.png)  
+![gf_img_16](./img/grafana-data-source-5.png)  
 [그림 8-16] Grafana 데이터 소스 설정
 </div>
 
@@ -255,7 +257,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-6.png)  
+![gf_img_17](./img/grafana-data-source-6.png)  
 [그림 8-17] Grafana 데이터 소스 연결 확인
 </div>
 
@@ -265,7 +267,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-panel-1.png)  
+![gf_img_18](./img/grafana-panel-1.png)  
 [그림 8-18] Grafana 대시보드로 이동 1
 </div>
 
@@ -273,13 +275,13 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-panel-2.png)  
+![gf_img_19](./img/grafana-panel-2.png)  
 [그림 8-19] Grafana 대시보드로 이동 2
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-panel-3.png)  
+![gf_img_20](./img/grafana-panel-3.png)  
 [그림 8-20] Grafana 대시보드로 이동 3
 </div>
 
@@ -288,21 +290,21 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-add-panel-1.png)  
+![gf_img](./img/grafana-add-panel-1.png)  
 [그림 8-21] Grafana 패널 생성
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-add-panel-2.png)  
+![gf_img](./img/grafana-add-panel-2.png)  
 [그림 8-22] Grafana 패널 생성 2
 </div>
 
 - 패널의 정보를 설정합니다.
-    - 우측 탭 - 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - **우측 탭** - 패널의 이름, 차트의 종류 등을 설정 합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
         - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 여기서는, `Iris source data` 라고 설정하겠습니다.
-    - 하단 탭 - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+    - **하단 탭** - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
         - `Data source` : `Source-database`
         - `Table` : `iris_data`
         - `Column` : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
@@ -316,7 +318,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-set-panel-1.png)  
+![gf_img_23](./img/grafana-set-panel-1.png)  
 [그림 8-23] Grafana 패널 설정
 </div>
 
@@ -324,7 +326,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-save-panel-1.png)  
+![gf_img_24](./img/grafana-save-panel-1.png)  
 [그림 8-24] Grafana 패널 저장
 </div>
 
@@ -336,13 +338,13 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-set-time-1.png)  
+![gf_img_25](./img/grafana-set-time-1.png)  
 [그림 8-25] Grafana 시각화 기간 설정
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-set-time-2.png)  
+![gf_img_26](./img/grafana-set-time-2.png)  
 [그림 8-26] Grafana 새로고침 주기 설정
 </div>
 
@@ -351,7 +353,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-set-time-3.png)  
+![gf_img_27](./img/grafana-set-time-3.png)  
 [그림 8-27] Grafana 대시보드 저장
 </div>
 
@@ -366,7 +368,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source2-1.png)  
+![gf_img_28](./img/grafana-data-source2-1.png)  
 [그림 8-28] Grafana 추론 결과 데이터 소스 이동
 </div>
 
@@ -381,7 +383,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source2-2.png)  
+![gf_img_29](./img/grafana-data-source2-2.png)  
 [그림 8-29] Grafana 추론 결과 데이터 소스 설정
 </div>
 
@@ -389,7 +391,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-data-source-6.png)  
+![gf_img_30](./img/grafana-data-source-6.png)  
 [그림 8-30] Grafana 추론 결과 데이터 소스 연결 확인
 </div>
 
@@ -400,13 +402,13 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-move-to-board-1.png)  
+![gf_img_31](./img/grafana-move-to-board-1.png)  
 [그림 8-31] Grafana 대시 보드로 이동
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-move-to-board-2.png)  
+![gf_img_32](./img/grafana-move-to-board-2.png)  
 [그림 8-32] Grafana 대시 보드로 이동 2
 </div>
 
@@ -415,7 +417,7 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-add-panel2.png)  
+![gf_img_33](./img/grafana-add-panel2.png)  
 [그림 8-33] Grafana 추론 패널 생성
 </div>
 
@@ -436,23 +438,23 @@ $ docker compose -p ch8-dashboard -f stream-docker-compose.yaml up -d
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-set-panel2.png)  
+![gf_img_34](./img/grafana-set-panel2.png)  
 [그림 8-34] Grafana 추론 패널 설정
 </div>
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-save-panel2.png)  
+![gf_img_35](./img/grafana-save-panel2.png)  
 [그림 8-35] Grafana 추론 패널 저장
 </div>
 
 
 
 ## 3. 완성 된 대시보드 확인
- 앞서 설정해둔 대시보드의 시각화 기간과 새로고침 주기는 다시 설정 하지 않아도 적용 됩니다. 최종 시각화 결과를 확인 합니다.
+ 앞서 설정해둔 대시보드의 시각화 기간과 새로고침 주기는 다시 설정 하지 않아도 전체 패널에 적용 됩니다. 최종 시각화 결과를 확인 합니다.
 
 <div style={{textAlign: 'center'}}>
 
-![MLflow ui](./img/grafana-final-result.gif)  
+![gf_img_36](./img/grafana-final-result.gif)  
 [그림 8-36] Grafana 최종 완성 대시보드
 </div>
