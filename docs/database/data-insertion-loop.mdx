@@ -19,9 +19,9 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1.  <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 data generator 스크립트를 작성합니다.
-2. `psycopg2` 를 이용하여 생성된 <var>`iris_data`</var> 테이블에 스크립트를 실행하여 계속해서 데이터를 삽입합니다.
-3. `psql` 을 이용하여 삽입한 데이터를 확인합니다.
+1. <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 스크립트를 이용하여 계속해서 데이터를 생성하는 스크립트를 작성합니다.
+2. 스크립트를 실행하여 <var>`iris_data`</var> 테이블에 계속해서 데이터를 삽입합니다.
+3. `psql` 을 이용하여 삽입되고 있는 데이터를 확인합니다.
 
 </CodeDescription>
 </details>
@@ -36,22 +36,22 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 ch1
 ├── Dockerfile
 ├── Makefile
-├── create_table.py
 ├── data_generator.py
-├── docker-compose.yaml
-├── insert_data.py
+├── data_insertion.py
 // highlight-next-line
-└── insert_data_loop.py
+├── data_insertion_loop.py
+├── docker-compose.yaml
+└── table_creator.py
 ```
 
 </BrowserWindow>
 
 ## 1. 데이터 생성
 
-### 1.1 Generate Data
+### 1.1 생성 루프
 
- <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 <code>insert_data.py</code> 스크립트를 참고하여 계속해서 데이터를 추가하는 <code>insert_data_loop.py</code> 를 작성해보겠습니다.
-이 때 <code>while</code> 문을 사용하여 코드를 작성하는데, <code>while True</code> 를 통해 외부의 개입이 없다면 계속해서 while 문을 실행할 수 있습니다.
+<Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 <code>data_insertion.py</code> 스크립트를 참고하여 계속해서 데이터를 추가하는 <code>data_insertion_loop.py</code> 를 작성해보겠습니다.
+여기서는 추가적으로 <code>while</code> 문을 사용하여 코드를 작성하겠습니다. <code>while True</code> 를 통해 외부의 개입이 없다면 계속해서 while 문을 실행할 수 있습니다.
 
 ```python
 def generate_data(db_connect, df):
@@ -73,12 +73,12 @@ def generate_data(db_connect, df):
 
 ### 1.2 Query 실행
 
-#### 1.2.1 `insert_data_loop.py`
+#### 1.2.1 전체 코드
 
- <Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 합쳐서 data generator 를 생성해보겠습니다.
+<Chapter>3) Data Insertion</Chapter> 챕터에서 작성한 내용들과 이번 챕터에서 설명한 내용을 모아서 `data_insertion_loop.py` 로 작성합니다.
 
-```python title="insert_data_loop.py"
-# insert_data_loop.py
+```python title="data_insertion_loop.py"
+# data_insertion_loop.py
 import time
 
 import pandas as pd
@@ -102,8 +102,9 @@ def get_data():
 def insert_data(db_connect, data):
     insert_row_query = f"""
     INSERT INTO iris_data
-        (sepal_length, sepal_width, petal_length, petal_width, target)
+        (timestamp, sepal_length, sepal_width, petal_length, petal_width, target)
         VALUES (
+            NOW(),
             {data.sepal_length},
             {data.sepal_width},
             {data.petal_length},
@@ -141,20 +142,12 @@ if __name__ == "__main__":
 
 ```bash
 # terminal-command
-python data_generator.py
-
-    CREATE TABLE IF NOT EXISTS iris_data (
-        id SERIAL PRIMARY KEY,
-        sepal_length float8,
-        sepal_width float8,
-        petal_length float8,
-        petal_width float8,
-        target int
-    );
+python data_insertion_loop.py
 
     INSERT INTO iris_data
-        (sepal_length, sepal_width, petal_length, petal_width, target)
+        (timestamp, sepal_length, sepal_width, petal_length, petal_width, target)
         VALUES (
+            NOW(),
             6.5,
             2.8,
             4.6,
@@ -164,8 +157,9 @@ python data_generator.py
     
 
     INSERT INTO iris_data
-        (sepal_length, sepal_width, petal_length, petal_width, target)
+        (timestamp, sepal_length, sepal_width, petal_length, petal_width, target)
         VALUES (
+            NOW(),
             5.5,
             4.2,
             1.4,
@@ -175,8 +169,9 @@ python data_generator.py
     
 
     INSERT INTO iris_data
-        (sepal_length, sepal_width, petal_length, petal_width, target)
+        (timestamp, sepal_length, sepal_width, petal_length, petal_width, target)
         VALUES (
+            NOW(),
             4.4,
             2.9,
             1.4,
@@ -185,16 +180,15 @@ python data_generator.py
         );
 ```
 
-## 2. Data 확인
+## 2. 데이터 확인
 
-`psql` 을 이용하여 DB 에 접속하고, 계속해서 data 가 삽입되고 있는지 확인해보겠습니다.
+`psql` 을 이용하여 DB 에 접속하고, 계속해서 데이터가 삽입되고 있는지 확인해보겠습니다.
 
 1. `psql` 을 이용하여 DB 에 접속합니다.
     
     ```bash
     # terminal-command
-    psql -h localhost -p 5432 -U myuser -d mydatabase
-    Password for user myuser: 
+    PGPASSWORD=mypassword psql -h localhost -p 5432 -U myuser -d mydatabase
     psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
     Type "help" for help.
     
