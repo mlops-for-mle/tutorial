@@ -74,6 +74,8 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 이런 동일한 환경을 제공하기 위해서  Containerization 은 머신러닝에서 중요한 기술 중 하나이며 이를 대표하는 소프트웨어가 바로 Docker 입니다.
 이러한 배경으로 머신러닝 엔지니어에게 Docker를 이해하고 다룰 수 있어야 합니다. 머신러닝 엔지니어에게 필요한 수준의 docker 를 다루고 이해할 수 있게하기 위해서 본 문서에서는 로컬 환경에서 실행되는 스크립트 작성 후 이를 docker 에서도 실행할 수 있는 순서로 진행됩니다.
 
+**< 대표하는 용어들을 글 중간에서 표현할 때 대문자로 할 것인지, 소문자로 할 것인지 규칙이 필요합니다. ex) Docker 로 표현할 것인지, docker 로 표현할 것인지? >**
+
 ## 이 문서를 학습하는 방법
 
 ### Architecture
@@ -105,7 +107,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
     - `POSTGRES_USER` : `myuser`
     - `POSTGRES_PASSWORD` : `mypassword`
     - `POSTGRES_DB` : `mydatabase`
-    - Port Forwarding : `5432:5432`
+    - Port Forwarding : `5432:5432` **< 앞에서는 port forwarding 으로 쓰고, 뒤에서는 port 로 쓰여진 것 같습니다. 통일성이 필요해보입니다. >**
 3. 생성된 postgres 서버를 확인합니다.
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
