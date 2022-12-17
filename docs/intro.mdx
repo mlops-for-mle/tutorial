@@ -87,7 +87,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 3. 각 챕터의 전체 코드를 확인할 수 있는 경로
 4. 스펙 명세서를 작성하기 위한 코드와 그에 대한 해설
 
-예를 들어서 다음에 학습할 챕터은 아래와 같이 되어 있습니다.
+예를 들어 다음에 학습할 챕터은 아래와 같이 되어 있습니다.
 
 <BrowserWindow url="https://mlops-for-mle.github.io/tutorial/docs/database/db-server-creation">
 
@@ -103,12 +103,14 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 #### 스펙 명세서
 
 1. Docker 를 설치합니다.
-2. Postgres 서버를 생성합니다.
-    - `POSTGRES_USER` : `myuser`
-    - `POSTGRES_PASSWORD` : `mypassword`
-    - `POSTGRES_DB` : `mydatabase`
-    - Port Forwarding : `5432:5432` **< 앞에서는 port forwarding 으로 쓰고, 뒤에서는 port 로 쓰여진 것 같습니다. 통일성이 필요해보입니다. >**
-3. 생성된 postgres 서버를 확인합니다.
+2. PostgreSQL DB 서버를 생성합니다.
+    - Image : `postgres:14.0`
+    - Container name : <code>postgres-server</code>
+    - <var>POSTGRES_USER</var> : <code>myuser</code>
+    - <var>POSTGRES_PASSWORD</var> : <code>mypassword</code>
+    - <var>POSTGRES_DB</var> : <code>mydatabase</code>
+    - Port forwarding : `5432:5432`
+3. 생성된 DB 서버를 확인합니다.
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
 **< ` ` 하고 bold 글씨의 용도를 정해야할 것 같습니다. ` ` 은 언제 써도 되며, bold 글씨는 언제써도 되는걸까요? >**
@@ -126,12 +128,11 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 ch1
 ├── Dockerfile
 ├── Makefile
-// highlight-next-line
-├── create_table.py
 ├── data_generator.py
+├── data_insertion.py
+├── data_insertion_loop.py
 ├── docker-compose.yaml
-├── insert_data.py
-└── insert_data_loop.py
+└── table_creator.py
 ```
 
 </BrowserWindow>
