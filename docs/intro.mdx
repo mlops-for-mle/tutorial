@@ -37,6 +37,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 “머신러닝 엔지니어를 위한 MLOps” 에서는 직접 구현해보며 각 컴포넌트들이 어떤 역할을 하는지 컴포넌트끼리는 어떻게 연결해야 하는지 설명하고자 합니다. 여기서 다루는 내용을 간단히 도식화 하면 [그림 0-3]과 같이 표시할 수 있습니다.
 
+**< 아래의 그림에서 모델 배포 뒤에 모델 서빙을 붙이면 어떨까요? >**
 
 <div style={{textAlign: 'center'}}>
 
@@ -47,6 +48,9 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 ### Chapter
 
 [그림 0-3] 의 파이프라인을 구현할 기술 스택과 관계도는 [그림 0-4]와 같습니다.
+
+**< 아래의 그림에서 table creator 이미지가 빠진 것 같습니다. >**
+
 <div style={{textAlign: 'center'}}>
 
 ![Pipeline](./img/architecture.png)
@@ -58,7 +62,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 1. 오픈소스
 2. 공식 Documentation 의 관리 여부
 
-대표적으로 사용하는 패키지는 FastAPI, sqlalchemy, mlflow 등이 있습니다.
+대표적으로 사용하는 패키지는 FastAPI, MLflow, Kafka 등이 있습니다.
 단순히 따라해보는 것에 그치지 않고 본인의 업무에 필요한 방향으로 적용해 볼 수 있도록 간단한 튜토리얼을 작성하고 MLOps에 맞게 변형하는 과정으로 진행됩니다.
 
 ### Docker
@@ -68,7 +72,9 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 머신러닝의 성능 재현은 머신러닝 모델을 다룰 때 가장 중요한 부분 중 하나입니다.
 이를 위해서는 OS, 파이썬 버전, 패키지 버전, 코드, 가중치 등 모델을 학습 했을 때의 환경과 모든 것이 동일해야 합니다.
 이런 동일한 환경을 제공하기 위해서  Containerization 은 머신러닝에서 중요한 기술 중 하나이며 이를 대표하는 소프트웨어가 바로 Docker 입니다.
-이러한 배경으로 머신러닝 엔지니어에게 Docker를 이해하고 다룰 수 있어야 합니다. 머신러닝 엔지니어에게 필요한 수준의 docker를 다루고 이해할 수 있게하기 위해서 본 문서에서는 로컬 환경에서 실행되는 스크립트 작성 후 이를 docker에서도 실행할 수 있는 순서로 진행됩니다.
+이러한 배경으로 머신러닝 엔지니어에게 Docker를 이해하고 다룰 수 있어야 합니다. 머신러닝 엔지니어에게 필요한 수준의 docker 를 다루고 이해할 수 있게하기 위해서 본 문서에서는 로컬 환경에서 실행되는 스크립트 작성 후 이를 docker 에서도 실행할 수 있는 순서로 진행됩니다.
+
+**< 대표하는 용어들을 글 중간에서 표현할 때 대문자로 할 것인지, 소문자로 할 것인지 규칙이 필요합니다. ex) Docker 로 표현할 것인지, docker 로 표현할 것인지? >**
 
 ## 이 문서를 학습하는 방법
 
@@ -87,7 +93,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 #### 목표
 
-1. Docker 를 이용해 postgres server 를 생성합니다.
+1. Docker 를 이용해 DB 서버를 생성합니다.
 2. 생성된 DB 의 role name 과 attributes 를 확인합니다.
 
 <details>
@@ -101,10 +107,11 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
     - `POSTGRES_USER` : `myuser`
     - `POSTGRES_PASSWORD` : `mypassword`
     - `POSTGRES_DB` : `mydatabase`
-    - Port Forwarding : `5432:5432`
+    - Port Forwarding : `5432:5432` **< 앞에서는 port forwarding 으로 쓰고, 뒤에서는 port 로 쓰여진 것 같습니다. 통일성이 필요해보입니다. >**
 3. 생성된 postgres 서버를 확인합니다.
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
+**< ` ` 하고 bold 글씨의 용도를 정해야할 것 같습니다. ` ` 은 언제 써도 되며, bold 글씨는 언제써도 되는걸까요? >**
 
 </CodeDescription>
 </details>
@@ -118,8 +125,8 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 ```js
 ch1
 ├── Dockerfile
-// highlight-next-line
 ├── Makefile
+// highlight-next-line
 ├── create_table.py
 ├── data_generator.py
 ├── docker-compose.yaml
