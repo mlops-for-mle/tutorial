@@ -176,14 +176,14 @@ CREATE TABLE IF NOT EXISTS iris_data (
 
 이제 작성한 query 를 DB 에 전달해야 합니다. 전달을 위해서는 아래의 과정을 수행하면 됩니다.
 
-1. Connector 의 cursor 를 열고 cursor 에 query 를 전달합니다.
+1. Connector 의 cursor 를 열고, cursor 에 query 를 전달합니다.
     
     ```python
     cur = db_connect.cursor()
     cur.execute(create_table_query)
     ```
     
-2. 전달된 query 를 실행하기 위해서는 connector 에서 `commit` 을 해주어야 합니다.
+2. 전달된 query 를 실행하기 위해 connector 에 `commit` 을 합니다.
     
     ```python
     db_connect.commit()
@@ -225,9 +225,8 @@ def create_table(db_connect):
         db_connect.commit()
 ```
 
-`create_table` 함수의 입력값은 <var>`db_connect`</var> 입니다. DB 와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한 번만 연결 후 연결된 connector 를 재사용합니다.
-함수 내부에는 query 가 있고, 실행될 때 어떤 query 가 실행되었는지 확인하기 위해서 `print` 를 합니다.  
-마지막으로 query 를 DB 에 전달하는 `with` 문을 추가합니다.  
+`create_table` 함수의 입력값은 <var>db_connect</var> 입니다. DB 와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한 번만 연결 후 연결된 connector 를 재사용합니다.
+함수 내부에는 query 가 있고, 실행될 때 어떤 query 가 실행되었는지 확인하기 위해서 `print` 를 합니다. 마지막으로 query 를 DB 에 전달하는 `with` 문을 추가합니다.
 
 ### 2.3 Query 실행
 
