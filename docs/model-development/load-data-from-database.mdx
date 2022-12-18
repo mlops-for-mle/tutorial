@@ -156,12 +156,12 @@ X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, rand
 ```
 
 ## 2. Save Data
-그리고 사용한 데이터를 저장하는 `# 4. save data` 부분을 추가합니다.
+그리고 사용한 데이터를 저장하는 `# 2. save data` 부분을 추가합니다.
 데이터를 저장하는 이유는 현재 데이터베이스에 계속해서 데이터가 쌓이고 있기 때문에 매번 데이터를 불러올 때마다 데이터가 바뀝니다.
 데이터가 바뀌면 모델이 정상적으로 불러왔는지 확인할 수 없기 때문에 사용한 데이터를 저장해 평가하는 부분에서 사용합니다.
 
 ```python  title="db_train.py"
-# 4. save data
+# 2. save data
 df.to_csv("data.csv", index=False)
 ```
 
