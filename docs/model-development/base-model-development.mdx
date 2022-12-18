@@ -106,14 +106,10 @@ scaler = StandardScaler()
 
 `fit` 을 통해 scaler를 학습한 후 `transform`을 이용해 데이터를 scaling 합니다.
 
-**< 위에 표현이 학습이 맞을까요? 다른 표현을 넣어야할 것 같은데 괜찮은 표현이 있을까요? >**
-
 ```python
 scaled_X_train = scaler.fit_transform(X_train)
 scaled_X_valid = scaler.transform(X_valid)
 ```
-
-**< 위에 있는 코드에서 X_train 는 fit_transform 으로 하고 X_valid 는 transform 으로 하는게 맞는거죠? >**
 
 scaling 전 데이터와 scaling 후 데이터를 비교하면 다음과 같습니다.
 
