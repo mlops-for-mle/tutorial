@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: 📌 DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `Compose` 파일을 작성합니다.
+description: 📌 DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
 ---
 
 # 6) Data Generator on Docker Compose
@@ -10,7 +10,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 `Compose` 파일을 작성합니다.
+1. DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -19,7 +19,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. <code>docker-compose.yaml</code> 을 작성합니다.
+1. Docker Compose 파일을 작성합니다.
 
     - Postgres server service
         - Service name : `postgres-server`
@@ -38,11 +38,11 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
     :::info
 
-    Postgres server 서비스와 data generator 서비스를 띄울 때 어떤 서비스가 먼저 띄워져야 하는지 생각해보고, 그 기능을 yaml 파일에 추가합니다.
+    Postgres server 서비스와 data generator 서비스를 띄울 때 어떤 서비스가 먼저 띄워져야 하는지 생각해보고, 그 기능을 Compose 파일에 추가합니다.
 
     :::
 
-2. `docker-compose.yaml` 을 실행합니다.
+2. Docker Compose 파일을 실행합니다.
 3. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
     - Data generator server 에서 확인합니다.
@@ -95,7 +95,9 @@ docker rm --force postgres-server data-generator
 ```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
 
-RUN apt-get update && apt-get install -y postgresql-client
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/app
 
@@ -111,9 +113,9 @@ CMD ["localhost"]
 
 ## 2. Docker Compose
 
-이제 `docker-compose.yaml` 을 작성해보도록 하겠습니다.
+이제 Compose 파일을 작성해보도록 하겠습니다.
 
-`Compose` 파일의 아키텍처는 아래와 같습니다.
+Compose 파일의 아키텍처는 아래와 같습니다.
 
 <CodeDescription>
 
@@ -127,9 +129,9 @@ services:
     ...
 ```
 
-- `version` : `Compose` 파일의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
-  이번 챕터에서는 작성일 기준 최신 버전인 `"3"` 을 사용하겠습니다.
-- `services` : `Compose` 에 묶일 서비스들을 의미합니다. 하나의 서비스는 하나의 컨테이너를 의미합니다.
+- `version` : Compose 파일의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
+  이번 챕터에서는 작성일 기준 최신 버전인 3을 사용하겠습니다.
+- `services` : Compose 에 묶일 서비스들을 의미합니다. 하나의 서비스는 하나의 컨테이너를 의미합니다.
   - `postgres-server` : <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 DB 서버를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
   - `data-generator` : <Chapter>05) Data Generator on Docker</Chapter> 챕터에서 사용한 data generator 를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
 
@@ -191,14 +193,14 @@ services:
 ```
 
 - `build` :
-  - `context` : 이미지를 build 하기 위해 `Dockerfile` 이 있는 절대경로 또는 상대경로를 설정합니다.
-  - `dockerfile` : `context` 에서 설정한 경로에 있는 `Dockerfile` 의 파일명을 입력합니다.
+  - `context` : 이미지를 build 하기 위해 Dockerfile 이 있는 절대경로 또는 상대경로를 설정합니다.
+  - `dockerfile` : `context` 에서 설정한 경로에 있는 Dockerfile 의 파일명을 입력합니다.
 - `depends_on` :
   - `Compose` 로 띄워지는 서비스 간의 종속성 순서대로 서비스를 시작할 때 사용합니다.
   - 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator 를 실행해야 하기 때문에 postgres server 의 서비스 이름인 `postgres-server` 를 입력합니다.
 - `command` :
   - Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다.
-  - <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 data generator 를 사용하기 위해서는 postgres server 의 host 를 변경해야 합니다.
+  - <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 data generator 를 사용하기 위해서는 postgres server 의 호스트를 변경해야 합니다.
   - 호스트 이름은 위에서 언급한 것처럼 컨테이너의 이름으로 주어야 하기 때문에 `["postgres-server"]` 로 덮어씁니다.
 
 </CodeDescription>
@@ -231,10 +233,8 @@ services:
     command: ["postgres-server"]
 ```
 
-이제 작성한 `docker-compose.yaml` 파일을 실행해 보겠습니다.  
+이제 작성한 Compose 파일을 실행해보겠습니다.  
 Compose 파일은 `up` 명령어와 `down` 명령어를 통해 실행과 종료를 할 수 있습니다.
-
-이제 `docker-compose.yaml` 에 정의되어 있는 서비스들의 컨테이너를 실행해보겠습니다.
 
 <CodeDescription>
 
@@ -425,7 +425,7 @@ networks:
 
 #### 2.4.3 실행
 
-네트워크까지 작성한 최종 `docker-compose.yaml` 은 다음과 같습니다.
+네트워크까지 작성한 최종 Compose 파일은 다음과 같습니다.
 
 ```yaml  title="docker-compose.yaml"
 version: "3"
@@ -462,7 +462,7 @@ networks:
 
 ```
 
-다시 docker compose 를 실행해 보겠습니다.
+다시 `docker compose` 를 실행해 보겠습니다.
 
 ```bash
 # terminal-command
