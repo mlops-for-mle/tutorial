@@ -58,7 +58,7 @@ ch1
 
 </BrowserWindow>
 
-## 1. Data Generator
+## 1. `data_generator.py`
 
 ### 1.1 전체 코드
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 스크립트를 실행하면 다음과 같은 순서로 실행됩니다.
 
 1. DB 에 연결하는 connector 생성  
-    Connector 를 생성할 때 <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 내용과는 다르게 `host` 를 받는 부분을 다음과 같이 `ArgumentParser` 로 변경했습니다.
+    Connector 를 생성할 때 <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 내용과는 다르게 호스트를 받는 부분을 다음과 같이 `ArgumentParser` 로 변경했습니다.
 
     ```python
     parser = ArgumentParser()
@@ -174,7 +174,9 @@ if __name__ == "__main__":
 ```docker title="Dockerfile"
 FROM amd64/python:3.9-slim
 
-RUN apt-get update && apt-get install -y postgresql-client
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/app
 
@@ -373,8 +375,8 @@ docker run -d \
     
     - `--network` 옵션에 위에서 생성한 네트워크 이름을 입력합니다.
     - 컨테이너를 시작할 때 이미지 이름의 뒤에 입력된 값은 Dockerfile 의 `CMD` 를 수정합니다.
-        - 위에서 connector 를 생성할 때 host 를 받는 부분을 수정했었는데 바로 이 경우를 위해서입니다.
-        컨테이너 간의 통신을 하는 경우에는 `localhost` 가 아닌 각 컨테이너의 이름이 host 가 됩니다.
+        - 위에서 connector 를 생성할 때 호스트를 받는 부분을 수정했었는데 바로 이 경우를 위해서입니다.
+        컨테이너 간의 통신을 하는 경우에는 `localhost` 가 아닌 각 컨테이너의 이름이 호스트가 됩니다.
         이 때 앞서 띄운 DB 컨테이너의 이름은 `postgres-server` 이기 때문에 argument 로 `postgres-server` 를 입력합니다.
 
     </CodeDescription>

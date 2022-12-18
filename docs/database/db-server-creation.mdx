@@ -208,8 +208,8 @@ PostgreSQL DB 서버를 확인할 때 사용하는 CLI 툴인 `psql` 설치합�
 PGPASSWORD=mypassword psql -h localhost -p 5432 -U myuser -d mydatabase
 ```
 - `PGPASSWORD=` : 접속할 user 의 암호를 입력합니다. 여기서는 `mypassword` 를 입력합니다.
-- `-h` : host 를 지정합니다. 이 때 host 는 docker 에서 포트 포워딩을 했기 때문에 `localhost` 를 입력합니다.
-- `-p` : port 를 지정합니다. 여기서는 `5432` 를 입력합니다.
+- `-h` : 호스트를 지정합니다. 이 때 호스트는 docker 에서 포트 포워딩을 했기 때문에 `localhost` 를 입력합니다.
+- `-p` : 포트를 지정합니다. 여기서는 `5432` 를 입력합니다.
 - `-U` : 접속할 user 의 이름을 입력합니다. 여기서는 `myuser` 를 통해 접속합니다.
 - `-d` : database 의 이름을 입력합니다. 여기서는 `mydatabase` 를 입력합니다.
 
