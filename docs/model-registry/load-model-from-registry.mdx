@@ -61,6 +61,7 @@ ch3
 
 
 ## 1.  모델 불러오기
+\\<!--앞에서는 "파트"라고 표현했는데 해당 페이지에서는 "챕터"로 표현하는 거 같습니다.-->
 
 <Chapter>2) Save Model to Registry</Chapter> 챕터에서 작성한 코드로 학습된 모델을 서버로 부터 로드하는 코드를 작성합니다.
 
@@ -104,6 +105,7 @@ print(model_pipeline)
 ```
 
 #### 1.2.2 `pyfunc` 모델 불러오기
+\\<!--sklearn.load_model이 아닌 pyfunc.PyFuncModel을 사용하는 이유가 있을까요?-->
 
 `mlflow` 에서는 지정한 방식[[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는 종류에 관계없이 `mlflow.pyfunc.load_model` 을 이용해 쉽게 모델을 불러올 수 있습니다.
 
@@ -185,7 +187,7 @@ parser.add_argument("--run-id", dest="run_id", type=str)
 args = parser.parse_args()
 
 model_pipeline = mlflow.pyfunc.load_model(f"runs:/{args.run_id}/{args.model_name}")
-
+\\<!-- mlops-for-mle에는 sklearn.load_model도 되어 있습니다! -->
 # 2. get data
 df = pd.read_csv("data.csv")
 
