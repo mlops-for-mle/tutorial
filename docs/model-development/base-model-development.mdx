@@ -251,7 +251,7 @@ print("Load Model Valid Accuracy :", load_valid_acc)
 
 위에서 설명한 코드를 `base_train.py`, `base_validate_save_model.py`  로 나눠서 작성할 수 있습니다.
 
-### 5.1 모델 학습 및 저장
+### 5.1 `base_train.py`
 
 우선 학습 및 데이터 저장을 위한 코드들을 모은 `base_train.py` 입니다.
 
@@ -290,7 +290,7 @@ joblib.dump(scaler, "scaler.joblib")
 joblib.dump(classifier, "classifier.joblib")
 ```
 
-### 5.2 모델 검증
+### 5.2 `base_validate_save_model.py`
 
 다음은 저장된 모델을 검증하는 `base_validate_save_model.py` 입니다.
 
