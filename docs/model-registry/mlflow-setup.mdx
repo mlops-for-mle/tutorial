@@ -30,10 +30,10 @@ import { Chapter, Part } from '@site/src/components/Highlight';
       - <var>api</var>: <code>9000:9000</code>
       - <var>console</var>: <code>9001:9001</code>
 3. Docker Compose 파일에 모델과 모델의 결과들을 관리할 MLFlow 서버를 정의 합니다.
-    - 앞서 띄워둔 `PostgreSQL DB` 와 `MinIO` 두 가지 서버를 연결 합니다.  ** 연결한다는 표현이 조금 모호한 것 같습니다. 조금 더 구체적으로 알려주면 좋을 것 같은데요. 다른 표현이 있을까요?**
+    - 앞서 띄워둔 PostgreSQL DB 와 MinIO 두 가지 서버를 연결 합니다.  ** 연결한다는 표현이 조금 모호한 것 같습니다. 조금 더 구체적으로 알려주면 좋을 것 같은데요. 다른 표현이 있을까요?**
     - Dockerfile
         - MLflow 에 관련된 패키지가 설치된 이미지를 생성하기 위한 Dockerfile 을 정의합니다.
-        - Artifact-store 인 `MinIO` 에 초기 버켓을 생성 하기 위해 `MinIO` Client 도 함께 설치되도록 합니다.
+        - Artifact-store 인 `MinIO` 에 초기 버켓을 생성 하기 위해 MinIO Client 도 함께 설치되도록 합니다.
     - Docker Compose
       - `MinIO` 의 접속 정보를 `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 변수를 통해 적절하게 설정합니다.
       - `MinIO` Client 를 설치하고, MinIO 의 초기 버켓을 생성하도록 명령어를 작성합니다.
@@ -41,7 +41,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
       - Port forwarding : <code>5001:5000</code>
         - MLflow 에서는 default 로 5000 포트를 사용합니다.
         - 하지만 **MacOS** 의 경우 5000번 포트로 "AirPlay" 기능을 사용하기 때문에 여기서는 보편적인 적용을 위해 5001번 포트를 사용합니다.
-4. 정의된 스펙에 따라 Docker Compose 를 활용해 서비스들을 띄웁니다.
+4. 정의된 스펙에 따라 서비스들을 띄웁니다.
     - `localhost:9001` 에 접속하여 MinIO 로그인 페이지가 잘 동작하는지 확인합니다.
     - `localhost:5001` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인합니다.
 
@@ -78,13 +78,14 @@ ch3
 
 ### 1.1 Backend Store
 
-Backend Store 란 수치 데이터와 MLflow 서버의 정보들을 체계적으로 관리하기위한 DB 입니다. Backend Store 에는 모델의 학습 결과인 accuracy, f1-score, 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터와 run_id, run_name, experiment_name 등의 MLflow 의 메타 데이터가 저장됩니다.
+Backend Store 란 수치 데이터와 MLflow 서버의 정보들을 체계적으로 관리하기위한 DB 입니다. 
+Backend Store 에는 모델의 학습 결과인 accuracy, f1-score, 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터와 run_id, run_name, experiment_name 등의 MLflow 의 메타 데이터가 저장됩니다.
 
 이번 파트에서는 Backend Store 를 위해 `01. Database` 파트에서 사용되었던 PostgreSQL DB 를 새롭게 생성하겠습니다.
 
 ### 1.2 PostgreSQL DB Server
 
-PostgreSQL DB 서버의 스펙을 Docker Compose 파일에 서비스 이름, 사용자, 비밀번호, DB 이름을 환경변수를 설정합니다.
+PostgreSQL DB 서버의 스펙을 Compose 파일에 서비스 이름, 사용자, 비밀번호, DB 이름을 환경변수를 설정합니다.
 
 <CodeDescription>
 
@@ -119,7 +120,8 @@ services:
 
 ### 2.1 Artifact Store
 
-Artifact Store 란 MLflow 에서 학습된 모델을 저장하는 model registry 로 이용하기 위한 스토리지 (storage) 서버입니다. Artifact Store 를 이용하면 기본적인 파일 시스템 보다 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
+Artifact Store 란 MLflow 에서 학습된 모델을 저장하는 model registry 로 이용하기 위한 스토리지 (storage) 서버입니다. 
+Artifact Store 를 이용하면 기본적인 파일 시스템 보다 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
 
 ### 2.2 Why MinIO?
 이번 파트에서는 Artifact Store 로 MinIO 서버를 사용하는데 그 이유는 다음과 같습니다.
@@ -131,7 +133,7 @@ Artifact Store 란 MLflow 에서 학습된 모델을 저장하는 model registry
 
 ### 2.3 MinIO Server
 
-MinIO의 스펙을 Docker Compose 파일에 서비스 이름, 사용자, 비밀번호를 환경변수로 정의하고 호스트와 연결되는 포트 또한 정의합니다.
+MinIO의 스펙을 Compose 파일에 서비스 이름, 사용자, 비밀번호를 환경변수로 정의하고 호스트와 연결되는 포트 또한 정의합니다.
 
 <CodeDescription>
 
@@ -211,7 +213,7 @@ RUN cd /tmp && \
 
 ### 3.2 Docker Compose
 
-작성된 Dockerfile 을 build 하도록 Docker Compose 파일의 `services` 탭 밑에 정의합니다. 
+작성된 Dockerfile 을 build 하도록 Compose 파일의 `services` 탭 밑에 정의합니다. 
   1. MinIO 에 연결하기 위한 계정 정보를 환경변수로 설정합니다.
   2. 모델을 저장할 때 사용할 MinIO 초기 버켓을 생성합니다.
   3. MLflow 서버를 띄우는 명령어를 작성합니다.
@@ -254,7 +256,7 @@ services:
 
 - `build` : 
   - 앞서 작성한 Dockerfile 을 사용하여 이미지를 build 하여 사용합니다.
-- `depends_on` : MLflow 서버가 띄워지기 전에, `PostgreSQL DB` 와 `MinIO` 서버를 먼저 띄우도록 합니다.
+- `depends_on` : MLflow 서버가 띄워지기 전에, PostgreSQL DB 와 MinIO 서버를 먼저 띄우도록 합니다.
   - `condition` : `PostgreSQL DB` 와 `MinIO` 서비스의 동작 상태가 체크되면 MLflow 서버를 띄웁니다.
 - `ports` : 
   - 호스트와 컨테이너의 포트를 설정합니다. 
@@ -268,13 +270,13 @@ services:
   - `mc mb ~` : 등록된 호스트를 통해 초기 버켓을 생성합니다.
   - `mlflow server` : MLflow 서버를 동작시킵니다.
   - `--backend-store-uri` 에 명시된 정보를 통해 PostgreSQL DB 와 연결합니다.
-  - `--default-artifact-root` 에 명시된 버켓을 통해 `MinIO` 의 초기 버켓과 연결합니다.
+  - `--default-artifact-root` 에 명시된 버켓을 통해 MinIO 의 초기 버켓과 연결합니다.
 
 </CodeDescription>
 
 ## 4. Docker Compose 를 이용하여 서비스 띄우기
 
-완성된 Dockerfile 과 Docker Compose 파일은 아래와 같습니다.
+완성된 Dockerfile 과 Compose 파일은 아래와 같습니다.
 
 ### 4.1 Dockerfile
 
@@ -359,7 +361,7 @@ services:
 ```
 ### 4.3 실행
 
-Dockerfile 과 Docker Compose 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
+Dockerfile 과 Compose 두 파일이 있는 경로에서 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
 
 ```bash
 # terminal-command
