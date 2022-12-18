@@ -7,10 +7,13 @@ description: 📌 Docker 를 이용하여 data generator 서버를 실행하기 
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
+import DBImage2 from './img/db-2.png';
+import DBImage3 from './img/db-3.png';
+import DBImage4 from './img/db-4.png';
 
 ### 목표
 
-1. 앞서 작성했던 코드를 컨테이너 안에서 실행하기 위해 `Dockerfile` 을 작성합니다.
+1. 앞선 챕터에서 작성한 코드들을 컨테이너로 실행할 수 있게 하는 `Dockerfile` 을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -280,15 +283,16 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED         STATUS  
 
 로컬에서는 어떻게 DB 컨테이너에 접근이 가능했을까요?
 
-**< 그림이 너무 큰 것 같습니다. 조금 줄이면 좋을 것 같아요. >**
-
 <div style={{textAlign: 'center'}}>
 
-![Localhost Networking](./img/db-2.png)  
+<img src={DBImage2} style={{scale: '70%'}}/>
+
 [그림 1-2] Localhost Networking
 </div>
 
-[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계를 나타낸 그림입니다.  <Chapter>1) DB Server Creation</Chapter> 챕터에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
+[그림 1-2] 는 컨테이너를 띄운 데스크탑과 컨테이너의 관계를 나타낸 그림입니다.
+<Chapter>1) DB Server Creation</Chapter> 챕터에서 DB 컨테이너를 띄울 때 사용한 명령어는 다음과 같습니다.
+
 
 ```bash
 # terminal-command
@@ -301,11 +305,10 @@ docker run -d \
 이 때 `-p` 옵션은 포트 포워딩을 의미합니다. 위의 `5432:5432` 를 해석하면 DB 컨테이너의 `5432` 포트를 localhost 의 `5432` 포트로 연결하라는 뜻입니다.  
 즉, `localhost:5432` 에 대한 접근은 컨테이너 내부의 `5432` 포트에 대한 접근과 같습니다. 이러한 연결이 있었기 때문에 로컬에서는 DB 에 접근이 가능했습니다.
 
-**< 그림이 너무 큰 것 같습니다. 조금 줄이면 좋을 것 같아요. >**
-
 <div style={{textAlign: 'center'}}>
 
-![Container Networking Disconneted](./img/db-3.png)  
+<img src={DBImage3} style={{scale: '70%'}}/>
+
 [그림 1-3] Container Networking Disconneted
 </div>
 
@@ -313,11 +316,10 @@ docker run -d \
 이 때 data generator 컨테이너 입장에서 `localhost:5432` 는 아무것도 열려있지 않은 비어있는 포트입니다.
 그렇기 때문에 DB 를 찾지 못한다는 에러와 함께 종료되는 것입니다.
 
-**< 그림이 너무 큰 것 같습니다. 조금 줄이면 좋을 것 같아요. >**
-
 <div style={{textAlign: 'center'}}>
 
-![Container Networking Connetected](./img/db-4.png)  
+<img src={DBImage4} style={{scale: '70%'}}/>
+
 [그림 1-4] Container Networking Connetected
 </div>
 
