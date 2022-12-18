@@ -18,6 +18,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 <CodeDescription>
 
 ### 스펙 명세서
+\\<!-- 스펙 명세서와 아래 풀이와 user, passowrd 등의 naming이 다릅니다. 통일해야될 거 같습니다.-->
 
 1. MLflow 의 운영 정보, 모델 결과 등을 저장 할 물리적인 데이터베이스 Postgres 서버 스펙을 정의합니다.
     - `POSTGRES_USER` : `myuser`
@@ -78,9 +79,9 @@ ch3
 
 ### 1.1 Backend Store
 
-수치 데이터와 mlflow 서버의 정보들을 체계적으로 관리하기위해 데이터 베이스를 사용합니다. 이를 **Backend store** 라고 합니다. **Backend store** 에는 모델의 학습 결과인 accuracy, f1-score 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터들과 run_id, run_name, experiment_name 등의 MLflow 의 meta data 가 저장 됩니다.
+수치 데이터와 mlflow 서버의 정보들을 체계적으로 관리하기 위해 데이터 베이스를 사용합니다. 이를 **Backend store** 라고 합니다. **Backend store** 에는 모델의 학습 결과인 accuracy, f1-score 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터들과 run_id, run_name, experiment_name 등의 MLflow 의 meta data 가 저장 됩니다.
 
-이번 파트에서는 Backend Store 로 `01. Database` 파트에서 사용한 Postgres를 사용합니다.
+이번 파트에서는 Backend Store 로 <Part>01. Database</Part> 파트에서 사용한 Postgres를 사용합니다.
 
 ### 1.2 Postgres Server docker-compose
 
@@ -118,7 +119,7 @@ mlflow-backend-store:
 
 ### 2.1 Artifact Store
 
-MLflow 에서는 학습된 모델을 저장하는 Model registry 로 이용하기 위해 스토리지 서버를 사용 할 수 있는데 이를 **Artifact store** 라고 합니다. **Artifact Store** 를 이용하면 기본적인 파일 시스템 보다, 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
+MLflow 에서는 학습된 모델을 저장하는 Model registry 를 이용하기 위해 스토리지 서버를 사용 할 수 있는데 이를 **Artifact store** 라고 합니다. **Artifact Store** 를 이용하면 기본적인 파일 시스템 보다, 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
 
 ### 2.2 Why MinIO?
 이번 파트에서는 **Artifact Store** 로 MinIO 서버를 사용하는데 그 이유는 다음과 같습니다.
@@ -202,7 +203,7 @@ RUN cd /tmp && \
 ### 3.2 MLflow Server docker-compose
 
 작성된 `Dockerfile`을 빌드하도록 `docker-compose` 의 `services` 탭 밑에 정의합니다. 
-  1. `MinIO` 에 연결하기위한 계정 정보를 환경변수를 활용해 설정합니다.
+  1. `MinIO` 에 연결하기 위한 계정 정보를 환경변수를 활용해 설정합니다.
   2. 모델을 저장할 때 사용 할 `MinIO` 초기 버켓을 생성합니다.
   3. mlflow server를 띄우는 명령어를 작성합니다.
       - `PostgresDB` 에 연결하기 위한 keyword argument 를 추가합니다.
@@ -214,7 +215,7 @@ RUN cd /tmp && \
 mlflow-server:
   build:
     context: .
-    dockerfile: ./Dockerfile
+    dockerfile: Dockerfile
   container_name: mlflow-server
   ports:
     - 5001:5000
