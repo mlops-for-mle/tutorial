@@ -1,6 +1,6 @@
 ---
 sidebar_position: 5
-description: 📌 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 `Dockerfile` 을 작성합니다.
+description: 📌 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 Dockerfile 을 작성합니다.
 ---
 
 # 5) Data Generator on Docker
@@ -13,7 +13,7 @@ import DBImage4 from './img/db-4.png';
 
 ### 목표
 
-1. 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 `Dockerfile` 을 작성합니다.
+1. 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 Dockerfile 을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
@@ -22,7 +22,7 @@ import DBImage4 from './img/db-4.png';
 
 ### 스펙 명세서
 
-1.  <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 스크립트를 build 할 수 있는 <code>Dockerfile</code> 을 작성합니다.
+1.  <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 스크립트를 build 할 수 있는 Dockerfile 을 작성합니다.
 
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
     - 컨테이너에서 `psql` 을 이용하여 DB 에 접속할 수 있도록 `postgresql-client` 를 설치합니다.
@@ -60,7 +60,7 @@ ch1
 
 ## 1. Data Generator
 
-### 1.1 전체 코드
+### 1.1 `data_generator.py`
 
  <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 코드들을 모아서 데이터를 생성하는 <code>data_generator.py</code> 를 작성합니다.
 
@@ -150,7 +150,7 @@ if __name__ == "__main__":
 스크립트를 실행하면 다음과 같은 순서로 실행됩니다.
 
 1. DB 에 연결하는 connector 생성  
-    Connector 를 생성할 때 <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 내용과는 다르게 `host` 를 받는 부분을 다음과 같이 `ArgumentParser` 로 변경했습니다.
+    Connector 를 생성할 때 <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 내용과는 다르게 호스트를 받는 부분을 다음과 같이 `ArgumentParser` 로 변경했습니다.
 
     ```python
     parser = ArgumentParser()
@@ -163,18 +163,20 @@ if __name__ == "__main__":
 4. 불러온 데이터 중 랜덤으로 row 1개를 DB 에 삽입
 5. 4번을 계속해서 반복합니다.
 
-### 1.2 Dockerfile 작성
+### 1.2 Dockerfile 을 이용한 컨테이너 생성
 
 #### 1.2.1 Dockerfile
 
-`Dockerfile` 을 이용하여 위에서 작성한 스크립트를 실행할 수 있는 이미지를 만들어보겠습니다. 
+Dockerfile 을 이용하여 위에서 작성한 스크립트를 실행할 수 있는 이미지를 만들어보겠습니다. 
 
 <CodeDescription>
 
 ```docker title="Dockerfile"
 FROM amd64/python:3.9-slim
 
-RUN apt-get update && apt-get install -y postgresql-client
+RUN apt-get update && apt-get install -y \
+    postgresql-client \
+    && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /usr/app
 
@@ -195,7 +197,7 @@ CMD ["localhost"]
 - <var>RUN</var> : 
 
     - 이미지를 만들 때 실행할 코드를 지정합니다.
-    - 첫 번째 `RUN` 에서는 해당 `Dockerfile` 을 이용하여 data generator 를 띄울 때, 컨테이너 안에 접근하여 `psql`을 사용하기 위해 `postgresql-client` 을 설치합니다.
+    - 첫 번째 `RUN` 에서는 해당 Dockerfile 을 이용하여 data generator 를 띄울 때, 컨테이너 안에 접근하여 `psql`을 사용하기 위해 `postgresql-client` 을 설치합니다.
     - 다음으로 두 번째 `RUN` 에서는 컨테이너에서 python 스크립트를 실행할 때 필요한 `scikit-learn`, `pandas`, `psycopg2-binary` 패키지들을 설치합니다.
 - <var>WORKDIR</var> : 
 
@@ -216,7 +218,7 @@ CMD ["localhost"]
 
 #### 1.2.2 Build
 
-이제 위에서 작성한 `Dockerfile` 을 이용해 이미지를 build 해보겠습니다.
+이제 위에서 작성한 Dockerfile 을 이용해 이미지를 build 해보겠습니다.
 
 이미지를 build 하기 위해서는 아래 규칙을 따르면 됩니다.
 이와 관련한 자세한 내용은 [공식 홈페이지](https://docs.docker.com/engine/reference/commandline/build/)를 참고해주세요.
@@ -343,7 +345,7 @@ docker run -d \
 
 이를 해결하기 위해서는 [그림 1-4] 처럼 두 컨테이너 간에 통신할 수 있도록 연결해 주어야 합니다.
 
-### 2.2 Network Connection
+### 2.2 네트워크 연결
 두 컨테이너를 연결시키는 방법 중 하나로 `docker network` 를 사용할 수 있습니다.
 
 1. 우선, 컨테이너 간 통신할 수 있는 네트워크를 생성합니다.
@@ -373,8 +375,8 @@ docker run -d \
     
     - `--network` 옵션에 위에서 생성한 네트워크 이름을 입력합니다.
     - 컨테이너를 시작할 때 이미지 이름의 뒤에 입력된 값은 Dockerfile 의 `CMD` 를 수정합니다.
-        - 위에서 connector 를 생성할 때 host 를 받는 부분을 수정했었는데 바로 이 경우를 위해서입니다.
-        컨테이너 간의 통신을 하는 경우에는 `localhost` 가 아닌 각 컨테이너의 이름이 host 가 됩니다.
+        - 위에서 connector 를 생성할 때 호스트를 받는 부분을 수정했었는데 바로 이 경우를 위해서입니다.
+        컨테이너 간의 통신을 하는 경우에는 `localhost` 가 아닌 각 컨테이너의 이름이 호스트가 됩니다.
         이 때 앞서 띄운 DB 컨테이너의 이름은 `postgres-server` 이기 때문에 argument 로 `postgres-server` 를 입력합니다.
 
     </CodeDescription>

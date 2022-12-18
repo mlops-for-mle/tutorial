@@ -152,7 +152,8 @@ df.to_csv("data.csv", index=False)
 
 
 ## 3. 전체 코드
-### 3.1 모델 학습 및 저장
+
+### 3.1 `db_train.py`
 위에서 작성한 내용을 모아서 `db_train.py` 로 작성하면 아래와 같습니다.
 
 ```python  title="db_train.py"
@@ -193,7 +194,7 @@ joblib.dump(model_pipeline, "db_pipeline.joblib")
 df.to_csv("data.csv", index=False)
 ```
 
-### 3.2 모델 검증
+### 3.2 `validate_save_model.py`
 
 다음은 <Chapter>2) Model Pipeline</Chapter> 챕터에서 저장된 모델을 검증하는 `base_validate_save_model.py` 를 수정해 `db_validate_save_model.py` 로 저장합니다.
 그리고 `# 1. reproduce data` 에서 저장된 데이터를 불러오도록 수정합니다.
