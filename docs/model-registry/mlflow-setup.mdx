@@ -78,10 +78,10 @@ ch3
 
 ### 1.1 Backend Store
 
-Backend Store 란 수치 데이터와 MLflow 서버의 정보들을 체계적으로 관리하기위한 DB 입니다. 
+Backend Store 란 수치 데이터와 MLflow 서버의 정보들을 체계적으로 관리하기 위한 DB 입니다. 
 Backend Store 에는 모델의 학습 결과인 accuracy, f1-score, 모델이 학습되면서 생기는 loss, 모델 자체의 정보인 hyperparmameters 등의 수치 데이터와 run_id, run_name, experiment_name 등의 MLflow 의 메타 데이터가 저장됩니다.
 
-이번 파트에서는 Backend Store 로 사용하기 위해 `01. Database` 파트에서 사용되었던 PostgreSQL DB 를 새롭게 생성하겠습니다.
+이번 파트에서는 Backend Store 로 사용하기 위해 <Part>01. Database</Part> 파트에서 사용되었던 PostgreSQL DB 를 새롭게 생성하겠습니다.
 
 ### 1.2 PostgreSQL DB Server
 
@@ -120,7 +120,7 @@ services:
 
 ### 2.1 Artifact Store
 
-Artifact Store 란 MLflow 에서 학습된 모델을 저장하는 model registry 로 이용하기 위한 스토리지 (storage) 서버입니다. 
+Artifact Store 란 MLflow 에서 학습된 모델을 저장하는 model registry 를 이용하기 위한 스토리지 (storage) 서버입니다. 
 Artifact Store 를 이용하면 기본적인 파일 시스템 보다 체계적으로 관리 할 수 있으며 외부에 있는 스토리지 서버도 사용 할 수 있다는 장점이 있습니다. 
 
 ### 2.2 Why MinIO?
