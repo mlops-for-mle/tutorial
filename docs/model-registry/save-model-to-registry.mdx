@@ -147,10 +147,22 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 `os` 라이브러리를 이용해 시스템의 환경변수를 설정합니다.
 
-- `MLFLOW_S3_ENDPOINT_URL` : 모델을 저장할 스토리지의 주소입니다. <Chapter>1) MLflow Setup</Chapter>  챕터에서 띄운 MinIO 서버 주소와 같으며 `http://localhost:9000` 입니다.
-- `MLFLOW_TRACKING_URI` : 정보를 저장하기 위해 연결할 MLflow 서버의 주소입니다. <Chapter>1) MLflow Setup</Chapter>  챕터의 MLflow 서버 주소와 같으며 `http://localhost:5001` 입니다.
-- `AWS_ACCESS_KEY_ID` : MinIO 에 접근하기 위한 아이디입니다. <Chapter>1) MLflow Setup</Chapter>  챕터에서 설정한 <var>MINIO_ROOT_USER</var> 인 `minio` 를 사용합니다.
-- `AWS_SECRET_ACCESS_KEY` : MinIO 에 접근하기 위한 비밀번호입니다. <Chapter>1) MLflow Setup</Chapter>  챕터에서 설정한 <var>MINIO_ROOT_PASSWORD</var> 인 `miniostorage` 를 사용합니다.
+- <var>MLFLOW_S3_ENDPOINT_URL</var> : 
+
+    - 모델을 저장할 스토리지의 주소입니다. 
+    - <Chapter>1) MLflow Setup</Chapter>  챕터에서 띄운 MinIO 서버 주소와 같으며 <code>http://localhost:9000</code> 입니다.
+- <var>MLFLOW_TRACKING_URI</var> : 
+
+    - 정보를 저장하기 위해 연결할 MLflow 서버의 주소입니다. 
+    - <Chapter>1) MLflow Setup</Chapter>  챕터의 MLflow 서버 주소와 같으며 <code>http://localhost:5001</code> 입니다.
+- <var>AWS_ACCESS_KEY_ID</var> : 
+
+    - MinIO 에 접근하기 위한 아이디입니다. 
+    - <Chapter>1) MLflow Setup</Chapter>  챕터에서 설정한 <var>MINIO_ROOT_USER</var> 인 <code>minio</code> 를 사용합니다.
+- <var>AWS_SECRET_ACCESS_KEY</var> : 
+
+    - MinIO 에 접근하기 위한 비밀번호입니다. 
+    - <Chapter>1) MLflow Setup</Chapter>  챕터에서 설정한 <var>MINIO_ROOT_PASSWORD</var> 인 <code>miniostorage</code> 를 사용합니다.
 
 </CodeDescription>
 
@@ -335,7 +347,7 @@ df.to_csv("data.csv", index=False)
 python save_model_to_registry.py.py --model-name "sk_model"
 ```
 
-### 2.3 MLflow 에서 결과 확인
+### 2.3 MLflow 에서 결과 확인하기
 
 코드 실행의 결과를 [localhost:5001](http://localhost:5001)(mlflow server) 에서 확인합니다.
 
