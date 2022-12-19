@@ -1,18 +1,18 @@
 ---
 sidebar_position: 2
-description: 📌 API 서버를 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+description: 📌 앞서 작성한 API 를 실행할 수 있는 Dockerfile 을 작성합니다.
 ---
 
 # 2) Model API on Docker Compose
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
-
+import APIServingImage5 from './img/api-serving-5.png';
 
 ### 목표
 
-1. 앞서 작성한 API 를 실행할 수 있는 `Dockerfile` 을 작성합니다.
-2. API 서버를 띄우기 위한 `docker-compose.yaml` 파일을 작성합니다.
+1. 앞서 작성한 API 를 실행할 수 있는 Dockerfile 을 작성합니다.
+2. API 서버를 띄우기 위한 Docker Compose 파일을 작성합니다.
 3. API 서버에 데이터를 전달하여 제대로 작동하는지 확인합니다.
 
 <details>
@@ -24,14 +24,14 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 1. 작성한 API 를 실행하는데 필요한 모델을 이미지에 복사하는 Dockerfile 을 작성합니다.
     - 이미지를 실행했을 때, 별도의 모델 정보를 필요로 하지 않습니다.
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
-    - 포트는 default 포트인 `8000` 번 포트를 이용합니다.
-2. `docker-compose.yaml` 파일을 작성합니다.
-    - Model API server
+    - 포트는 default 포트인 8000번 포트를 이용합니다.
+2. Docker Compose 파일을 작성합니다.
+    - Model API 서버
         - Service name: `api-with-model`
         - Image: `Dockerfile`
         - Container name: `api-with-model`
         - Port: `8000:8000`
-3. `docker-compose.yaml` 을 실행하여 API 를 작동시키고 데이터를 전달하여 예측 결과를 제대로 반환하는지 확인합니다.
+3. Docker Compose 파일을 실행하여 API 를 작동시키고 데이터를 전달하여 예측 결과를 제대로 반환하는지 확인합니다.
     - Swagger UI 를 통해 확인합니다.
     - `curl` 을 통해 확인합니다.
 
@@ -61,13 +61,13 @@ ch6
 
 <div style={{textAlign: 'center'}}>
 
-![model api diagram](./img/api-serving-5.png)
+<img src={APIServingImage5} style={{scale: '70%'}}/>
 [그림 6-5] Model API Diagram
 </div>
 
 ## 1. Dockerfile 작성
 
-`Dockerfile` 을 이용하여 앞서 작성한 Model API 를 작동시킬 수 있는 API 서버의 도커 이미지를 만들어보겠습니다.
+Dockerfile 을 이용하여 앞서 작성한 Model API 를 작동시킬 수 있는 API 서버의 Docker 이미지를 만들어보겠습니다.
 
 ```docker title="Dockerfile"
 FROM amd64/python:3.9-slim
@@ -84,15 +84,27 @@ COPY sk_model/ sk_model/
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
 ```
 
-- `FROM` : Base image 로 `amd64/python:3.9-slim` 을 사용합니다.
-- `WORKDIR` : 작업 directory 는 `/usr/app` 으로 지정합니다.
-- `RUN` : `pip` 를 업데이트 한 후 필요한 패키지들을 설치합니다.
-- `COPY` : API 를 작동시키는데 필요한 `.py` 파일들과 모델이 저장된 디렉토리 `sk_model` 을 컨테이너 내부로 복사합니다. API 에서 사용할 모델 파일을 직접 넣어줌으로써 이미지를 실행했을 때에는 별도의 모델 정보를 필요로 하지 않게 됩니다.
-- `CMD` : 컨테이너가 실행될 때 수행할 명령어의 기본값을 적어줍니다. 여기에서는 `uvicorn` 을 이용해 `app.py` 에서 만든 FastAPI 의 객체 `app` 을 실행합니다.
+- <var>FROM</var> : 
+
+  - Base image 로 `amd64/python:3.9-slim` 을 사용합니다.
+- <var>WORKDIR</var> : 
+
+  - 작업 directory 는 `/usr/app` 으로 지정합니다.
+- <var>RUN</var> : 
+
+  - `pip` 를 업데이트 한 후 필요한 패키지들을 설치합니다.
+- <var>COPY</var> : 
+
+  - API 를 작동시키는데 필요한 `.py` 파일들과 모델이 저장된 디렉토리 `sk_model` 을 컨테이너 내부로 복사합니다. 
+  - API 에서 사용할 모델 파일을 직접 넣어줌으로써 이미지를 실행했을 때에는 별도의 모델 정보를 필요로 하지 않게 됩니다.
+- <var>CMD</var> : 
+
+  - 컨테이너가 실행될 때 수행할 명령어의 기본값을 적어줍니다. 
+  - 여기서는 `uvicorn` 을 이용해 `app.py` 에서 만든 FastAPI 의 객체 `app` 을 실행합니다.
 
 ## 2. Docker Compose
 
-이제 Model API service 를 띄우는 `docker-compose.yaml` 파일을 작성하겠습니다.
+이제 Model API 서비스를 띄우는 Docker Compose 파일을 작성하겠습니다.
 
 <CodeDescription>
 
@@ -104,29 +116,38 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
+    container_name: api-with-model
     ports:
       - 8000:8000
-    container_name: api-with-model
 
 networks:
   default:
     name: mlops-network
     external: true
 ```
-- `ports` : host 와 container 의 port 를 설정합니다. 형식은 `host:container` 으로 사용되며, 여기서는 `8000:8000` 로 설정하겠습니다.
-- `container_name` : 컨테이너의 이름을 설정합니다. Model API service 의 컨테이너 이름은 `api-with-model` 로 설정하겠습니다.
-- `networks`: 서비스들을 연결할 도커 네트워크를 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름을 설정합니다. 
+  - Model API 서비스의 컨테이너 이름은 `api-with-model` 로 설정하겠습니다.
+- <var>ports</var> : 
+
+  - 호스트와 컨테이너의 포트를 설정합니다. 
+  - 형식은 `host:container` 으로 사용되며, 여기서는 `8000:8000` 로 설정하겠습니다.
+- <var>networks</var> : 
+
+  - 서비스들을 연결할 Docker 네트워크를 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 로 사용합니다. 
+  - `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
 
 </CodeDescription>
 
-이제 완성된 `docker-compose.yaml` 파일을 다음의 명령어를 통해 실행하여 Model API service 를 작동시킵니다.
+이제 완성된 Docker Compose 파일을 다음의 명령어를 통해 실행하여 Model API 서비스를 작동시킵니다.
 
 ```bash
 # terminal-command
 docker compose up -d
 ```
 
-컨테이너가 잘 실행되고 있는지 확인해보면 다음과 같이 api-with-model 이라는 이름의 컨테이너가 실행되고 있음을 확인할 수 있습니다.
+컨테이너가 잘 실행되고 있는지 확인해보면 다음과 같이 `api-with-model` 이라는 이름의 컨테이너가 실행되고 있음을 확인할 수 있습니다.
 
 ```bash
 # terminal-command
@@ -139,9 +160,9 @@ a88b1a6cff44   ch6-api-with-model   "uvicorn app:app --h…"   5 seconds ago   U
 
 ### 3.1 Swagger UI 이용
 
-이제 API 서버가 잘 작동하는지 확인해 보겠습니다. API 서버 컨테이너를 실행할 때 포트 포워딩을 `8000` 번에서 `8000` 번으로 했으므로 `8000` 번 포트로 접속하면 API 서버로 접속할 수 있습니다.
+이제 API 서버가 잘 작동하는지 확인해 보겠습니다. API 서버 컨테이너를 실행할 때 포트 포워딩을 `8000:8000` 으로 했으므로 8000번 포트로 접속하면 API 서버로 접속할 수 있습니다.
 
-[`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하여 Request body 의 형태에 알맞게 데이터를 전달해주면 Response body 로 inference 결과가 잘 반환되는 것을 확인할 수 있습니다.
+[`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하여 Request Body 의 형태에 알맞게 데이터를 전달해주면 Response Body 로 inference 결과가 잘 반환되는 것을 확인할 수 있습니다.
 
 ### 3.2 `curl` 이용
 
