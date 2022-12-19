@@ -169,15 +169,15 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 ### 1.2 모델 저장하기
 
-**여기 부분부터는 갑자기 등장하는 experiment 과 run 이 이해하기가 조금 어렵게 작성되어있는 느낌입니다. 글을 좀 더 들어가기 쉽게 작성되어야할 것 같습니다.**
+MLflow 는 정보를 저장하기 위해 `experiment` 와 `run` 을 사용합니다.
+- `experiment`: MLflow 에서 정보를 관리하기 위해 나누는 일종의 디렉토리 입니다. `BERT`, `ResNet` 과 같이 특정 이름으 통해 생성 할 수 있으며, 생성하지 않고 MLflow 에 정보를 저장하는 경우 `Default` 라는 이름의 `experiment` 에 저장됩니다.
+- `run`: `experiment` 에 저장되는 모델 실험 결과 입니다. 해당 `run` 에 실제 정보들이 저장되게 되며, `experiment`/`run` 의 구조로 저장됩니다.
 
-`mlflow` 는 정보를 `experiment` / `run` 의 구조로 저장하며 `experiment` 에 `run` 을 동적으로 생성합니다. 이 때, 각각의 `run` 은 unique 한 해쉬값인 `run_id` 를 부여받게 되며 이를 통해서 추후 원하는 정보에 접근 할 수 있습니다.
+MLflow 는 정보 저장에 관련된 스크립트를 실행 할 때 명시된 `experiment` 에 `run` 을 동적으로 생성합니다. 이 때, 각각의 `run` 은 unique 한 해쉬값인 `run_id` 를 부여받게 되며 이를 이용하여 저장된 후에도 해당 정보에 접근 할 수 있습니다.
 
-모델의 결과 등을 저장 할 가장 큰 카테고리인 `experiment` 의 경우 이름을 지정하지 않고 결과를 저장하면 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 만드는 방식으로 진행합니다.
+앞서 설명한대로 정보를 저장 할 가장 큰 카테고리인 `experiment` 의 이름을 지정하지 않는 경우 기본 값으로 `Default` 라는 이름의 `experiment` 에 `run` 이 생성됩니다. 실습에서는 `new-exp` 라는 이름을 가진 새로운 `experiment` 를 생성하고, 생성된 `new-exp` 에 `run` 을 생성하는 방식으로 진행합니다.
 
-**여기 위까지**
-
-이어서 <Part>02. Model Development</Part> 파트의 모델과 모델의 결과 metric 인 정확도를 저장해보겠습니다.  
+<Part>02. Model Development</Part> 파트의 모델과 모델의 결과 metric 인 정확도를 저장해보겠습니다.  
 `mlflow` 클래스를 이용하여 다음과 같이 작성합니다.
 
 1. 모델의 이름을 설정할 수 있는 외부 변수를 설정합니다. MLflow 에서는 모델을 저장할 때 이름을 설정하여 관리하게 됩니다. 여기서는 default 로 `sk_model` 을 사용하겠습니다.
