@@ -70,12 +70,6 @@ COPY crud_pydantic.py crud_pydantic.py
 CMD ["uvicorn", "crud_pydantic:app", "--host", "0.0.0.0", "--reload"]
 ```
 
-- <var>FROM</var> : 
-
-  - Base image 로는 `amd64/python:3.9-slim` 을 사용하도록 하겠습니다.
-- <var>WORKDIR</var> : 
-
-  - 작업 directory 는 `/usr/app` 으로 지정합니다.
 - <var>RUN</var> : 
   
   - `pip` 를 먼저 업데이트한 후에 `fastapi[all]` 을 설치합니다.
