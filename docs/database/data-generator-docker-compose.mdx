@@ -196,7 +196,7 @@ services:
   - `context` : 이미지를 build 하기 위해 Dockerfile 이 있는 절대경로 또는 상대경로를 설정합니다.
   - `dockerfile` : `context` 에서 설정한 경로에 있는 Dockerfile 의 파일명을 입력합니다.
 - `depends_on` :
-  - `Compose` 로 띄워지는 서비스 간의 종속성 순서대로 서비스를 시작할 때 사용합니다.
+  - Compose 로 띄워지는 서비스 간의 종속성 순서대로 서비스를 시작할 때 사용합니다.
   - 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator 를 실행해야 하기 때문에 postgres server 의 서비스 이름인 `postgres-server` 를 입력합니다.
 - `command` :
   - Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다.
