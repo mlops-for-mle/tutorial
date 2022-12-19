@@ -84,12 +84,6 @@ COPY sk_model/ sk_model/
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--reload"]
 ```
 
-- <var>FROM</var> : 
-
-  - Base image 로 `amd64/python:3.9-slim` 을 사용합니다.
-- <var>WORKDIR</var> : 
-
-  - 작업 directory 는 `/usr/app` 으로 지정합니다.
 - <var>RUN</var> : 
 
   - `pip` 를 업데이트 한 후 필요한 패키지들을 설치합니다.
@@ -125,14 +119,6 @@ networks:
     name: mlops-network
     external: true
 ```
-- <var>container_name</var> : 
-
-  - 컨테이너의 이름을 설정합니다. 
-  - Model API 서비스의 컨테이너 이름은 `api-with-model` 로 설정하겠습니다.
-- <var>ports</var> : 
-
-  - 호스트와 컨테이너의 포트를 설정합니다. 
-  - 형식은 `host:container` 으로 사용되며, 여기서는 `8000:8000` 로 설정하겠습니다.
 - <var>networks</var> : 
 
   - 서비스들을 연결할 Docker 네트워크를 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 로 사용합니다. 
