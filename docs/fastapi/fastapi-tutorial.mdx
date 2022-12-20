@@ -26,7 +26,7 @@ FastAPI 의 [공식 문서](https://fastapi.tiangolo.com/)를 참고하여 튜�
 2. [First Steps](https://fastapi.tiangolo.com/tutorial/first-steps/) 를 따라 FastAPI 를 이용해 간단한 API 를 만들어봅니다.
 3. [Path Parameter](https://fastapi.tiangolo.com/tutorial/path-params/) 에 대해 학습합니다.
 4. [Query Parameter](https://fastapi.tiangolo.com/tutorial/query-params/) 에 대해 학습합니다.
-5. Path parameter 와 Query parameter 를 모두 사용하여 API 를 만들어봅니다. [[Multiple Path and Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
+5. Path Parameter 와 Query Parameter 를 모두 사용하여 API 를 만들어봅니다. [[Multiple Path and Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
 
 </CodeDescription>
 </details>
@@ -107,7 +107,7 @@ uvicorn main:app --reload
 <div style={{textAlign: 'center'}}>
 
 ![API Running Screen](./img/fastapi-2.png)
-[그림 5-2] 실행 화면 예시
+[그림 5-2] `main.py` 실행 화면
 
 </div>
 
@@ -117,7 +117,7 @@ uvicorn main:app --reload
 <div style={{textAlign: 'center'}}>
 
 ![Swagger UI Screen](./img/fastapi-3.png)
-[그림 5-3] Swagger UI 화면 예시
+[그림 5-3] Swagger UI 화면
 
 </div>
 
@@ -136,28 +136,28 @@ API 를 만들 수 있도록 도와주는 Python 클래스 `FastAPI` 를 import 
 from fastapi import FastAPI
 ```
 
-### 2.2 Step 2: Create a FastAPI instance
+### 2.2 Step 2: Create a FastAPI Instance
 
-`FastAPI` 클래스의 instance 를 생성합니다.
+`FastAPI` 클래스의 인스턴스를 생성합니다.
 여기에서 생성하는 인스턴스의 이름에 따라 `uvicorn main:app --reload` 과 같은 형태로 실행 명령어가 달라지게 됩니다.
 
 ```python
 app = FastAPI()
 ```
 
-### 2.3 Step 3: Create a *path* operation
+### 2.3 Step 3: Create a Path Operation
 
-여기에서 말하는 <var>path</var> 는 URL 에서 첫 번째 `/` 부터 시작되는 마지막 부분을 의미합니다.
-예를 들어 URL 이 `https://example.com/items/foo` 와 같이 되어 있다면, path 는 `/items/foo` 라고 할 수 있습니다.
+여기에서 말하는 path 는 URL 에서 첫 번째 `/` 부터 시작되는 마지막 부분을 의미합니다.
+예를 들어 URL 이 `https://example.com/items/foo` 와 같이 되어 있다면, path 는 <code>/items/foo</code> 라고 할 수 있습니다.
 
-<var>Operation</var> 은 POST, GET, PUT, DELETE 등과 같은 HTTP method 를 의미합니다.
-이러한 operation 을 수행하기 위해 `@app.get("/")` 와 같은 *path operation decorator* 를 사용합니다.
+Operation 은 POST, GET, PUT, DELETE 등과 같은 HTTP Method 를 의미합니다.
+이러한 operation 을 수행하기 위해 `@app.get("/")` 와 같은 Path Operation Decorator 를 사용합니다.
 
 `@app.get("/")` 은 FastAPI 로 하여금 path `/` 로 가서 `GET` operation 을 수행하라는 의미로 사용할 수 있습니다.
 
-### 2.4 Step 4: Define the path operation function
+### 2.4 Step 4: Define the Path Operation Function
 
-Path operation function 은 path operation 이 수행되었을 때 호출될 Python 함수를 말합니다.
+Path Operation Function 은 Path Operation 이 수행되었을 때 호출될 Python 함수를 말합니다.
 다음과 같은 형태로 사용되었습니다.
 
 ```python
@@ -166,14 +166,14 @@ def read_root():
     return {"Hello": "World"}
 ```
 
-### 2.5 Step 5: Return the content
+### 2.5 Step 5: Return the Content
 
-Path operation function 을 통해 return 하는 값으로는 `dict` , `list` , `str` , `int` 등이 가능합니다.
-또한, 뒤에서 나올 Pydantic model 의 형태로도 return 할 수 있습니다.
+Path Operation Function 을 통해 return 하는 값으로는 `dict` , `list` , `str` , `int` 등이 가능합니다.
+또한, 뒤에서 나올 Pydantic Model 의 형태로도 return 할 수 있습니다.
 
 ## 3. Path Parameter 이해하기
 
-Path Parameter 는 path operation 에 포함된 변수로 사용자에게 입력받아 function 의 argument 로 사용되는 parameter 를 의미합니다. [[Path Parameters](https://fastapi.tiangolo.com/tutorial/path-params/)]
+Path Parameter 는 Path Operation 에 포함된 변수로 사용자에게 입력받아 function 의 argument 로 사용되는 parameter 를 의미합니다. [[Path Parameters](https://fastapi.tiangolo.com/tutorial/path-params/)]
 
 다음과 같이 `path_param.py` 를 작성하고 `uvicorn path_param:app --reload` 를 입력하여 실행합니다.
 
@@ -213,7 +213,7 @@ def read_item(item_id: int):
 
 ## 4. Query Parameter 이해하기
 
-Query Parameter 는 function parameter 로는 사용되지만 path operation 에 포함되지 않아 Path Parameter 라고 할 수 없는 parameter 를 의미합니다. [[Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/)]
+Query Parameter 는 function parameter 로는 사용되지만 Path Operation 에 포함되지 않아 Path Parameter 라고 할 수 없는 parameter 를 의미합니다. [[Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/)]
 
 다음과 같이 `query_param.py` 를 작성하고 `uvicorn query_param:app --reload` 를 입력하여 실행합니다.
 
@@ -232,7 +232,7 @@ def read_item(skip: int = 0, limit: int = 10):
     return fake_items_db[skip : skip + limit]
 ```
 
-Path Parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 과 `limit` 이 path operation 인 `@app.get("/items/")` 에는 들어있지 않습니다.
+Path Parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 과 `limit` 이 Path Operation 인 `@app.get("/items/")` 에는 들어있지 않습니다.
 
 Query 는 URL 에서 `?` 뒤에 key-value 쌍의 형태로 나타나고, `&` 로 구분되어 사용됩니다.  
 예를 들면, 위와 같은 경우 `http://localhost:8000/items/?skip=0&limit=10` 과 같은 형태로 사용할 수 있습니다.  
@@ -249,13 +249,13 @@ def read_user_item(item_id: str, needy: str):
 		return item
 ```
 
-위의 예시에서 `needy` 는 path operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 Query Parameter 이고, function `read_user_item()` 에서 default 값이 존재하지 않기 때문에 Required Query Parameter 임을 알 수 있습니다.  
+위의 예시에서 `needy` 는 Path Operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 Query Parameter 이고, function `read_user_item()` 에서 default 값이 존재하지 않기 때문에 Required Query Parameter 임을 알 수 있습니다.  
 이러한 경우 `http://localhost:8000/items/foo-item` 와 같이 `needy` 를 입력해주지 않으면 에러가 발생합니다.  
 따라서 `http://localhost:8000/items/foo-item?needy=someneedy` 와 같은 형태로 `?` 뒤에 입력을 해 주어야 에러가 발생하지 않고 함수가 제대로 동작합니다.
 
 ## 5. Multiple Path and Query Parameters 사용해보기
 
-Path Parameter 와 Query Parameter 를 모두 사용하여 path operation function 을 작성해봅니다. [[Multiple Path and Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
+Path Parameter 와 Query Parameter 를 모두 사용하여 Path Operation Function 을 작성해봅니다. [[Multiple Path and Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
 
 다음과 같이 `multi_param.py` 를 작성합니다.
 
@@ -281,10 +281,10 @@ def read_user_item(user_id: int, item_id: str, q: Union[str, None] = None, short
     return item
 ```
 
-먼저 path operation 을 보면, `@app.get("/users/{user_id}/items/{item_id}")` 로 되어 있습니다.
+먼저 Path Operation 을 보면, `@app.get("/users/{user_id}/items/{item_id}")` 로 되어 있습니다.
 이를 통해 `user_id` 와 `item_id` 라는 Path Parameter 가 있음을 알 수 있습니다.
 
-이번에는 path operation function 의 parameter 를 살펴 보면, `user_id`, `item_id`, `q`, `short` 가 있음을 알 수 있습니다.
+이번에는 Path Operation Function 의 parameter 를 살펴 보면, `user_id`, `item_id`, `q`, `short` 가 있음을 알 수 있습니다.
 이 중 Path Parameter 가 아닌 `q` 와 `short` 는 Query Parameter 임을 알 수 있고, default 값이 각각 `None` 과 `False` 임을 알 수 있습니다.
 
 다음과 같은 형태로 URL 을 줄 수 있을 것입니다.
