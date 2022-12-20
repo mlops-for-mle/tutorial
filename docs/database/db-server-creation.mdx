@@ -79,14 +79,24 @@ docker run -d \
   postgres:14.0
 ```
 
-- `-d` : 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션 없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
-- `—-name` : 컨테이너의 이름을 지정합니다. 여기서는 `postgres-server` 를 사용하겠습니다.
-- `-p` : 컨테이너에서 외부로 노출할 포트 포워딩 (port forwarding)을 설정합니다. 형식은 `host:container` 으로 사용이 되며, 여기서는 `5432:5432` 로 설정하겠습니다.
-- `-e` : 필요한 환경 변수를 설정합니다.
-    - <var>POSTGRES_USER</var> : User 의 이름을 설정합니다. 여기서는 <code>myuser</code> 를 사용하겠습니다.
-    - <var>POSTGRES_PASSWORD</var> : User 의 비밀번호를 설정합니다. 여기서는 <code>mypassword</code> 를 사용하겠습니다.
-    - <var>POSTGRES_DB</var> : Database 의 이름을 설정합니다. 여기서는 <code>mydatabase</code> 를 사용하겠습니다.
-- `postgres:14.0` : 사용할 이미지를 지정합니다. 여기서는 `postgres:14.0` 을 사용하겠습니다.
+- <var>-d</var> : 
+
+    - 컨테이너가 detached 모드로 실행하게 되며, `-d` 옵션 없이 실행했다면 해당 터미널에서 `Ctrl + C` 를 눌러서 빠져나오는 순간 해당 컨테이너는 종료됩니다.
+- <var>--name</var> : 
+
+    - 컨테이너의 이름을 지정합니다. 
+- <var>-p</var> : 
+
+    - 컨테이너에서 외부로 노출할 포트 포워딩 (port forwarding) 을 설정합니다. 
+    - 형식은 `host:container` 으로 사용이 되며, 여기서는 `5432:5432` 로 설정하겠습니다.
+- <var>-e</var> : 필요한 환경 변수를 설정합니다.
+
+    - <var>POSTGRES_USER</var> : 유저의 이름을 설정합니다. 
+    - <var>POSTGRES_PASSWORD</var> : 유저의 비밀번호를 설정합니다.
+    - <var>POSTGRES_DB</var> : DB 의 이름을 설정합니다.
+- <var>postgres:14.0</var> : 
+
+    - 사용할 이미지를 지정합니다.
 
 </CodeDescription>
 
@@ -116,11 +126,21 @@ PostgreSQL DB 서버를 확인할 때 사용하는 CLI 툴인 `psql` 설치합�
 # terminal-command
 PGPASSWORD=mypassword psql -h localhost -p 5432 -U myuser -d mydatabase
 ```
-- `PGPASSWORD=` : 접속할 user 의 암호를 입력합니다. 여기서는 `mypassword` 를 입력합니다.
-- `-h` : 호스트를 지정합니다. 이 때 호스트는 docker 에서 포트 포워딩을 했기 때문에 `localhost` 를 입력합니다.
-- `-p` : 포트를 지정합니다. 여기서는 `5432` 를 입력합니다.
-- `-U` : 접속할 user 의 이름을 입력합니다. 여기서는 `myuser` 를 통해 접속합니다.
-- `-d` : database 의 이름을 입력합니다. 여기서는 `mydatabase` 를 입력합니다.
+- <var>PGPASSWORD=</var> : 
+
+    - 접속할 유저의 암호를 입력합니다. 
+- <var>-h</var> : 
+
+    - 호스트를 지정합니다. 
+- <var>-p</var> : 
+
+    - 포트를 지정합니다. 
+- <var>-U</var> : 
+
+    - 접속할 유저의 이름을 입력합니다. 
+- <var>-d</var> : 
+
+    - DB 의 이름을 입력합니다. 
 
 </CodeDescription>
 
