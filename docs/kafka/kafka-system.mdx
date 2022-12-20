@@ -19,63 +19,71 @@ import ArchitectureImage from './img/kafka-13.png';
 
 ### 스펙 명세서
 
-1. Zookeeper, Broker, Schema-registry, Connect 를 생성하는 Docker Compose 파일을 작성합니다.
+1. Zookeeper, Broker, Schema Registry, Connect 를 생성하는 Docker Compose 파일을 작성합니다.
     - Zookeeper
-        - Service name : <code>zookeeper</code>
-        - Image : <code>confluentinc/cp-zookeeper:7.3.0</code>
-        - Container name : <code>zookeeper</code>
-        - Port : <code>2181:2181</code>
-        - Environment
-            - <var>ZOOKEEPER_SERVER_ID</var> : <code>1</code>
+        - <var>Service name</var> : <code>zookeeper</code>
+        - <var>Image</var> : <code>confluentinc/cp-zookeeper:7.3.0</code>
+        - <var>Container name</var> : <code>zookeeper</code>
+        - <var>Port</var> : <code>2181:2181</code>
+        - <var>Environment</var>
+
+            - <var>ZOOKEEPER_SERVER_ID</var> : <code>1</code>  
             - <var>ZOOKEEPER_CLIENT_PORT</var> : <code>2181</code>
     - Broker
-        - Service name : `broker`
-        - Image : `confluentinc/cp-kafka:7.3.0`
-        - Container name : `broker`
-        - Port : `9092:9092`
-        - Environment
-            - `KAFKA_BROKER_ID` : `1`
-            - `KAFKA_ZOOKEEPER_CONNECT` : `zookeeper:2181`
-            - `KAFKA_ADVERTISED_LISTENERS` : `PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092`
-            - `KAFKA_LISTENER_SECURITY_PROTOCOL_MAP` : `PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT`
-            - `KAFKA_INTER_BROKER_LISTENER_NAME` : `PLAINTEXT`
-            - `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR` : `1`
-            - `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS` : `0`
+        - <var>Service name</var> : <code>broker</code>
+        - <var>Image</var> : <code>confluentinc/cp-kafka:7.3.0</code>
+        - <var>Container name</var> : <code>broker</code>
+        - <var>Port</var> : <code>9092:9092</code>
+        - <var>Environment</var>
+
+            - <var>KAFKA_BROKER_ID</var> : <code>1</code>
+            - <var>KAFKA_ZOOKEEPER_CONNECT</var> : <code>zookeeper:2181</code>
+            - <var>KAFKA_ADVERTISED_LISTENERS</var> : <code>PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092</code>
+            - <var>KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</var> : <code>PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</code>
+            - <var>KAFKA_INTER_BROKER_LISTENER_NAME</var> : <code>PLAINTEXT</code>
+            - <var>KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</var> : <code>1</code>
+            - <var>KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS</var> : <code>0</code>
     - Schema-registry
-        - Service name : `schema-registry`
-        - Image : `confluentinc/cp-schema-registry:7.3.0`
-        - Container name : `schema-registry`
-        - Port : `8081:8081`
-        - Environment
-            - `SCHEMA_REGISTRY_HOST_NAME` : `schema-registry`
-            - `SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS` : `broker:29092`
-            - `SCHEMA_REGISTRY_LISTENERS` : `http://schema-registry:8081`
+        - <var>Service name</var> : <code>schema-registry</code>
+        - <var>Image</var> : <code>confluentinc/cp-schema-registry:7.3.0</code>
+        - <var>Container name</var> : <code>schema-registry</code>
+        - <var>Port</var> : <code>8081:8081</code>
+        - <var>Environment</var>
+
+            - <var>SCHEMA_REGISTRY_HOST_NAME</var> : <code>schema-registry</code>
+            - <var>SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS</var> : <code>broker:29092</code>
+            - <var>SCHEMA_REGISTRY_LISTENERS</var> : <code>http://schema-registry:8081</code>
     - Connect
-        - Service name : `connect`
-        - Image : `confluentinc/cp-connect:7.3.0` 를 이용한 Dockerfile
-            - Environment
-                - `CONNECT_PLUGIN_PATH` : `“/usr/share/java,/usr/share/confluent-hub-components”`
-            - Run
-                - `confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5`
-                - `confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2`
-                - `confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0`
-        - Container name : `connect`
-        - Port : `8083:8083`
-        - Environment
-            - `CONNECT_BOOTSTRAP_SERVERS` : `schema-registry`
-            - `CONNECT_BOOTSTRAP_SERVERS` : `broker:29092`
-            - `CONNECT_REST_ADVERTISED_HOST_NAME` : `connect`
-            - `CONNECT_GROUP_ID` : `docker-connect-group`
-            - `CONNECT_CONFIG_STORAGE_TOPIC` : `docker-connect-configs`
-            - `CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR` : `1`
-            - `CONNECT_OFFSET_STORAGE_TOPIC` : `docker-connect-offsets`
-            - `CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR` : `1`
-            - `CONNECT_STATUS_STORAGE_TOPIC` : `docker-connect-status`
-            - `CONNECT_STATUS_STORAGE_REPLICATION_FACTOR` : `1`
-            - `CONNECT_KEY_CONVERTER` : `org.apache.kafka.connect.storage.StringConverter`
-            - `CONNECT_VALUE_CONVERTER` : `org.apache.kafka.connect.json.JsonConverter`
-            - `CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL` : `http://schema-registry:8081`
-2. `kafka-docker-compose.yaml` 을 실행합니다.
+        - <var>Service name</var> : <code>connect</code>
+        - <var>Image</var> : <code>confluentinc/cp-connect:7.3.0</code> 를 이용한 Dockerfile
+        
+            - <var>Environment</var>
+                - <var>CONNECT_PLUGIN_PATH</var> : <code>“/usr/share/java,/usr/share/confluent-hub-components”</code>
+        
+            - <var>Run</var>
+
+                - <code>confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5</code>
+                - <code>confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2</code>
+                - <code>confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0</code>
+        
+        - <var>Container name</var> : <code>connect</code>
+        - <var>Port</var> : <code>8083:8083</code>
+        - <var>Environment</var>
+
+            - <var>CONNECT_BOOTSTRAP_SERVERS</var> : <code>schema-registry</code>
+            - <var>CONNECT_BOOTSTRAP_SERVERS</var> : <code>broker:29092</code>
+            - <var>CONNECT_REST_ADVERTISED_HOST_NAME</var> : <code>connect</code>
+            - <var>CONNECT_GROUP_ID</var> : <code>docker-connect-group</code>
+            - <var>CONNECT_CONFIG_STORAGE_TOPIC</var> : <code>docker-connect-configs</code>
+            - <var>CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR</var> : <code>1</code>
+            - <var>CONNECT_OFFSET_STORAGE_TOPIC</var> : <code>docker-connect-offsets</code>
+            - <var>CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR</var> : <code>1</code>
+            - <var>CONNECT_STATUS_STORAGE_TOPIC</var> : <code>docker-connect-status</code>
+            - <var>CONNECT_STATUS_STORAGE_REPLICATION_FACTOR</var> : <code>1</code>
+            - <var>CONNECT_KEY_CONVERTER</var> : <code>org.apache.kafka.connect.storage.StringConverter</code>
+            - <var>CONNECT_VALUE_CONVERTER</var> : <code>org.apache.kafka.connect.json.JsonConverter</code>
+            - <var>CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL</var> : <code>http://schema-registry:8081</code>
+2. Docker Compose 파일을 실행합니다.
 3. `docker ps` 명령어를 이용하여 잘 띄워졌는지 확인합니다.
 
 </CodeDescription>
@@ -108,7 +116,7 @@ ch7
 ## 0. 환경 설정
 :::caution
 
-📌 이번 챕터를 진행하기 위해서는 위해서 앞서 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 실행된 docker compose 를 종료해야 합니다.
+📌 이번 챕터를 진행하기 위해서는 위해서 앞서 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 실행된 Docker Compose 를 종료해야 합니다.
 :::
 
 아래 명령어를 통해 종료합니다.
@@ -124,25 +132,25 @@ docker compose -p ch7-naive down -v
 
 <div style={{textAlign: 'center'}}>
 
-<img src={ArchitectureImage} style={{scale: '80%'}}/>
+<img src={ArchitectureImage} style={{scale: '70%'}}/>
 [그림7-13] Kafka System
 
 </div>
 
 각각의 서비스에 대해 알아보겠습니다.
 
-- **Kafka Cluster** : source connector 에서 데이터를 받아 topic 에 저장하고, sink connector 로 넘겨줄 kafka cluster 입니다. broker 는 multi broker 가 아닌 single broker 를 사용하겠습니다.
-- **Zookeeper** : broker server 의 상태 감지를 위해 사용되는 zookeeper server 입니다.
-- **Schema Registry** : 메시지의 schema 를 저장하기 위한 schema registry server 입니다.
-- **Kafka Connect** : connector 를 띄우기 위한 connect server 입니다.
+- Zookeeper : 브로커 서버의의 상태 감지를 위해 사용되는 주키퍼 서버입니다.
+- Broker : Source Connector 에서 데이터를 받아 토픽에 저장하고, Sink Connector 로 데이터를 넘겨줄 브로커 서버입니다. 이번 챕터에서는 다중 브로커가 아닌 단일 브로커를 사용합니다.
+- Schema Registry : 메시지의 schema 를 저장하기 위한 Schema Registry 서버입니다.
+- Connect : Connector 를 띄우기 위한 Connect 서버입니다.
 
 이제 서비스를 하나씩 구체적으로 살펴보겠습니다.
 
-## 2. Kafka Cluster
+## 2. Kafka System
 
 ### 2.1 Zookeeper & Broker
 
-zookeeper 와 broker 를 띄우는 코드는 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 작성한 내용을 사용합니다.
+주키퍼와 브로커를 띄우는 코드는 <Chapter>2) Producer & Consumer</Chapter> 챕터에서 작성한 내용을 사용합니다.
 
 ```yaml  title="kafka-docker-compose.yaml"
 version: "3"
@@ -173,13 +181,16 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 ```
 
-### 2.2 Schema-registry
+### 2.2 Schema Registry
 
-다음으로 schema-registry 를 띄우는 코드에 대해 알아보겠습니다.
+다음으로 Schema Registry 를 띄우는 코드에 대해 알아보겠습니다.
 
 <CodeDescription>
 
 ```yaml  title="kafka-docker-compose.yaml"
+version: "3"
+
+services:
   schema-registry:
     image: confluentinc/cp-schema-registry:7.3.0
     container_name: schema-registry
@@ -193,25 +204,36 @@ services:
       SCHEMA_REGISTRY_LISTENERS: http://schema-registry:8081
 ```
 
-- `image` : schema-registry 의 이미지로 `confluentinc/cp-schema-registry:7.3.0` 를 이용하도록 하겠습니다.
-- `container_name` : container의 이름은 `schema-registry` 로 사용하겠습니다.
-- `depends_on` : `broker` 가 먼저 실행된 후 schema-registry 실행되어야 합니다.
-- `ports` : schema-registry 의 포트인 `8081:8081` 을 포트포워딩합니다.
+- <var>image</var> : 
 
-schema-registry 의 환경 변수는 다음과 같습니다.
+  - Schema Registry 의 이미지로 <code>confluentinc/cp-schema-registry:7.3.0</code> 를 이용합니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름은 <code>schema-registry</code> 로 사용하겠습니다.
+- <var>depends_on</var> : 
+
+  - <code>broker</code> 가 먼저 실행된 후 Schema Registry 가 실행되어야 합니다.
+- <var>ports</var> : 
+
+  - Schema Registry 의 포트인 <code>8081:8081</code> 을 포트 포워딩합니다.
+
+Schema Registry 의 환경 변수는 다음과 같습니다.
 
 <CodeDescription>
 
-- **SCHEMA_REGISTRY_HOST_NAME**
-  - schema-registry 의 host name 을 지정합니다.
-  - 이번 챕터에서는 `schema-registry` 로 지정하겠습니다.
-- **SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS**
-  - bootstrap 으로 띄워진 broker server 를 지정합니다.
-  - 일반적으로 `<broker service name>:<broker service internal port>` 형식으로 작성합니다.
-  - 이번 챕터에서는 `broker:29092` 을 사용하겠습니다.
-- **SCHEMA_REGISTRY_LISTENERS**
+- <var>SCHEMA_REGISTRY_HOST_NAME</var>
+  
+  - Schema Registry 의 호스트 이름을 지정합니다.
+  - 이번 챕터에서는 <code>schema-registry</code> 로 지정하겠습니다.
+- <var>SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS</var>
+  
+  - Bootstrap 으로 띄워진 브로커 서버를 지정합니다.
+  - 일반적으로 <code>브로커 서비스 이름 : 브로커 서비스 내부 포트</code> 형식으로 작성합니다.
+  - 이번 챕터에서는 <code>broker:29092</code> 을 사용하겠습니다.
+- <var>SCHEMA_REGISTRY_LISTENERS</var>
+  
   - 외부에서 접속할 리스너를 설정합니다.
-  - 이번 챕터에서는 `http://schema-registry:8081` 으로 설정하겠습니다.
+  - 이번 챕터에서는 <code>http://schema-registry:8081</code> 으로 설정하겠습니다.
 
 </CodeDescription>
 
@@ -219,9 +241,9 @@ schema-registry 의 환경 변수는 다음과 같습니다.
 
 ### 2.3 Connect
 
-다음으로 connect 를 띄우는 코드에 대해 알아보겠습니다.
+다음으로 Connect 를 생성하는 코드에 대해 알아보겠습니다.
 
-Connect 의 경우 image 를 build 하기 위한 `Dockerfile` 이 필요합니다.
+Connect 의 경우 이미지를 build 하기 위한 Dockerfile 이 필요합니다.
 Dockerfile 은 아래와 같이 작성할 수 있습니다.
 
 <CodeDescription>
@@ -237,21 +259,32 @@ RUN confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5
   confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0
 ```
 
-- `FROM` : base image 로 `confluentinc/cp-kafka-connect:7.3.0` 을 사용하겠습니다.
-- `ENV` : Connect 에서는 플러그인의 path 를 설정해주어야합니다.
-  여기서는 base image 에 있는 `/usr/share/java` path 와 `/usr/share/confluent-hub-components` path 를 플러그인 path 로 설정합니다. 합쳐서  `"/usr/share/java,/usr/share/confluent-hub-components"` 플러그인 path 로 사용하겠습니다.
-- `RUN` : 다음으로 image 를 만들 때 실행할 코드를 지정합니다. 여기서는 JDBC connector 를 사용할 것이며, PostgreSQL 에 접근이 가능한 connector 를 설치해야합니다. 또한 value schema 의 converter 는 json converter 를 사용하겠습니다. 따라서 환경 변수로 설정한 플러그인 path 를 통해 아래의 3가지 명령어를 사용하여 connector 와 converter 에 필요한 기능들을 설치합니다.
-    - `confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5`
-    - `confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2`
-    - `confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0`
+- <var>FROM</var> : 
+
+  - Base 이미지로 <code>confluentinc/cp-kafka-connect:7.3.0</code> 을 사용하겠습니다.
+- <var>ENV</var> : 
+
+  - Connect 에서는 플러그인의 path 를 설정해줍니다.
+  - 이번 챕터에서는 base 이미지에 있는 <code>/usr/share/java</code> path 와 <code>/usr/share/confluent-hub-components</code> path 를 플러그인 path 로 설정합니다. 
+  - 합쳐서 <code>/usr/share/java,/usr/share/confluent-hub-components</code> 플러그인 path 로 사용하겠습니다.
+- <var>RUN</var> : 
+
+  - 이번 챕터에서는 JDBC Connector 를 사용할 것이며, PostgreSQL DB 에 접근이 가능한 Connector 를 설치해야합니다. 
+    - <code>confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5.5</code>
+    - <code>confluent-hub install --no-prompt confluentinc/kafka-connect-jdbc:10.2.2</code>
+  - 또한 value schema 의 Converter 는 Json Schema Converter 를 사용하겠습니다.
+    - <code>confluent-hub install --no-prompt confluentinc/kafka-connect-json-schema-converter:7.3.0</code>
 
 </CodeDescription>
 
-앞서 작성한 Dockerfile 을 이용한 connect 의 코드는 아래와 같습니다.
+앞서 작성한 Dockerfile 을 이용한 Connect 의 코드는 아래와 같습니다.
 
 <CodeDescription>
 
 ```yaml  title="kafka-docker-compose.yaml"
+version: "3"
+
+services:  
   connect:
     build:
       context: .
@@ -277,52 +310,70 @@ RUN confluent-hub install --no-prompt snowflakeinc/snowflake-kafka-connector:1.5
       CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL: http://schema-registry:8081
 ```
 
-- `build` : `Dockerfile` 을 build 하기 위해 경로로 `.` 을 `dockerfile` 파일명인 `connect.Dockerfile` 을 입력합니다.
-- `container_name` : container 의 이름으로 `connect` 로 사용하겠습니다.
-- `depends_on` : `broker` 와 `schema-registry` 가 먼저 실행된 다음에 connect 가 실행되야 합니다.
-- `ports` : connect 의 port 인 `8083:8083` 를 포트포워딩합니다.
+- <var>build</var> : 
+  
+  - Dockerfile 을 build 하기 위한 경로로 <code>.</code> 을 입력하고, Dockerfile 파일명인 <code>connect.Dockerfile</code> 을 입력합니다.
+- <var>container_name</var> : 
+
+  - 컨테이너 이름은 <code>connect</code> 로 사용하겠습니다.
+- <var>depends_on</var> : 
+
+  - 브로커와 Schema Registry 가 먼저 실행된 다음에 Connect 가 실행되야 합니다.
+- <var>ports</var> : 
+
+  - Connect 의 포트인 <code>8083:8083</code> 를 포트 포워딩합니다.
 
 Connect 의 환경 변수는 다음과 같습니다.
 
 <CodeDescription>
 
-- **CONNECT_BOOTSTRAP_SERVERS**
-  - bootstrap 으로 띄워진 broker server 를 지정합니다.
-  - 일반적으로  `<broker service name>:<broker service internal port>` 형식을 사용합니다.
-- **CONNECT_REST_ADVERTISED_HOST_NAME**
-  - kafka broker 에서 bootstrap 으로 띄워진 server 를 지정합니다.
-  - 일반적으로  `<broker service name>:<broker service internal port>` 형식을 사용합니다.
-- **CONNECT_GROUP_ID**
-  - connect cluster 그룹에서 각각의 connect 를 식별할 때 필요한 ID 를 지정합니다.
-- **CONNECT_CONFIG_STORAGE_TOPIC**
-  - connector config 를 저장할 broker 의 topic 명을 설정합니다.
-- **CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR**
-  - config 를 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다.
-  - 이번 챕터에서는 `1`로 설정하겠습니다.
-- **CONNECT_OFFSET_STORAGE_TOPIC**
-  - connector offset 을 저장할 broker 의 topic 명을 설정합니다.
-- **CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR**
-  - offset 을 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다.
-  - 이번 챕터에서는 `1`로 설정하겠습니다.
-- **CONNECT_STATUS_STORAGE_TOPIC**
-  - connector 와 task 의 상태를 저장할 broker 의 topic 명을 설정합니다.
-- **CONNECT_STATUS_STORAGE_REPLICATION_FACTOR**
-  - 상태를 저장하는 topic 을 생성할 때 사용할 replication factor 를 지정합니다.
-  - 이번 챕터에서는 `1`로 설정하겠습니다.
-- **CONNECT_KEY_CONVERTER**
-  - key 에 대한 converter 를 설정합니다.
-  - 이번 챕터에서는 string converter 를 사용하겠습니다. 그래서 `org.apache.kafka.connect.storage.StringConverter` 를 기입해줍니다.
-- **CONNECT_VALUE_CONVERTER**
-  - value 에 대한 converter 를 설정합니다.
-  - 이번 챕터에서는 json converter 를 사용하겠습니다. 그래서 `org.apache.kafka.connect.json.JsonConverter` 를 기입해줍니다.
-- **CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL**
-  - value converter 에 대한 schema registry url 를 설정합니다.
-  - 이번 챕터에서는 앞서 살펴본 schema registry 의 service name 과 port 인 `http://schema-registry:8081` 를 기입해줍니다.
+- <var>CONNECT_BOOTSTRAP_SERVERS</var>
+
+  - Bootstrap 으로 띄워진 브로커 서버를 지정합니다.
+  - 일반적으로 <code>브로커 서비스 이름 : 브로커 서비스 내부 포트</code> 형식을 사용합니다.
+- <var>CONNECT_REST_ADVERTISED_HOST_NAME</var>
+
+  - Connect 에서는 REST API 요청에 대한 처리와 Connector 의 등록, 설정, 시작, 종료 등의 처리를 담당하는 Worker 가 존재합니다.
+  - Worker 간의 연결이 가능하도록 호스트 이름을 지정합니다.
+- <var>CONNECT_GROUP_ID</var>
+
+  - Connect 의 Worker 프로세스 그룹 (또는 클러스터)를 구성하는 데 사용하는 고유한 ID 를 지정합니다.
+  - 단, Consumer 그룹 ID 와 충돌하면 안됩니다.
+- <var>CONNECT_CONFIG_STORAGE_TOPIC</var>
+
+  - Connector 의 환경 설정을 저장할 브로커의 토픽 이름을 설정합니다.
+- <var>CONNECT_CONFIG_STORAGE_REPLICATION_FACTOR</var>
+
+  - 환경 설정을 저장하는 토픽을 생성할 때 사용할 Replication Factor 의 수를 설정합니다.
+- <var>CONNECT_OFFSET_STORAGE_TOPIC</var>
+
+  - Connector 의 offset 을 저장할 브로커의 토픽 이름을 설정합니다.
+- <var>CONNECT_OFFSET_STORAGE_REPLICATION_FACTOR</var>
+
+  - Offset 을 저장하는 토픽을 생성할 때 사용할 Replication Factor 의 수를 설정합니다.
+- <var>CONNECT_STATUS_STORAGE_TOPIC</var>
+
+  - Connector 와 task 의 상태를 저장할 브로커의 토픽 이름을 설정합니다.
+- <var>CONNECT_STATUS_STORAGE_REPLICATION_FACTOR</var>
+
+  - 상태를 저장하는 토픽을 생성할 때 사용할 Replication Factor 의 수를 설정합니다.
+- <var>CONNECT_KEY_CONVERTER</var>
+
+  - Key 에 대한 Converter 를 설정합니다.
+  - 이번 챕터에서는 String Converter 를 사용하겠습니다.
+- <var>CONNECT_VALUE_CONVERTER</var>
+
+  - Value 에 대한 Converter 를 설정합니다.
+  - 이번 챕터에서는 Json Converter 를 사용하겠습니다.
+- <var>CONNECT_VALUE_CONVERTER_SCHEMA_REGISTRY_URL</var>
+
+  - Value Converter 에 대한 Schema Registry URL 을 설정합니다.
+  - 이번 챕터에서는 Schema Registry 의 서비스 이름과 포트인 <code>http://schema-registry:8081</code> 을 기입해줍니다.
 
 </CodeDescription>
 </CodeDescription>
 
-### 2.4 전체 코드
+### 2.4 `kafka-docker-compose.yaml`
 
 모든 서비스를 띄우는 코드는 아래와 같습니다.
 
@@ -398,11 +449,11 @@ networks:
     external: true
 ```
 
-## 3. 실행
+## 3. 실행 및 확인
 
 ### 3.1 실행
 
-`docker compose` 명령어를 이용하여 위에서 작성한 서비스들을 띄워봅니다.
+`docker compose` 명령어를 이용하여 위에서 작성한 서비스들을 생성합니다.
 
 <CodeDescription>
 
@@ -411,12 +462,16 @@ networks:
 docker compose -p ch7-kafka -f kafka-docker-compose.yaml up -d
 ```
 
-- `-p` : project name 을 `ch7-kafka` 로 사용합니다.
-- `-f` :file name 은 위에서 작성한 파일 이름인 `kafka-docker-compose.yaml`을 적어줍니다.
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch7-kafka</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>kafka-docker-compose.yaml</code> 을 적어줍니다.
 
 </CodeDescription>
 
-### 3.2 실행 확인
+### 3.2 서비스 확인
 
 `docker ps` 명령어를 이용하여 서비스들이 잘 띄워졌는지 확인합니다.
 

@@ -22,19 +22,21 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 1. 주키퍼와 브로커를 띄우는 Docker Compose 파일을 작성합니다.
     - Zookeeper
-      - Service name : `zookeeper`
-      - Image : `confluentinc/cp-zookeeper:7.3.0`
-      - Container name : `zookeeper`
-      - Port : `2181:2181`
-      - Environment
+      - <var>Service name</var> : <code>zookeeper</code>
+      - <var>Image</var> : <code>confluentinc/cp-zookeeper:7.3.0</code>
+      - <var>Container name</var> : <code>zookeeper</code>
+      - <var>Port</var> : <code>2181:2181</code>
+      - <var>Environment</var>
+
         - <var>ZOOKEEPER_SERVER_ID</var> : <code>1</code>
         - <var>ZOOKEEPER_CLIENT_PORT</var> : <code>2181</code>
     - Broker
-      - Service name : `broker`
-      - Image : `confluentinc/cp-kafka:7.3.0`
-      - Container name : `broker`
-      - Port : `9092:9092`
-      - Environment
+      - <var>Service name</var> : <code>broker</code>
+      - <var>Image</var> : <code>confluentinc/cp-kafka:7.3.0</code>
+      - <var>Container name</var> : <code>broker</code>
+      - <var>Port</var> : <code>9092:9092</code>
+      - <var>Environment</var>
+
           - <var>KAFKA_BROKER_ID</var> : <code>1</code>
           - <var>KAFKA_ZOOKEEPER_CONNECT</var> : <code>zookeeper:2181</code>
           - <var>KAFKA_ADVERTISED_LISTENERS</var> : <code>PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092</code>
@@ -44,15 +46,15 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
           - <var>KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS</var> : <code>0</code>
 2. Docker Compose 파일을 실행합니다.
 3. `docker compose exec` 명령어를 이용하여 토픽을 생성합니다.
-    - 토픽 이름 : `topic-test`
-    - 파티션 수 : `1`
-    - Replication Factor 수 : `1`
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Partition count</var> : <code>1</code>
+    - <var>Replication Factor count</var> : <code>1</code>
 4. 터미널에서 `docker compose exec` 명령어를 이용하여 브로커에 접속한 뒤, `kafka-console-consumer` 명령어를 이용하여 Consumer 를 실행합니다.
-    - 토픽 이름 : `topic-test`
-    - Bootstrap Server : `broker:29092`
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Bootstrap server</var> : <code>broker:29092</code>
 5. 다른 터미널에서 `docker compose exec` 명령어를 이용하여 브로커에 접속한 뒤, `kafka-console-producer` 명령어를 이용하여 Producer 를 실행합니다.
-    - 토픽 이름 : `topic-test`
-    - 브로커 리스트 : `broker:29092`
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Broker list</var> : <code>broker:29092</code>
 6. Producer 에서 메시지를 생성하고, Consumer 에서 메시지를 확인합니다.
 
 </CodeDescription>
@@ -104,9 +106,15 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
 ```
-- `image` : 주키퍼의 이미지로 `confluentinc/cp-zookeeper:7.3.0` 를 이용하도록 하겠습니다.
-- `container_name` : 컨테이너의 이름은 `zookeeper` 로 사용하겠습니다.
-- `ports` : 주키퍼의 포트인 `2181:2181`를 포트 포워딩합니다.
+- <var>image</var> : 
+
+  - 주키퍼의 이미지로 <code>confluentinc/cp-zookeeper:7.3.0</code> 를 이용하도록 하겠습니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름은 <code>zookeeper</code> 로 사용하겠습니다.
+- <var>ports</var> : 
+
+  - 주키퍼의 포트인 <code>2181:2181</code> 를 포트 포워딩합니다.
 
 주키퍼의 환경 변수는 다음과 같습니다.
 
@@ -152,10 +160,18 @@ services:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 ```
 
-- `image` : 브로커의 이미지로 `confluentinc/cp-kafka:7.3.0` 를 이용하도록 하겠습니다.
-- `container_name` : 컨테이너의 이름은 `broker` 로 사용하겠습니다.
-- `depends_on` : 주키퍼가 먼저 실행된 후 다음에 브로커가 실행되어야 합니다.
-- `ports` : 브로커의 포트인 `9092:9092` 를 포트 포워딩합니다.
+- <var>image</var> : 
+
+  - 브로커의 이미지로 <code>confluentinc/cp-kafka:7.3.0</code> 를 이용하도록 하겠습니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름은 <code>broker</code> 로 사용하겠습니다.
+- <var>depends_on</var> : 
+
+  - 주키퍼가 먼저 실행된 후 다음에 브로커가 실행되어야 합니다.
+- <var>ports</var> : 
+
+  - 브로커의 포트인 <code>9092:9092</code> 를 포트 포워딩합니다.
 
 브로커의 환경 변수는 다음과 같습니다.
 
@@ -238,10 +254,21 @@ services:
 
 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
 
+<CodeDescription>
+
 ```bash
 # terminal-command
 docker compose -p ch7-naive -f naive-docker-compose.yaml up -d
 ```
+
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch7-naive</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>naive-docker-compose.yaml</code> 을 적어줍니다.
+
+</CodeDescription>
 
 `docker ps` 를 입력하여 잘 띄워졌는지 확인합니다.
 

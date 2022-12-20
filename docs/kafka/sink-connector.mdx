@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: 📌 DConnect 에 source connector 를 띄워봅니다.
+description: 📌 Connect 에 Sink Connector 를 띄워봅니다.
 ---
 
 # 6) Sink Connector
@@ -11,9 +11,9 @@ import ArchitectureImage from './img/kafka-15.png';
 
 ## 목표
 
-1. Docker-compose 를 이용하여 데이터를 전달받을 target postgres server 를 구축합니다.
-2. Connect 에 sink connector 를 생성합니다.
-3. Target postgres server 에서 데이터가 잘 전달되었는지 확인합니다.
+1. Docker Compose 를 이용하여 데이터를 전달받을 Target DB 서버와 Table Creator 를 구축합니다.
+2. Connect 에 Sink Connector 를 생성합니다.
+3. Target DB 서버에 데이터가 잘 전달되었는지 확인합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -21,12 +21,20 @@ import ArchitectureImage from './img/kafka-15.png';
 
 ### 스펙 명세서
 
-1. sink 후 데이터를 저장할 postgres 서버를 생성합니다.
-    - `POSTGRES_USER` : `sinkuser`
-    - `POSTGRES_PASSWORD` : `sinkpassword`
-    - `POSTGRES_DB` : `sinkdatabase`
-    - Port Forwarding : `5433:5432`
-2. sink connect에 사용할 json 파일로 만듭니다.
+1. Docker Compose 를 통해 Sink Connector 로 데이터를 전달하여 저장할 Target PostgreSQL DB 서버와 DB 에 테이블을 생성하는 Table Creator 를 생성합니다.
+    - Target DB Server
+        - <var>Image</var> : <code>postgres:14.0</code>
+        - <var>Container name</var> : <code>target-postgres-server</code>
+        - <var>POSTGRES_USER</var> : <code>targetuser</code>
+        - <var>POSTGRES_PASSWORD</var> : <code>targetpassword</code>
+        - <var>POSTGRES_DB</var> : <code>targetdatabase</code>
+        - <var>Port forwarding</var> : <code>5433:5432</code>
+    - Table Creator
+        - Dockerfile : 
+            - psycopg2 패키지를 이용하여 Target DB 서버에 테이블을 생성하는 코드를 만든 후 Dockerfile 에서 해당 코드가 실행되도록 이미지를 만듭니다.
+        - Docker Compose :
+            - <var>Container name</var> : <code>table-creator</code>
+2. Sink Connector 를 띄우기 위한 설정 파일을 만듭니다.
     ```json
     {
         "name": "postgres-sink-connector",
@@ -39,14 +47,20 @@ import ArchitectureImage from './img/kafka-15.png';
             "topics": "postgres-source-iris_data",
             "auto.create": false,
             "auto.evolve": false,
-            "tasks.max": 2
-       }
+            "tasks.max": 2,
+            "transforms": "TimestampConverter",
+            "transforms.TimestampConverter.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+            "transforms.TimestampConverter.field": "timestamp",
+            "transforms.TimestampConverter.format": "yyyy-MM-dd HH:mm:ss.S",
+            "transforms.TimestampConverter.target.type": "Timestamp"
+        }
     }
     ```
-2. curl 명령어를 이용하여 POST method 로 sink connector 를 생성합니다.
-    - URL : `http://localhost:8083/connectors`
-    - Header : `"Content-Type: application/json"`
-3. postgres 서버에 접속해 쌓인 데이터를 확인합니다.
+2. <code>curl</code> 명령어를 이용하여 POST method 로 Sink Connector 를 생성합니다.
+
+    - <var>URL</var> : <code>http://localhost:8083/connectors</code>
+    - <var>Header</var> : <code>Content-Type: application/json</code>
+3. Target DB 서버에 접속하여 저장된 데이터를 확인합니다.
 
 
 </CodeDescription>
@@ -88,24 +102,29 @@ ch7
 
 </div>
 
-- **Target Postgres Server** : sink connector 에서 데이터를 받아 저장할 DB server 입니다.
-- **Table Creator** : target DB 에 테이블을 만드는 creator 입니다.
-- **Sink Connector** : 데이터를 broker 의 topic 에서 target DB 로 전달할 connector 입니다.
+:::caution
+
+📌  해당 파트는 <Part>01. Database</Part> 파트의 DB 를 이용합니다.  
+📌  DB 를 띄우지 않은 경우 <Part>01. Database</Part> 파트를 완료하고 DB 가 띄워진 상태에서 진행해주세요.  
+
+:::
 
 ## 2. Target Postgres Server
 
-### 2.1 Table creator
+### 2.1 Table Creator
 
-아래의 코드는 target DB 를 띄운 다음에 테이블만 생성하는 코드입니다. 자세한 내용은 <Part>01. Database</Part> 파트를 참고해주세요.
+아래의 코드는 Target DB 를 띄운 다음에 테이블만 생성하는 코드입니다. 자세한 내용은 <Part>01. Database</Part> 파트를 참고해주세요.
 
 ```python  title="create_table.py"
 # create_table.py
 import psycopg2
 
+
 def create_table(db_connect):
     create_table_query = """
     CREATE TABLE IF NOT EXISTS iris_data (
         id SERIAL PRIMARY KEY,
+        timestamp timestamp,
         sepal_length float8,
         sepal_width float8,
         petal_length float8,
@@ -116,6 +135,7 @@ def create_table(db_connect):
     with db_connect.cursor() as cur:
         cur.execute(create_table_query)
         db_connect.commit()
+
 
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
@@ -128,7 +148,7 @@ if __name__ == "__main__":
     create_table(db_connect)
 ```
 
-`Dockerfile` 을 이용하여 위에서 작성한 스크립트를 실행할 수 있는 이미지를 만듭니다.
+Dockerfile 을 이용하여 위에서 작성한 스크립트를 실행할 수 있는 이미지를 만듭니다.
 
 ```docker  title=target.Dockerfile
 # target.Dockerfile
@@ -146,7 +166,7 @@ ENTRYPOINT ["python", "create_table.py"]
 
 ### 2.2 실행
 
-Docker compose 를 이용하여 target postgres server 와 table creator 를 띄웁니다.
+Docker Compose 를 이용하여 Target DB 서버와 Table Creator 를 띄웁니다.
 
 #### 2.2.1 `target-docker-compose.yaml`
 
@@ -157,34 +177,33 @@ Docker compose 를 이용하여 target postgres server 와 table creator 를 띄
 version: "3"
 
 services:
-  sink-postgres-server:
+  target-postgres-server:
     image: postgres:14.0
-    container_name: sink-postgres-server
+    container_name: target-postgres-server
     ports:
       - 5433:5432
     environment:
-      POSTGRES_USER: sinkuser
-      POSTGRES_PASSWORD: sinkpassword
-      POSTGRES_DB: sinkdatabase
+      POSTGRES_USER: targetuser
+      POSTGRES_PASSWORD: targetpassword
+      POSTGRES_DB: targetdatabase
     healthcheck:
-      test: ["CMD", "pg_isready", "-q", "-U", "sinkuser", "-d", "sinkdatabase"]
+      test: ["CMD", "pg_isready", "-q", "-U", "targetuser", "-d", "targetdatabase"]
       interval: 10s
       timeout: 5s
       retries: 5
 
-  sink-table-creator:
-    platform: linux/amd64
+  table-creator:
     build:
-      context: ./docker/sink
-      dockerfile: Dockerfile
-    container_name: sink-table-creator
+      context: .
+      dockerfile: target.Dockerfile
+    container_name: table-creator
     depends_on:
-      sink-postgres-server:
+      target-postgres-server:
         condition: service_healthy
 
 networks:
   default:
-    name: ch1_default
+    name: mlops-network
     external: true
 ```
 
@@ -198,19 +217,23 @@ networks:
 docker compose -p ch7-target -f target-docker-compose.yaml up -d
 ```
 
-- `-p` : project name 을 `ch7-target` 로 사용합니다.
-- `-f` :file name 은 위에서 작성한 파일 이름인 `target-docker-compose.yaml`을 적어줍니다.
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch7-target</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>target-docker-compose.yaml</code> 을 적어줍니다.
 
 </CodeDescription>
 
 ## 3. Sink Connector
 
-다음으로 kafka broker 의 topic 에서 target DB 로 데이터를 전달하는 sink connector 를 생성합니다.
+다음으로 브로커의 토픽에서 Target DB 로 데이터를 전달하는 Sink Connector 를 생성합니다.
 
 ### 3.1 생성
 
-Sink connector 는 source connector 를 띄울 때와 마찬가지로 connect 의 REST API 를 이용하여 생성합니다.
-아래 명령어를 통해 sink connector 를 띄울 수 있는 `sink_connector.json` 을 생성합니다.
+Sink Connector 는 Source Connector 와 마찬가지로 Connect 에 API 호출을 통해 생성합니다.
+아래 명령어를 통해 Sink Connector 를 띄울 수 있는 `sink_connector.json` 을 생성합니다.
 
 ```bash
 # terminal-command
@@ -226,13 +249,19 @@ cat <<EOF > sink_connector.json
         "topics": "postgres-source-iris_data",
         "auto.create": false,
         "auto.evolve": false,
-        "tasks.max": 2
+        "tasks.max": 2,
+        "transforms": "TimestampConverter",
+        "transforms.TimestampConverter.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+        "transforms.TimestampConverter.field": "timestamp",
+        "transforms.TimestampConverter.format": "yyyy-MM-dd HH:mm:ss.S",
+        "transforms.TimestampConverter.target.type": "Timestamp"
     }
 }
+
 EOF
 ```
 
-생성하는 json 에 대한 설명은 다음과 같습니다.
+생성하는 Source Connector 에 대한 설정 파일은 다음과 같습니다.
 
 <CodeDescription>
 
@@ -248,44 +277,78 @@ EOF
         "topics": "postgres-source-iris_data",
         "auto.create": false,
         "auto.evolve": false,
-        "tasks.max": 2
+        "tasks.max": 2,
+        "transforms": "TimestampConverter",
+        "transforms.TimestampConverter.type": "org.apache.kafka.connect.transforms.TimestampConverter$Value",
+        "transforms.TimestampConverter.field": "timestamp",
+        "transforms.TimestampConverter.format": "yyyy-MM-dd HH:mm:ss.S",
+        "transforms.TimestampConverter.target.type": "Timestamp"
     }
 }
+
 ```
 
-- name :
-  - connector 의 이름을 정합니다.
-  - 이번 챕터에서는 `postgres-sink-connector` 를 사용하겠습니다.
-- config :
-    - `connector.class` : 
-      - connector 를 생성하기 위한 class 를 설정합니다.
-      - 이번 챕터에서는 JDBC source connector 를 사용하기 때문에 `io.confluent.connect.jdbc.JdbcSinkConnector` 를 입력합니다.
-    - `connection.url` : 
-      - DB 에 접근하기 위한 주소를 설정합니다.
-      - 이번 챕터에서는 앞서 띄워두었던 target-postgres-server 의 URL 인 `jdbc:postgresql://target-postgres-server:5432/targetdatabase` 을 입력합니다.
-    - `connection.user` : 
-      - DB 에 접속하기 위한 user name 을 설정합니다.
-      - 이번 챕터에서는 `targetuser` 를 입력합니다.
-    - `connection.password` : 
-      - DB 에 접속하기 위한 password 를 설정합니다.
-      - 이번 챕터에서는 `targetpassword` 를 입력합니다.
-    - `table.name.format` : 
-      - target 테이블의 이름에 대한 format 을 설정합니다.
-      - 이번 챕터에서는 `iris_data` 로 설정합니다.
-    - `topics` : 
-      - sink connector 가 broker 에 있는 topic 들 중에 어떤 topic 에 있는 데이터를 가져올 지 설정합니다.
-      - 이번 챕터에서는 `postgres-source-iris_data` 를 입력합니다.
-    - `auto.create` : 
-      - 테이블을 자동으로 생성할 지의 여부를 설정합니다. 이미 테이블을 생성했기 때문에 `false` 로 설정합니다.
-    - `auto.evolve` : 
-      - 테이블에 자동으로 column 을 생성할 지의 여부를 설정합니다. 이미 테이블의 schema 도 생성했기 때문에 `false` 로 설정합니다.
-    - `tasks.max` : 
-      - connector 에서 task 의 수를 얼마나 가져갈 지를 설정합니다.
-      - 이번 챕터에서는 2로 설정해주겠습니다.
+- <var>name</var> : 
+
+  - Connector 의 이름을 정합니다.  
+- <var>config</var> :
+
+  - <var>connector.class</var> : 
+
+    - Connector 를 생성하기 위한 class 를 설정합니다.  
+    - 이번 챕터에서는 JDBC Sink Connector 를 사용함으로 <code>io.confluent.connect.jdbc.JdbcSinkConnector</code> 를 기입합니다.
+  - <var>connection.url</var> : 
+    
+    - Target DB 에 접근하기 위한 주소를 설정합니다.
+    - 이번 챕터에서는 앞서 띄워두었던 Target DB 서버의 URL 인 <code>jdbc:postgresql://target-postgres-server:5432/targetdatabase</code> 을 기입합니다.
+  - <var>connection.user</var> : 
+    
+    - Target DB 에 접속하기 위한 user 를 설정합니다.
+  - <var>connection.password</var> : 
+    
+    - Target DB 에 접속하기 위한 password 를 설정합니다.
+  - <var>table.name.format</var> : 
+
+    - Target DB 에 전달할 테이블 이름의 format 을 설정합니다.
+  - <var>topics</var> : 
+
+    - Sink Connector 가 브로커에 있는 토픽들 중에 가져올 토픽을 설정합니다.
+  - <var>auto.create</var> : 
+
+    - 테이블을 자동으로 생성할 지의 여부를 설정합니다. 
+    - 이미 테이블을 생성했기 때문에 <code>false</code> 로 설정합니다.
+  - <var>auto.evolve</var> : 
+
+    - 테이블에 자동으로 column 들을 생성할 지의 여부를 설정합니다. 
+    - 이미 테이블의 column 들을 생성했기 때문에 <code>false</code> 로 설정합니다.
+  - <var>tasks.max</var> : 
+
+    - Connector 에서 task 의 수를 얼마나 가져갈 지를 설정합니다.
+  - <var>transforms</var> : 
+  
+    - 토픽에 있는 string type 의 timestamp 값을 Target DB 로 전달할 때 timestamp type 으로 변경하여 전달해야 합니다.
+       따라서 Sink Connector 를 생성할 때 <var>transforms</var> 에 있는 Timestamp Converter 를 이용하여 string type 을 timestamp type 으로 변경 후, Target DB 에 데이터를 넣습니다.
+    - Transformation 을 적용할 Converter 를 설정합니다.
+  - <var>transforms.TimestampConverter.type</var> : 
+
+    - Timestamp Converter 의 type 을 설정합니다.
+    - Timestamp column 은 key 에 있는 값이 아닌 value 에 있는 값이므로 value 에 대한 Timestamp Converter 를 사용합니다.
+  - <var>transforms.TimestampConverter.field</var> : 
+  
+    - Timestamp Converter 를 적용할 field 를 설정합니다.
+    - 토픽에 있는 timestamp column 을 기입합니다.
+  - <var>transforms.TimestampConverter.format</var> : 
+  
+    - Timestamp Converter 의 format 을 설정합니다.
+    - Timestamp 의 format 인 <code>yyyy-MM-dd HH:mm:ss.S</code> 를 기입합니다.
+  - <var>transforms.TimestampConverter.target.type</var> : 
+    
+    - Timestamp Converter 를 이용하여 변환한 후에 적용할 type 을 설정합니다.
+    - Target DB 에 넣기 위해 <code>timestamp</code> 를 기입합니다.
 
 </CodeDescription>
 
-이제 작성된 json 파일을 curl 을 이용하여 connect 의 REST API 에 POST method 로 보냅니다.
+이제 Sink Connector 생성하는 json 파일을 curl 을 이용하여 Connect 의 REST API 에 POST method 로 보냅니다.
 
 ```bash
 # terminal-command
@@ -299,19 +362,19 @@ curl -X POST http://localhost:8083/connectors -H "Content-Type: application/json
 
 ### 2.2 생성 확인
 
-아래의 GET method 로 현재 connector 목록을 확인할 수 있습니다.
+아래의 GET method 로 현재 Connector 목록을 확인할 수 있습니다. 앞서 생성한 Connector 가 잘 있는지 확인합니다.
 
 ```bash
 # terminal-command
 curl -X GET http://localhost:8083/connectors
 ```
-앞서 생성한 connector 들이 잘 있는지 확인합니다.
+생성된 connector 들이 잘 있는지 확인합니다.
 
 ```bash
 ["postgres-sink-connector","postgres-source-connector"]%
 ```
 
-이어서 `postgres-sink-connector` 의 추가 정보를 확인합니다.
+이어서 `postgres-sink-connector` 의 정보를 확인합니다.
 
 ```bash
 # terminal-command
@@ -324,16 +387,20 @@ curl -X GET http://localhost:8083/connectors/postgres-sink-connector
 {"name":"postgres-sink-connector","config":{"connector.class":"io.confluent.connect.jdbc.JdbcSinkConnector","table.name.format":"iris_data","connection.password":"targetpassword","auto.evolve":"false","connection.user":"targetuser","topics":"postgres-source-iris_data","tasks.max":"2","name":"postgres-sink-connector","auto.create":"false","connection.url":"jdbc:postgresql://target-postgres-server:5432/targetdatabase"},"tasks":[{"connector":"postgres-sink-connector","task":0},{"connector":"postgres-sink-connector","task":1}],"type":"sink"}%
 ```
 
-### 2.2 데이터 확인
+### 2.3 데이터 확인
 
 마지막으로 DB 에 데이터가 잘 쌓여있는지 확인해봅니다.
 
-1. 아래의 명령어를 이용하여 target DB 에 접속합니다.
+1. `psql` 을 이용하여 Target DB 에 접속합니다.
   ```bash
   # terminal-command
   PGPASSWORD=targetpassword psql -h localhost -p 5433 -U targetuser -d targetdatabase
+  psql (14.3, server 14.0 (Debian 14.0-1.pgdg110+1))
+  Type "help" for help.
+  
+  targetdatabase=#
   ```
-2.  Select 문을 작성하여 데이터를 확인합니다.
+2. Select 문을 작성하여 데이터를 확인합니다.
   ```sql
   targetdatabase=# SELECT * FROM iris_data LIMIT 100;
   ```
