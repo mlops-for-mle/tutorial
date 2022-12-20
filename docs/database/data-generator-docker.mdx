@@ -14,7 +14,8 @@ import DBImage4 from './img/db-4.png';
 ### 목표
 
 1. 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 Dockerfile 을 작성합니다.
-2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
+2. Docker 컨테이너 간의 네트워크를 연결하여 DB 에 데이터를 계속해서 삽입합니다.
+3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -29,10 +30,13 @@ import DBImage4 from './img/db-4.png';
     - 컨테이너에서 코드가 실행될 수 있도록 `scikit-learn`, `pandas`, `psycopg2-binary` 을 설치합니다.
     - <Chapter>4) Data Insertion Loop</Chapter> 챕터에서 작성한 스크립트를 복사합니다.
     - `ENTRYPOINT` 와 `CMD` 를 이용하여 스크립트를 실행합니다.
-2. <code>psql</code> 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
+2. Dockerfile 을 이용하여 이미지를 build 하고 실행합니다.
+3. Docker Network 를 통해 컨테이너 간의 네트워크를 연결하여 DB 에 데이터를 계속해서 삽입합니다.
 
-    - Local 에서 확인합니다.
-    - Data generator 서버에서 확인합니다.
+    - <code>docker network create</code> 명령어를 이용하여 <code>my-network</code> 라는 네트워크를 생성합니다.
+    - <code>docker network connect</code> 명령어를 이용하여 생성한 <code>my-network</code> 에 postgres server 를 연결합니다.
+    - Build 된 이미지를 다시 실행합니다. 이때 <code>--network</code> 옵션을 이용하여 <code>my-network</code> 네트워크에 연결합니다.
+4. <code>psql</code> 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
 
 </CodeDescription>
 </details>
@@ -221,7 +225,7 @@ CMD ["localhost"]
 
 #### 1.2.2 Build
 
-이제 위에서 작성한 Dockerfile 을 이용해 이미지를 build 해보겠습니다.
+이제 위에서 작성한 Dockerfile 을 이용하여 이미지를 build 해보겠습니다.
 
 이미지를 build 하기 위해서는 아래 규칙을 따르면 됩니다.
 이와 관련한 자세한 내용은 [공식 홈페이지](https://docs.docker.com/engine/reference/commandline/build/)를 참고해주세요.
