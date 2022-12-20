@@ -123,7 +123,7 @@ export function ReviewersRow(): JSX.Element {
         githubUrl="https://github.com/Haeun-Oh"
         linkedinUrl="https://www.linkedin.com/in/haeun-oh/"
         >
-        <Translate id="team.profile.Minjoo Lee.body">
+        <Translate id="team.profile.Haeun Oh.body">
         Beta Tester
         </Translate>
       </TeamProfileCardCol>
