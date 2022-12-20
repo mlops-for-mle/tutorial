@@ -57,7 +57,7 @@ ch5
 Request Body 는 client 에서 API 로 전송하는 데이터를 의미합니다.
 반대로 Response Body 는 API 가 client 로 전송하는 데이터를 의미합니다.
 
-이렇게 client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해  Pydantic Model 을 사용할 수 있습니다.
+이렇게 client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해 Pydantic Model 을 사용할 수 있습니다.
 
 ### 1.1 Base Setting
 
@@ -130,7 +130,7 @@ def create_user(user: CreateIn) -> CreateOut:
 
 위의 Path Operation Function 을 보면 parameter 로 `user` 를 입력 받고, type 은 `CreateIn` 인 것을 알 수 있습니다.
 
-`USER_DB[user.name] = user.nickname` 와 같이 Pydantic 의 모델에 선언된 변수를 사용하여 DB 에 사용자 정보를 저장해 줍니다.
+`USER_DB[user.name] = user.nickname` 와 같이 Pydantic Model 에 선언된 변수를 사용하여 DB 에 사용자 정보를 저장해 줍니다.
 
 Response Body 에 필요한 변수는 `response_model` 로 지정된 `CreateOut` 모델의 변수인 `status` 와 `id` 이기 때문에 이 변수들의 값을 저장해 주어야 합니다.
 `status` 와 `id` 값을 준 `CreateOut` 의 객체를 return 하면 됩니다.

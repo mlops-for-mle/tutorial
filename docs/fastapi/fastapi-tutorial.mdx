@@ -150,7 +150,7 @@ app = FastAPI()
 여기에서 말하는 path 는 URL 에서 첫 번째 `/` 부터 시작되는 마지막 부분을 의미합니다.
 예를 들어 URL 이 `https://example.com/items/foo` 와 같이 되어 있다면, path 는 <code>/items/foo</code> 라고 할 수 있습니다.
 
-<var>Operation</var> 은 POST, GET, PUT, DELETE 등과 같은 HTTP method 를 의미합니다.
+Operation 은 POST, GET, PUT, DELETE 등과 같은 HTTP method 를 의미합니다.
 이러한 operation 을 수행하기 위해 `@app.get("/")` 와 같은 Path Operation Decorator 를 사용합니다.
 
 `@app.get("/")` 은 FastAPI 로 하여금 path `/` 로 가서 `GET` operation 을 수행하라는 의미로 사용할 수 있습니다.
