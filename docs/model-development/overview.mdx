@@ -9,8 +9,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 :::caution
 
-📌  해당 파트는 <Part>01. Database</Part> 파트의 DB 를 이용합니다.  
-📌  DB 를 띄우지 않은 경우 <Part>01. Database</Part> 파트를 완료하고 DB 가 띄워진 상태에서 진행해주세요.
+📌  해당 파트는 <Part>01. Database</Part> 파트의 postgres server 와 data generator 를 이용합니다.  
+📌  DB 를 띄우지 않은 경우 <Part>01. Database</Part> 파트를 완료하고 postgres server 와 data generator 가 띄워진 상태에서 진행해주세요.
 
 :::
 
@@ -22,7 +22,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 [그림 2-1] Basic Workflow
 </div>
 
-우선, `scikit-learn` 에 있는 데이터를 사용합니다. 데이터를 통해 모델을 학습 후 저장합니다. 저장된 모델을 불러와 정상적으로 동작하는지 확인합니다.
+데이터는 `scikit-learn` 패키지에 있는 iris 데이터를 사용합니다. 
+데이터를 통해 모델을 학습 후 저장하고, 저장된 모델을 불러와서 학습이 잘 되었는지 확인합니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -30,4 +31,4 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 [그림 2-2] Database Workflow
 </div>
 
-다음으로 [그림 2-2]처럼 데이터를 불러오는 부분을 수정합니다. 이 때 사용하는 데이터베이스는 앞선 파트에서 만든 데이터베이스를 사용합니다.
+[그림 2-2]처럼 데이터를 불러오는 부분은 <Part>01. Database</Part> 파트에서 생성한 DB 의 iris 데이터를 사용합니다.
