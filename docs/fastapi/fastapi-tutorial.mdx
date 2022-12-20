@@ -107,7 +107,7 @@ uvicorn main:app --reload
 <div style={{textAlign: 'center'}}>
 
 ![API Running Screen](./img/fastapi-2.png)
-[그림 5-2] 실행 화면 예시
+[그림 5-2] `main.py` 실행 화면
 
 </div>
 
@@ -117,7 +117,7 @@ uvicorn main:app --reload
 <div style={{textAlign: 'center'}}>
 
 ![Swagger UI Screen](./img/fastapi-3.png)
-[그림 5-3] Swagger UI 화면 예시
+[그림 5-3] Swagger UI 화면
 
 </div>
 
@@ -136,9 +136,9 @@ API 를 만들 수 있도록 도와주는 Python 클래스 `FastAPI` 를 import 
 from fastapi import FastAPI
 ```
 
-### 2.2 Step 2: Create a FastAPI instance
+### 2.2 Step 2: Create a FastAPI Instance
 
-`FastAPI` 클래스의 instance 를 생성합니다.
+`FastAPI` 클래스의 인스턴스를 생성합니다.
 여기에서 생성하는 인스턴스의 이름에 따라 `uvicorn main:app --reload` 과 같은 형태로 실행 명령어가 달라지게 됩니다.
 
 ```python
@@ -150,7 +150,7 @@ app = FastAPI()
 여기에서 말하는 path 는 URL 에서 첫 번째 `/` 부터 시작되는 마지막 부분을 의미합니다.
 예를 들어 URL 이 `https://example.com/items/foo` 와 같이 되어 있다면, path 는 <code>/items/foo</code> 라고 할 수 있습니다.
 
-<var>Operation</var> 은 POST, GET, PUT, DELETE 등과 같은 HTTP method 를 의미합니다.
+<var>Operation</var> 은 POST, GET, PUT, DELETE 등과 같은 HTTP Method 를 의미합니다.
 이러한 operation 을 수행하기 위해 `@app.get("/")` 와 같은 Path Operation Decorator 를 사용합니다.
 
 `@app.get("/")` 은 FastAPI 로 하여금 path `/` 로 가서 `GET` operation 을 수행하라는 의미로 사용할 수 있습니다.
@@ -166,10 +166,10 @@ def read_root():
     return {"Hello": "World"}
 ```
 
-### 2.5 Step 5: Return the content
+### 2.5 Step 5: Return the Content
 
 Path Operation Function 을 통해 return 하는 값으로는 `dict` , `list` , `str` , `int` 등이 가능합니다.
-또한, 뒤에서 나올 Pydantic model 의 형태로도 return 할 수 있습니다.
+또한, 뒤에서 나올 Pydantic Model 의 형태로도 return 할 수 있습니다.
 
 ## 3. Path Parameter 이해하기
 
@@ -232,7 +232,7 @@ def read_item(skip: int = 0, limit: int = 10):
     return fake_items_db[skip : skip + limit]
 ```
 
-Path Parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 과 `limit` 이 path operation 인 `@app.get("/items/")` 에는 들어있지 않습니다.
+Path Parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 과 `limit` 이 Path Operation 인 `@app.get("/items/")` 에는 들어있지 않습니다.
 
 Query 는 URL 에서 `?` 뒤에 key-value 쌍의 형태로 나타나고, `&` 로 구분되어 사용됩니다.  
 예를 들면, 위와 같은 경우 `http://localhost:8000/items/?skip=0&limit=10` 과 같은 형태로 사용할 수 있습니다.  

@@ -124,7 +124,7 @@ docker run -d \
   ch5-api-server
 ```
 
-- `-d` : 컨테이너를 detach mode 로 실행합니다. Detach mode 란 백그라운드에서 실행하는 것을 의미합니다.
+- `-d` : 컨테이너를 Detached Mode 로 실행합니다. Detached Mode 란 백그라운드에서 실행하는 것을 의미합니다.
 - `--name` : 컨테이너의 이름을 `api-server` 로 설정합니다.
 - `-p` : 포트 포워딩을 `8000:8000` 으로 설정합니다.
 
@@ -151,18 +151,17 @@ fb72ccf8fb47   ch5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 1
 ### 2.1 작동 확인
 이제 FastAPI 를 통해 만든 API 서버가 잘 작동하는지 확인해 보겠습니다.
 API 서버 컨테이너를 실행할 때 포트 포워딩을 `8000:8000` 으로 했으므로 8000번 포트로 접속하면 API 서버로 접속할 수 있습니다.
-FastAPI 에서 제공하는 [Interactive API Docs](https://fastapi.tiangolo.com/tutorial/first-steps/#interactive-api-docs) 에 접속하려면 URL 뒤에 `/docs` 를 붙이면 됩니다.
 
-[http://localhost:8000/docs](http://localhost:8000/docs) 에 접속하면 다음과 같이 접속이 되는 것을 확인할 수 있습니다.
+[`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하면 다음과 같이 접속이 되는 것을 확인할 수 있습니다.
 
 <div style={{textAlign: 'center'}}>
 
-![API's Swagger UI Screen](./img/fastapi-4.png)
-[그림 5-4] 작성한 API의 Swagger UI 화면
+![API's Swagger UI Screen](./img/fastapi-9.png)
+[그림 5-9] 작성한 API의 Swagger UI 화면
 
 </div>
 
-[그림 5-4]의 화면에서 앞서 수행한 시나리오와 같은 다양한 작업을 해 보면, 만든 API 가 제대로 작동하는 것을 확인할 수 있습니다.
+[그림 5-6]의 화면에서 앞서 수행한 시나리오와 같은 다양한 작업을 해 보면, 만든 API 가 제대로 작동하는 것을 확인할 수 있습니다.
 
 ### 2.2 컨테이너 종료
 

@@ -54,10 +54,10 @@ ch5
 
 ## 1. Pydantic Model
 
-Request Body 는 client 에서 API 로 전송하는 데이터를 의미합니다.
-반대로 Response Body 는 API 가 client 로 전송하는 데이터를 의미합니다.
+Request Body 는 Client 에서 API 로 전송하는 데이터를 의미합니다.
+반대로 Response Body 는 API 가 Client 로 전송하는 데이터를 의미합니다.
 
-이렇게 client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해  Pydantic Model 을 사용할 수 있습니다.
+이렇게 Client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해  Pydantic Model 을 사용할 수 있습니다.
 
 ### 1.1 Base Setting
 
@@ -68,7 +68,7 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 ```
 
-앞서 작성한 API 와 마찬가지로 FastAPI instance 를 생성한 후 입력받은 데이터를 저장할 수 있도록 `USER_DB` 를 생성합니다.
+앞서 작성한 API 와 마찬가지로 FastAPI 인스턴스를 생성한 후 입력받은 데이터를 저장할 수 있도록 `USER_DB` 를 생성합니다.
 또한, `HTTPException` 을 이용하여 에러를 발생할 수 있도록 합니다.
 
 ```python
@@ -135,7 +135,7 @@ def create_user(user: CreateIn) -> CreateOut:
 Response Body 에 필요한 변수는 `response_model` 로 지정된 `CreateOut` 모델의 변수인 `status` 와 `id` 이기 때문에 이 변수들의 값을 저장해 주어야 합니다.
 `status` 와 `id` 값을 준 `CreateOut` 의 객체를 return 하면 됩니다.
 
-정리하면, `create_user` 함수는 입력으로 `CreateIn` 모델을 받고, `CreateOut` 모델을 반환함으로써 request 할 때와 response 할 때 주고받는 데이터에 다른 변수를 사용할 수 있는 것입니다.
+정리하면, `create_user` 함수는 입력으로 `CreateIn` 모델을 받고, `CreateOut` 모델을 반환함으로써 Request 할 때와 Response 할 때 주고받는 데이터에 다른 변수를 사용할 수 있는 것입니다.
 
 ### 2.3 `crud_pydantic.py`
 
@@ -197,6 +197,43 @@ def delete_user(name: str):
     del USER_DB[name]
     return {"status": "success"}
 ```
+
+### 2.4 실행
+작성한 코드를 다음의 명령어를 통해 실행합니다.
+
+```bash
+# terminal-command
+uvicorn crud_pydantic:app --reload
+```
+
+이제 [`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하면 다음과 같은 Swagger UI 화면을 볼 수 있습니다.
+
+<div style={{textAlign: 'center'}}>
+
+![crud_pydantic.py run screen](./img/fastapi-6.png)
+[그림 5-6] `crud_pydantic.py` 실행 화면
+
+</div>
+
+[그림 5-6]의 화면에서 Pydantic Model 을 사용하여 수정한 POST Method 를 클릭하여 수정하기 전후를 비교해 봅시다.
+
+<div style={{textAlign: 'center'}}>
+
+![crud_pydantic.py run screen](./img/fastapi-7.png)
+[그림 5-7] Pydantic Model 로 수정하기 전 POST Method
+
+</div>
+
+Pydantic Model 로 수정하기 전에는 [그림 5-7]과 같이 parameter 를 이용하여 데이터를 전달했습니다.
+
+<div style={{textAlign: 'center'}}>
+
+![crud_pydantic.py run screen](./img/fastapi-8.png)
+[그림 5-8] Pydantic Model 로 수정한 후 POST Method
+
+</div>
+
+반면, Pydantic Model 로 수정한 후에는 [그림 5-8]과 같이 Request Body 를 통해 데이터를 전달하는 것을 확인할 수 있습니다.
 
 ## 3. Pydantic Model 사용 전후 비교
 
