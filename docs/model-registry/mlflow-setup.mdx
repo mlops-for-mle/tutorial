@@ -33,17 +33,18 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - 환경 변수를 이용하여 MLflow 서버에서 앞서 띄워둔 PostgreSQL DB 와 MinIO 두 가지 서버에 접근이 가능하도록 연결합니다.
     - Dockerfile
         - MLflow 에 관련된 패키지가 설치된 이미지를 생성하기 위한 Dockerfile 을 정의합니다.
-        - Artifact Store 인 `MinIO` 에 초기 버켓을 생성 하기 위해 MinIO Client 도 함께 설치되도록 합니다.
+        - MinIO 에 모델 저장을 위한 초기 버켓을 생성 하기 위해 MinIO Client 도 함께 설치되도록 합니다.
     - Docker Compose
-      - `MinIO` 의 접속 정보를 `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 변수를 통해 적절하게 설정합니다.
-      - `MinIO` Client 를 설치하고, MinIO 의 초기 버켓을 생성하도록 명령어를 작성합니다.
+      - MinIO 의 접속 정보를 `AWS_ACCESS_KEY_ID` , `AWS_SECRET_ACCESS_KEY` 환경 변수를 통해 적절하게 설정합니다.
+      - MinIO Client 를 설치하고, MinIO 의 초기 버켓을 생성하도록 명령어를 작성합니다.
       - MLflow 서버를 띄우는 명령어를 작성합니다.
       - Port forwarding : <code>5001:5000</code>
         - MLflow 에서는 default 로 5000 포트를 사용합니다.
-        - 하지만 **MacOS** 의 경우 5000번 포트로 "AirPlay" 기능을 사용하기 때문에 이런 경우 보편적인 적용을 위해 5001번 포트를 사용합니다.
+        - 하지만 실습에서 MacOS 를 사용하는 경우 AirPlay 기능이 5000번 포트를 사용하기 때문에 중복을 피하기 위해 5001번 포트를 사용합니다.
+        - 일반적인 경우 5000번 포트를 사용하면 됩니다.
 4. 정의된 스펙에 따라 서비스들을 띄웁니다.
-    - `localhost:9001` 에 접속하여 MinIO 로그인 페이지가 잘 동작하는지 확인합니다.
-    - `localhost:5001` 에 접속하여 MLflow 페이지가 잘 동작하는지 확인합니다.
+    - localhost:9001 에 접속하여 MinIO 로그인 페이지가 잘 동작하는지 확인합니다.
+    - localhost:5001 에 접속하여 MLflow 페이지가 잘 동작하는지 확인합니다.
 
 </CodeDescription>
 </details>
@@ -107,12 +108,17 @@ services:
       retries: 5
 ```
 
-- `image` : DB 서버에서 사용할 이미지는 `postgres:14.0` 입니다.
-- `environment` :
-    - <var>POSTGRES_USER</var> : DB 에 접근하기 위한 사용자 이름입니다. 여기서는 <code>mlflowuser</code> 를 사용하겠습니다.
-    - <var>POSTGRES_PASSWORD</var> : DB 에 접근하기 위한 비밀번호입니다. 여기서는 <code>mlflowpassword</code> 를 사용하겠습니다.
-    - <var>POSTGRES_DB</var> : DB 이름을 설정합니다. 여기서는 <code>mlflowdatabase</code> 를 사용하겠습니다.
-- `healthcheck` : DB 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크합니다.
+- <var>image</var> :
+
+  - DB 서버에서 사용할 이미지는 `postgres:14.0` 입니다.
+- <var>environment</var> :  
+
+  - <var>POSTGRES_USER</var> : DB 에 접근하기 위한 사용자 이름입니다. 여기서는 <code>mlflowuser</code> 를 사용하겠습니다.
+  - <var>POSTGRES_PASSWORD</var> : DB 에 접근하기 위한 비밀번호입니다. 여기서는 <code>mlflowpassword</code> 를 사용하겠습니다.
+  - <var>POSTGRES_DB</var> : DB 이름을 설정합니다. 여기서는 <code>mlflowdatabase</code> 를 사용하겠습니다.
+- <var>healthcheck</var> :
+
+  - DB 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크합니다.
 
 </CodeDescription>
 
@@ -158,16 +164,21 @@ services:
       retries: 3
 ```
 
-- <code>image</code> : MinIO 서버에서 사용할 이미지는 <code>minio/minio</code> 입니다.
-- <code>ports</code> : 호스트와 컨테이너의 포트를 설정합니다.
+- <var>image</var> : 
+  
+  - MinIO 서버에서 사용할 이미지는 <code>minio/minio</code> 입니다.
+- <var>ports</var> :
 
-    - MinIO 의 API 포트를 9000으로 포트 포워딩합니다.
-    - MinIO 의 Console 포트를 9001으로 포트 포워딩합니다.
-- <code>environment</code> :
-    - <var>MINIO_ROOT_USER</var> : MinIO 에 접근하기 위한 사용자 이름입니다. 여기서는 <code>minio</code> 를 사용하겠습니다.
-    - <var>MINIO_ROOT_PASSWORD</var> : MinIO 에 접근하기 위한 비밀번호입니다. 여기서는 <code>miniostorage</code> 를 사용하겠습니다.
-- <code>command</code> : MinIO 서버를 실행시키는 명령어를 추가합니다. `--console-address` 를 통해 컨테이너의 9001 포트로 MinIO 에 접근할 수 있도록 주소를 열어줍니다.
-- <code>healthcheck</code> : MinIO 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크하는 구문을 추가합니다.
+  - 호스트와 컨테이너의 포트를 설정합니다.
+  - MinIO 의 API 포트를 9000으로 포트 포워딩합니다.
+  - MinIO 의 Console 포트를 9001으로 포트 포워딩합니다.
+- <var>environment</var> :
+
+  - <var>MINIO_ROOT_USER</var> : MinIO 에 접근하기 위한 사용자 이름입니다. 여기서는 <code>minio</code> 를 사용하겠습니다.
+  - <var>MINIO_ROOT_PASSWORD</var> : MinIO 에 접근하기 위한 비밀번호입니다. 여기서는 <code>miniostorage</code> 를 사용하겠습니다.
+
+- <var>command</var> : MinIO 서버를 실행시키는 명령어를 추가합니다. <code>--console-address</code> 를 통해 컨테이너의 9001 포트로 MinIO 에 접근할 수 있도록 주소를 열어줍니다.
+- <var>healthcheck</var> : MinIO 서버가 잘 띄워졌는지 상태를 확인하기 위해 상태를 체크하는 구문을 추가합니다.
 
 </CodeDescription>
 
@@ -199,14 +210,18 @@ RUN cd /tmp && \
     mv mc /usr/bin/mc
 ```
 
-- `FROM amd64/python:3.9-slim` :
+- <var>FROM</var> :
+
   - Base 이미지를 Python 3.9가 포함된 이미지로 설정합니다.
-- `RUN apt-get update && apt-get install -y ~` : 
+- <var>RUN</var> :
+  
   - `git` , `wget` 을 설치합니다. 
   - `git` 은 MLflow 서버 내부 동작에, `wget` 은 MinIO Client 를 설치하기 위해 사용됩니다.
-- `RUN pip install -U pip && ~` : 
+- <var>RUN</var> : 
+  
   - MLflow 를 비롯해 PostgreSQL DB, AWS S3 에 관련된 Python 패키지를 설치합니다.
-- `RUN cd /tmp && ~` : 
+- <var>RUN</var> : 
+  
   - 앞서 설치한 `wget` 을 활용하여 MinIO Client 를 설치합니다.
 
 </CodeDescription>
@@ -254,23 +269,29 @@ services:
         --host 0.0.0.0
 ```
 
-- `build` : 
+- <var>build</var> : 
+  
   - 앞서 작성한 Dockerfile 을 사용하여 이미지를 build 하여 사용합니다.
-- `depends_on` : MLflow 서버가 띄워지기 전에, PostgreSQL DB 와 MinIO 서버를 먼저 띄우도록 합니다.
+- <var>depends_on</var> :
+
+  - MLflow 서버가 띄워지기 전에, PostgreSQL DB 와 MinIO 서버를 먼저 띄우도록 합니다.
   - `condition` : `PostgreSQL DB` 와 `MinIO` 서비스의 동작 상태가 체크되면 MLflow 서버를 띄웁니다.
-- `ports` : 
+- <var>ports</var> :
+
   - 호스트와 컨테이너의 포트를 설정합니다. 
   - 5001:5000 포트를 설정합니다.
-- `environment`
+- <var>environment</var>
+
   - <var>AWS_ACCESS_KEY_ID</var> : AWS S3 의 credential 정보입니다. 여기서는 MinIO 의 <var>MINIO_ROOT_USER</var> 와 동일합니다.
   - <var>AWS_SECRET_ACCESS_KEY</var> : AWS S3 의 credential 정보입니다. 여기서는 MinIO 의 <var>MINIO_ROOT_PASSWORD</var> 와 동일합니다.
   - <var>MLFLOW_S3_ENDPOINT_URL</var> : AWS S3 의 주소를 설정합니다. 여기서는 MinIO 의 주소와 같습니다.
-- `command` : MinIO 초기 버켓을 생성 하고, MLflow 서버를 실행합니다.
-  - `mc config ~` : MinIO Client 를 활용해 MinIO 서버에 호스트를 등록합니다.
-  - `mc mb ~` : 등록된 호스트를 통해 초기 버켓을 생성합니다.
-  - `mlflow server` : MLflow 서버를 동작시킵니다.
-  - `--backend-store-uri` 에 명시된 정보를 통해 PostgreSQL DB 와 연결합니다.
-  - `--default-artifact-root` 에 명시된 버켓을 통해 MinIO 의 초기 버켓과 연결합니다.
+- <var>command</var> : MinIO 초기 버켓을 생성 하고, MLflow 서버를 실행합니다.
+
+  - <var>mc config ~</var> : MinIO Client 를 활용해 MinIO 서버에 호스트를 등록합니다.
+  - <var>mc mb ~</var> : 등록된 호스트를 통해 초기 버켓을 생성합니다.
+  - <var>mlflow server</var> : MLflow 서버를 동작시킵니다.
+  - <var>--backend-store-uri</var> : 명시된 정보를 통해 PostgreSQL DB 와 연결합니다.
+  - <var>--default-artifact-root</var> : 명시된 버켓을 통해 MinIO 의 초기 버켓과 연결합니다.
 
 </CodeDescription>
 
