@@ -116,7 +116,7 @@ pip install kafka-python requests psycopg2-binary
 4. `psycopg2` 패키지를 이용하여 받은 response 를 Target DB 에 삽입합니다.
 
 
-### 2.1 Create Prediction Table
+### 2.1 Prediction 테이블 생성
 
 먼저, 예측값을 저장할 테이블을 생성합니다.
 전반적인 코드는 <Part>01. Database</Part> 파트와 동일하며 다른 내용은 아래와 같습니다.
@@ -163,7 +163,7 @@ if __name__ == "__main__":
 
 </CodeDescription>
 
-### 2.2 Consumer
+### 2.2 Consumer 생성
 
 다음으로, Consumer 를 생성하겠습니다.  
 `kafka-python` 패키지를 이용하여 `KafkaConsumer` 의 인스턴스를 만들겠습니다.
@@ -243,11 +243,13 @@ payload 값의 형태를 보면 아래와 같이 나오는 것을 볼 수 있습
 ``` 
 
 
-### 2.3 Call API
-#### 2.3.1 Check Schema
+### 2.3 API 호출
 
-다음 과정은 받아진 데이터를 <Part>06. API Serving</Part> 파트에서 띄워진 API server 에 전달하고 model 의 inference 결과를 받는 것입니다.<br></br>
-<Part>06. API Serving</Part> 파트에서 띄워둔 API server 의 schema 를 살펴보겠습니다. 
+다음 과정은 읽어드린 데이터를 <Part>06. API Serving</Part> 파트에서 생성한 API 서버에 전달하고, 예측값을 받는 것입니다.
+
+#### 2.3.1 Schema 확인
+
+먼저 <Part>06. API Serving</Part> 파트에서 띄워둔 API 서버의 schema 를 살펴보겠습니다. 
 
 ```python title="schemas.py"
 from pydantic import BaseModel
@@ -262,10 +264,11 @@ class PredictOut(BaseModel):
     iris_class: int
 ```
 
-#### 2.3.2 Request to API
+API 서버에 request 로 보낼 값들에는 `sepal_length`, `sepal_width`, `petal_length`, `petal_width` column 이 있고, response 로 받는 값들에는 `iris_class` column 이 있습니다.
 
-API server 에 request 로 전달할 값들에는 `sepal_length`, `sepal_width`, `petal_length`, `petal_width` 만 전달해야합니다.
-따라서 value 값의 payload 에서 필요없는 column 들은 삭제를 해줍니다.
+#### 2.3.2 API 요청 및 응답
+
+API 서버에 request 로 보낼 값들 중 payload 에서 필요없는 column 들을 아래와 같이 삭제합니다.
 
 ```python  title="data_subscriber.py"
 msg.value["payload"].pop("id")
@@ -273,9 +276,9 @@ msg.value["payload"].pop("target")
 ts = msg.value["payload"].pop("timestamp")
 ```
 
-timestamp 의 경우, source DB 에서 나온 timestamp 를 target DB 에 넣어줄 것이기 때문에 똑같이 삭제는 하되, `ts` 변수로 할당해줍니다.
+timestamp 의 경우, Source DB 에서 나온 timestamp 를 Target DB 에 넣어줄 것이기 때문에 똑같이 삭제는 하되, `ts` 변수로 할당해줍니다.
 
-이제 `requests` 패키지에 있는 POST request 를 이용하여 payload 값들을 보내고 response 를 받습니다. 
+이제 `requests` 패키지에 있는 POST method 를 이용하여 payload 값들을 보내고 response 를 받습니다. 
 
 <CodeDescription>
 
@@ -290,24 +293,24 @@ response["timestamp"] = ts
 
 - <var>url</var> : 
 
-    - API server 의 endpoint 를 설정합니다.
-    - 이번 챕터에서는 API server 의 host name 과 port number, 그리고 POST method 인 predict 를 합하여 `"http://api-with-model:8000/predict"` 로 넣어줍니다.
+    - API 서버의 endpoint 를 설정합니다.
+    - 이번 챕터에서는 API 서버의 호스트 이름과 포트, 그리고 POST method 인 predict 를 합하여 <code>http://api-with-model:8000/predict</code> 로 넣어줍니다.
 - <var>json</var> : 
 
     - request 로 보낼 인자값들을 명시합니다.
-    - 이번 챕터에서는 value 값에 있는 payload 값인 `msg.value["payload"]` 를 넣어줍니다.
+    - 이번 챕터에서는 payload 값인 `msg.value["payload"]` 를 넣어줍니다.
 - <var>headers</var> : 
 
-    - client 에서 server 로 request 를 보낼 때 부가적인 정보를 전송할 수 있도록 설정합니다.
-    - 이번 챕터에서는 보낼 때 json 형식으로 보낼 것이기 때문에 `{"Content-Type": "application/json"}`` header 로 적어줍니다.
+    - Client 에서 Server 로 request 를 보낼 때 부가적인 정보를 전송할 수 있도록 설정합니다.
+    - 이번 챕터에서는 보낼 때 json 형식으로 보낼 것이기 때문에 <code>{"Content-Type": "application/json"}</code> header 로 적어줍니다.
 - Response 를 받고 난 뒤에 아까 남겨두었던 `ts` 변수를 response 에 넣어줍니다.
 
 </CodeDescription>
 
 
-### 2.4 Insert Prediction to Prediction Table
+### 2.4 Prediction 테이블에 예측값 삽입
 
-마지막으로 <Part>01. Database</Part> 에서 사용했던 `insert_data` method 를 이용하여 response 에 담긴 데이터를 target DB 에 추가합니다.
+마지막으로 <Part>01. Database</Part> 파트에서 사용했던 `insert_data` 함수를 이용하여 response 에 담긴 데이터를 Target DB 에 삽입합니다.
 
 ```python  title="data_subscriber.py"
 def insert_data(db_connect, data):
@@ -326,16 +329,18 @@ def insert_data(db_connect, data):
 insert_data(db_connect, response)
 ```
 
-### 2.5 전체 코드
+### 2.5 `data_subscriber.py`
 
 앞서 살펴봤던 모든 코드들은 다음과 같습니다.
 
 ```python title="data_subscriber.py"
+# data_subscriber.py
 from json import loads
 
 import psycopg2
 import requests
 from kafka import KafkaConsumer
+
 
 def create_table(db_connect):
     create_table_query = """
@@ -349,6 +354,7 @@ def create_table(db_connect):
         cur.execute(create_table_query)
         db_connect.commit()
 
+
 def insert_data(db_connect, data):
     insert_row_query = f"""
     INSERT INTO iris_prediction
@@ -361,6 +367,7 @@ def insert_data(db_connect, data):
     with db_connect.cursor() as cur:
         cur.execute(insert_row_query)
         db_connect.commit()
+
 
 def subscribe_data(db_connect, consumer):
     for msg in consumer:
@@ -384,6 +391,7 @@ def subscribe_data(db_connect, consumer):
         response["timestamp"] = ts
         insert_data(db_connect, response)
 
+
 if __name__ == "__main__":
     db_connect = psycopg2.connect(
         user="targetuser",
@@ -405,9 +413,10 @@ if __name__ == "__main__":
 ```
 
 ## 3. Docker Compose
+
 ### 3.1 Dockerfile
 
-Data subscriber 코드를 docker 에서 실행할 `Dockerfile` 입니다.
+Data Subscriber 코드를 Docker 에서 실행할 Dockerfile 을 만듭니다.
 
 ```docker  title="Dockerfile"
 FROM amd64/python:3.9-slim
@@ -424,9 +433,10 @@ ENTRYPOINT ["python", "data_subscriber.py"]
 
 ### 3.2 Docker Compose
 
-`Dockerfile` 을 이용하여 `stream-docker-compose.yaml` 를 구성하면 아래와 같습니다.
+Dockerfile 을 이용하여 Docker Compose 파일을 구성하면 아래와 같습니다.
 
 ```yaml title="stream-docker-compose.yaml"
+# stream-docker-compose.yaml
 version: "3"
 
 services:
@@ -441,11 +451,12 @@ networks:
     name: mlops-network
     external: true
 ```
-- 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part> 에서 생성한 mlops-network 로 사용합니다. `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 생성되어있는 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
+
+- 서비스들을 연결할 Docker Network 는 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 네트워크를 사용합니다. 
 
 ### 3.3 실행
 
-`docker compose` 명령어를 이용하여 data subscriber 서비스를 띄웁니다.
+`docker compose` 명령어를 이용하여 Data Subscriber 서비스를 생성합니다.
 
 <CodeDescription>
 
@@ -454,36 +465,40 @@ networks:
 docker compose -p ch8-stream -f stream-docker-compose.yaml up -d
 ```
 
-- `-p` 인 project name 은 `ch8-stream` 으로 작성합니다.
-- `-f` 인 file name 은 위에서 작성한 파일 이름인 `stream-docker-compose.yaml` 을 작성합니다.
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch8-stream</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>stream-docker-compose.yaml</code> 을 적어줍니다.
 
 </CodeDescription>
 
 ### 3.4 데이터 확인
 
-1. `psql` 로 target DB 에 접속합니다.
+1. `psql` 로 Target DB 에 접속합니다.
 
     ```bash
     $ PGPASSWORD=targetpassword psql -h localhost -p 5433 -U targetuser -d targetdatabase
-    psql (14.6 (Homebrew), server 14.0 (Debian 14.0-1.pgdg110+1))
+    psql (14.6, server 14.0 (Debian 14.0-1.pgdg110+1))
     Type "help" for help.
 
     targetdatabase=#
     ```
 
-2. Select 문을 작성하여 데이터를 확인합니다.
+2. Select 문을 작성하여 `iris_prediction` 테이블에 있는 데이터를 확인합니다.
 
     ```bash
-    targetdatabase=# SELECT * FROM iris_data LIMIT 100;
-    id  |        timestamp        | sepal_length | sepal_width | petal_length | petal_width | target 
-    -----+-------------------------+--------------+-------------+--------------+-------------+--------
-    1 | 2022-12-15 05:58:57.024 |          6.4 |         3.2 |          5.3 |         2.3 |      2
-    2 | 2022-12-15 05:58:58.047 |          5.2 |         4.1 |          1.5 |         0.1 |      0
-    3 | 2022-12-15 05:58:59.063 |          5.7 |         4.4 |          1.5 |         0.4 |      0
-    4 | 2022-12-15 05:59:00.07  |          6.5 |           3 |          5.5 |         1.8 |      2
-    5 | 2022-12-15 05:59:01.079 |          6.7 |         3.1 |          4.4 |         1.4 |      1
-    6 | 2022-12-15 05:59:02.094 |          5.2 |         3.4 |          1.4 |         0.2 |      0
-    7 | 2022-12-15 05:59:03.102 |          6.7 |           3 |            5 |         1.7 |      1
-    8 | 2022-12-15 05:59:04.127 |          5.5 |         2.3 |            4 |         1.3 |      1
-    9 | 2022-12-15 05:59:05.161 |          5.4 |         3.4 |          1.5 |         0.4 |      0
+    targetdatabase=# SELECT * FROM iris_prediction LIMIT 100;
+     id  |        timestamp        | iris_class 
+    -----+-------------------------+------------
+       1 | 2022-12-21 23:31:12.705 |          1
+       2 | 2022-12-21 23:31:13.804 |          2
+       3 | 2022-12-21 23:31:14.815 |          2
+       4 | 2022-12-21 23:31:15.828 |          2
+       5 | 2022-12-21 23:31:16.835 |          1
+       6 | 2022-12-21 23:31:17.848 |          1
+       7 | 2022-12-21 23:31:18.854 |          1
+       8 | 2022-12-21 23:31:19.863 |          0
+       9 | 2022-12-21 23:31:20.875 |          2
     ```
