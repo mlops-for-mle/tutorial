@@ -177,7 +177,7 @@ Path Parameter 는 path operation 에 포함된 변수로 사용자에게 입력
 
 다음과 같이 `path_param.py` 를 작성하고 `uvicorn path_param:app --reload` 를 입력하여 실행합니다.
 
-```python
+```python  title="path_param.py"
 # path_param.py
 from fastapi import FastAPI
 
@@ -217,7 +217,7 @@ Query Parameter 는 function parameter 로는 사용되지만 path operation 에
 
 다음과 같이 `query_param.py` 를 작성하고 `uvicorn query_param:app --reload` 를 입력하여 실행합니다.
 
-```python
+```python  title="query_param.py"
 # query_param.py
 from fastapi import FastAPI
 
@@ -259,7 +259,7 @@ Path parameter 와 Query parameter 를 모두 사용하여 path operation functi
 
 다음과 같이 `multi_param.py` 를 작성합니다.
 
-```python
+```python  title="multi_param.py"
 # multi_param.py
 from typing import Union
 
