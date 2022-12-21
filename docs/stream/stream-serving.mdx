@@ -1,18 +1,18 @@
 ---
 sidebar_position: 1
-description: 📌 Serving 을 위한 data subscriber 코드를 작성합니다.
+description: 📌 Stream Serving 을 위한 Data Subscriber 코드를 작성합니다.
 ---
 
-# 1) Stream serving
+# 1) Stream Serving
 import CodeDescription from '@site/src/components/CodeDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. Serving 을 위한 data subscriber 코드를 작성합니다.
-2. Docker-compose 를 이용하여 data subcriber 를 띄웁니다.
-3. Target DB 에 접속하여 실제 inference 한 결과가 쌓이고 있는지 확인합니다.
+1. Stream Serving 을 위한 Data Subscriber 코드를 작성합니다.
+2. Docker Compose 를 이용하여 Data Subcriber 를 생성합니다.
+3. Target DB 에 접속하여 예측값이 잘 쌓이고 있는지 확인합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -20,10 +20,19 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. `kafka-python` 패키지를 이용해 Kafka Topic 에서 데이터를 가져올 수 있는 consumer 를 생성합니다.
-2. 예측값을 저장할 `iris_prediction` 테이블을 target postgres server 에 생성합니다.
-3. `request` 패키지를 이용해 API 에 예측을 요청하고 응답을 받습니다.
-4. 응답받은 예측값을 `iris_prediction` 테이블에 삽입합니다.
+1. Stream Serving 을 위한 Data Subscriber 코드를 작성합니다.
+
+    - 1. `psycopg2` 패키지를 이용하여 예측값을 저장할 `iris_prediction` 테이블을 Target DB 서버에 생성합니다.
+    - 2. `kafka-python` 패키지를 이용하여 <Part>07. Kafka</Part> 파트에서 생성한 토픽에서 데이터를 가져올 수 있는 Consumer 를 구현합니다.
+            - <var>Topic name</var> : <code>postgres-source-iris_data</code>
+            - <var>bootstrap_servers</var> : <code>broker:29092</code>
+            - <var>auto_offset_reset</var> : <code>earliest</code>
+            - <var>group_id</var> : <code>iris-data-consumer-group</code>
+            - <var>value_deserializer</var> : <code>lambda x: loads(x)</code>
+    - 3. `requests` 패키지를 이용하여 REST API 에 모델의 예측을 요청하고 예측값을 받습니다.
+    - 4. 결과값을 `iris_prediction` 테이블에 삽입합니다.
+2. Docker Compose 를 이용하여 Data Subscriber 를 생성합니다.
+3. Target DB 에 접속하여 실제로 예측값이 잘 쌓이고 있는지 확인합니다.
 
 </CodeDescription>
 </details>
@@ -51,14 +60,20 @@ ch8
 
 ## 0. 패키지 설치
 
-이번 장에서 사용할 패키지들입니다.
+이번 챕터에서 사용할 패키지들입니다.
 
 ```bash
 # terminal-command
 pip install kafka-python requests psycopg2-binary
 ```
-- `kafka-python` : python 에서 kafka 를 SDK 형태로 사용하도록 도와주는 kafka python client 패키지 입니다. Consumer 를 구현할 때 사용합니다.
-- `requests` : python 으로 HTTP 통신이 필요한 프로그램을 작성할 때 가장 많이 사용되는 패키지입니다. API 를 호출할 때 사용합니다.
+- <var>kafka-python</var> : 
+
+    - Python 에서 Kafka 를 SDK 형태로 사용하도록 도와주는 Kafka Python Client 패키지입니다.
+    - 해당 챕터에서는 Consumer 를 구현할 때 사용합니다.
+- <var>requests</var> : 
+
+    - Python 으로 HTTP 통신이 필요한 프로그램을 작성할 때 가장 많이 사용되는 패키지입니다. 
+    - REST API 를 호출할 때 사용합니다.
 
 ## 1. Architecture
 
@@ -67,40 +82,43 @@ pip install kafka-python requests psycopg2-binary
 <div style={{textAlign: 'center'}}>
 
 ![Stream serving flow](./img/stream-2.png)
-[그림 8-2] Stream serving flow
+[그림 8-2] Stream Serving Workflow
 </div>
 <p>
-<Part>07. Kafka</Part> 파트에서는 source connector 와 sink connector 를 생성하여 source DB 에서 target DB 로 데이터를 전달하는 과정을 살펴봤습니다.
-<Part>08. Stream</Part> 파트에서는 다시 model deployment 관점으로 돌아와서 kafka 를 어떻게 쓸지 살펴보겠습니다.<br></br>
+<Part>07. Kafka</Part> 파트에서는 Source Connector 와 Sink Connector 를 생성하여 Source DB 에서 Target DB 로 데이터를 전달하는 과정을 살펴봤습니다.
+<Part>08. Stream</Part> 파트에서는 다시 Model Deployment 관점으로 돌아와서 Kafka 를 어떻게 쓸 지 살펴보겠습니다.<br></br>
 </p>
 <p>
-<Part>07. Kafka</Part> 파트와 동일하게 zookeeper, broker, connect 를 사용하며 source connector 를 사용하여 데이터를 publish 하는 과정도 동일합니다.
-달라지는 점은 sink connector 를 대신해서 직접 kafka 의 python SDK 를 이용하여 consumer 를 구현하는 것입니다.
+이번 파트에서는 <Part>07. Kafka</Part> 파트와 동일한 주키퍼, 브로커, Connect, Schema Registry 를 사용합니다.
+또한 Source Connector 를 사용하여 데이터를 가져오는 과정도 동일합니다.
+달라지는 점은 Sink Connector 를 대신해서 직접 Kafka Python SDK 를 이용하여 Consumer 를 구현하는 것입니다.
 </p>
 <p>
 왜 직접 구현해서 사용해야 할까요?<br></br>
-<Part>07. Kafka</Part> 에서 사용한 sink connector 를 살펴 보면, JSON 파일틀 통해 사전에 정의 된 양식에 맞추어 생성한 후 사용합니다.
-하지만, <Part>08. Stream</Part> 에서는 <Part>06. API serving</Part> 에서는 request 를 보내고 response 를 받는 과정이 존재합니다.
-source DB 에서 데이터를 받아 <Part>06. API serving</Part> 에서 만든 REST API 로 request 를 보내주어야하며, model 의 inference 결과를 response 로 받게 됩니다.
-받은 결과를 target DB 에 전달하는 이 과정을 담당해주는 코드가 필요합니다.
+<Part>07. Kafka</Part> 파트에서 사용한 Sink Connector 를 살펴 보면, 설정 파일을 통해 생성한 후 자동으로 Sink Connector 가 해당 토픽에 있는 데이터를 읽어서 Target DB 에 전달했습니다.
+하지만 <Part>08. Stream</Part> 파트에서는 <Part>06. API serving</Part> 파트에서 생성한 API 서버에 request 를 보내고 response 를 받아야합니다.
+이 과정에서 Sink Connector 를 쓰려면 토픽에서 데이터를 읽어서 전달할 endpoint 가 필요하지만, API Serving 에서는 수동으로 request 를 보내고 response 를 받기 때문에 Sink Connector 를 사용할 수가 없습니다.
+</p>
+<p>
+따라서 Source DB 에서 데이터를 받아 API 서버로 요청을 보내고, 모델의 예측 값을 받고, 받은 결과를 Target DB 에 삽입하는 과정을 담당하는 코드가 필요합니다.
 </p>
 
-따라서 이번 챕터에서는 sink connector 없이 `kafka-python`, `requests`, `psycopg2` 를 이용하여 커스터마이징한 Consumer 를 구축해보겠습니다. 
+따라서 이번 챕터에서는 Sink Connector 없이 `kafka-python`, `requests`, `psycopg2` 패키지들을 이용하여 Data Subscriber 를 구축해보겠습니다. 
 
 
 ## 2. Data Subscriber
 
-이번에 구현할 data subscriber 의 절차는 다음과 같습니다.
+이번에 구현할 Data Subscriber 의 절차는 다음과 같습니다.
 
 1. `psycopg2` 패키지를 이용하여 Target DB 에 접근하여 테이블을 생성합니다.
-2. `kafka-python` 패키지를 이용하여 broker 의 topic 에 있는 데이터를 subscribe 하는 consumer 를 생성합니다.
-3. `requests` 패키지를 이용하여 consumer 를 통해 받은 데이터를 `API Serving` 챕터에서 띄운 API server 에 model 의 input 인 request 를 보내고 model 의 inference 결과인 response 를 받습니다.
-4. `psycopg2` 패키지를 이용하여 받은 response 를 target DB 에 추가합니다.
+2. `kafka-python` 패키지를 이용하여 브로커의 토픽에 있는 데이터를 읽는 Consumer 를 생성합니다.
+3. `requests` 패키지를 이용하여 Consumer 를 통해 받은 데이터를 <Part>06. API serving</Part> 파트에서 띄운 API 서버에 데이터를 보내고 예측값을 받습니다.
+4. `psycopg2` 패키지를 이용하여 받은 response 를 Target DB 에 삽입합니다.
 
 
 ### 2.1 Create Prediction Table
 
-먼저, 예측값을 저장할 테이블 생성을 하겠습니다.  
+먼저, 예측값을 저장할 테이블을 생성합니다.
 전반적인 코드는 <Part>01. Database</Part> 파트와 동일하며 다른 내용은 아래와 같습니다.
 
 <CodeDescription>
@@ -147,8 +165,8 @@ if __name__ == "__main__":
 
 ### 2.2 Consumer
 
-다음으로, consumer 를 생성하겠습니다.  
-`kafka-python` 패키지를 이용하여 `KafkaConsumer` 의 instance 를 만들어보겠습니다.
+다음으로, Consumer 를 생성하겠습니다.  
+`kafka-python` 패키지를 이용하여 `KafkaConsumer` 의 인스턴스를 만들겠습니다.
 
 <CodeDescription>
 
@@ -160,36 +178,33 @@ consumer = KafkaConsumer(
     "postgres-source-iris_data",
     bootstrap_servers="broker:29092",
     auto_offset_reset="earliest",
-    enable_auto_commit=True,
-    group_id="iris",
-    value_deserializer=lambda x: loads(x.decode("utf-8")),
+    group_id="iris-data-consumer-group",
+    value_deserializer=lambda x: loads(x),
 )
 ```
 - <var>topics</var>:
 
-    - 데이터를 가져오고 싶은 topic 들을 넣습니다.
-    - 이번 챕터에서는 `postgres-source-iris_data` topic 에 있는 데이터를 가져올 것이기 때문에 `postgres-source-iris_data` 을 작성합니다.
+    - 데이터를 읽어들이고 싶은 토픽을 설정합니다.
 - <var>bootstrap_servers</var> :
 
-    - bootstrap server 로 띄워져있는 broker 의 `broker_service_name:broker_service_internal_port` 을 넣습니다.
-    - 이번 챕터에서는 `broker:29092` 를 작성합니다.
+    - Bootstrap 서버로 띄워져있는 브로커의 <code>브로커 서비스 이름 : 브로커 서비스 내부 포트</code> 을 넣습니다.
 - <var>auto_offset_reset</var> :
 
-    - topic 에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 2가지 설정이 있으며, `earliest` 는 가장 초기 offset 값, `latest` 는 가장 마지막 offset 값입니다.
-    - 이번 챕터에서는 첫번째 데이터부터 가져오고 싶기 때문에 `earliest` 를 작성합니다.
+    - 토픽에 있는 데이터를 어떤 offset 값부터 가져올 지 설정합니다. 
+    - 2가지 설정이 있으며, <code>earliest</code> 는 가장 초기 offset 값, <code>latest</code> 는 가장 마지막 offset 값입니다.
+    - 이번 챕터에서는 첫번째 데이터부터 가져오고 싶기 때문에 <code>earliest</code> 를 작성합니다.
 - <var>group_id</var> : 
 
-    - consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다.
-    - 이번 챕터에서는 `iris-data-consumer-group` 로 지정하겠습니다.
+    - Consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다.
 - <var>value_deserializer</var> :
 
-    - source connector (또는 produceer) 에서 serialization 된 value 값을 deserialization 할 때 어떤 deserializer 를 사용할 지를 설정합니다.
-    - <Part>07. Kafka</Part>파트에서는 connect 를 띄울 때 value converter 로서 json converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
-    - 이번 챕터에서는 데이터를 가져와서 json deserializer 를 이용하여 deserialization 을 해주어야 함으로, lambda function 과 json 의 loads 를 이용하여 `lambda x: loads(x)` 를 작성합니다.
+    - Source connector (또는 Produceer) 에서 serialization 된 value 값을 deserialization 할 때 사용할 deserializer 를 설정합니다.
+    - <Part>07. Kafka</Part>파트에서는 Connect 를 띄울 때 value converter 로서 Json Converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
+    - 이번 챕터에서는 데이터를 읽어서 Json Deserializer 를 이용하여 deserialization 을 해야 하기 때문에 lambda function 과 json 의 <code>loads</code> 를 이용하여 <code>lambda x: loads(x)</code> 를 작성합니다.
 
 </CodeDescription>
 
-이렇게 만들어진 consumer instance 는 for 문을 이용하여 topic 에 있는 데이터를 계속해서 가져올 수 있습니다.
+이렇게 만들어진 Consumer 인스턴스는 for 문을 이용하여 토픽에 있는 데이터를 실시간으로 계속해서 가져올 수 있습니다.
 
 ```python  title="data_subscriber.py"
 for msg in consumer:
@@ -219,9 +234,9 @@ for msg in consumer:
 # Value : {'schema': {'type': 'struct', 'fields': [{'type': 'int32', 'optional': False, 'field': 'id'}, {'type': 'string', 'optional': True, 'field': 'timestamp'}, {'type': 'double', 'optional': True, 'field': 'sepal_length'}, {'type': 'double', 'optional': True, 'field': 'sepal_width'}, {'type': 'double', 'optional': True, 'field': 'petal_length'}, {'type': 'double', 'optional': True, 'field': 'petal_width'}, {'type': 'int32', 'optional': True, 'field': 'target'}], 'optional': False, 'name': 'iris_data'}, 'payload': {'id': 225, 'timestamp': '2022-12-15 04:51:14.238', 'sepal_length': 6.7, 'sepal_width': 3.1, 'petal_length': 4.4, 'petal_width': 1.4, 'target': 1}}
 ```
 
-Print 문과 출력된 형태를 통해 메시지에 있는 topic, partition, offset, key, value 을 볼 수 있습니다. 앞으로 사용할 데이터는 value 에 있는 `payload` 키 값입니다.
+Print 문과 출력된 형태를 통해 메시지에 있는 topic, partition, offset, key, value 을 볼 수 있습니다. 앞으로 사용할 데이터는 value 에 있는 payload 값입니다.
 
-`payload` 키 값의 형태를 보면 아래와 같이 나오는 것을 볼 수 있습니다.
+payload 값의 형태를 보면 아래와 같이 나오는 것을 볼 수 있습니다.
 
 ```json
 'payload': {'id': 134, 'timestamp': '2022-12-15 04:49:41.21', 'sepal_length': 6.1, 'sepal_width': 2.8, 'petal_length': 4.0, 'petal_width': 1.3, 'target': 1}
