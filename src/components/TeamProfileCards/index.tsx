@@ -115,7 +115,16 @@ export function ReviewersRow(): JSX.Element {
         linkedinUrl="https://www.linkedin.com/in/minjoolee218/"
         >
         <Translate id="team.profile.Minjoo Lee.body">
-        Project Leader
+        Alpha & Beta Tester
+        </Translate>
+      </TeamProfileCardCol>
+      <TeamProfileCardCol
+        name="Haeun Oh"
+        githubUrl="https://github.com/Haeun-Oh"
+        linkedinUrl="https://www.linkedin.com/in/haeun-oh/"
+        >
+        <Translate id="team.profile.Haeun Oh.body">
+        Beta Tester
         </Translate>
       </TeamProfileCardCol>
     </div>
