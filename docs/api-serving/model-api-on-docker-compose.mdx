@@ -27,10 +27,10 @@ import APIServingImage5 from './img/api-serving-5.png';
     - 포트는 default 포트인 8000번 포트를 이용합니다.
 2. Docker Compose 파일을 작성합니다.
     - Model API 서버
-        - Service name: `api-with-model`
-        - Image: `Dockerfile`
-        - Container name: `api-with-model`
-        - Port: `8000:8000`
+        - <var>Service name</var>: <code>api-with-model</code>
+        - <var>Image</var>: <code>Dockerfile</code>
+        - <var>Container name</var>: <code>api-with-model</code>
+        - <var>Port</var>: <code>8000:8000</code>
 3. Docker Compose 파일을 실행하여 API 를 작동시키고 데이터를 전달하여 예측 결과를 제대로 반환하는지 확인합니다.
     - Swagger UI 를 통해 확인합니다.
     - `curl` 을 통해 확인합니다.
@@ -113,12 +113,27 @@ services:
     container_name: api-with-model
     ports:
       - 8000:8000
+    healthcheck:
+      test:
+      - curl -X POST http://localhost:8000/predict
+      - -H
+      - "Content-Type: application/json"
+      - -d
+      - '{"sepal_length": 6.7, "sepal_width": 3.3, "petal_length": 5.7, "petal_width": 2.1}'
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
 networks:
   default:
     name: mlops-network
     external: true
 ```
+- <var>healthcheck</var> :
+
+  - curl 을 이용하여 API 서버의 동작을 테스트합니다.
+  - 정상 동작이 확인되면 서비스를 띄웁니다.
+
 - <var>networks</var> : 
 
   - 서비스들을 연결할 Docker 네트워크를 <Part>01. Database</Part> 파트에서 생성한 `mlops-network` 로 사용합니다. 
