@@ -20,12 +20,13 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 ### 스펙 명세서
 
 1. 학습이 끝난 모델을 MLflow built-in method 를 사용하여 MLflow 서버에서 불러옵니다.
-    - 학습에 관련된 정보가 저장 되어있는 `run` 의 `run_id` 를 사용하여 모델을 불러옵니다.
+    - <Chapter>2) Save Model to Registry</Chapter> 에서 설치한 <code>mlflow</code> 패키지를 사용합니다.
+    - 학습에 관련된 정보가 저장 되어있는 run 의 run_id 를 사용하여 모델을 불러옵니다.
     - `mlflow` 패키지를 이용하여 모델을 불러오는 방법은 두 가지가 있습니다.
         1. [MLFlow built-in Model Flavors](https://www.mlflow.org/docs/latest/models.html#built-in-model-flavors)
         2. [MLFLow pyfunc load_model](https://mlflow.org/docs/latest/python_api/mlflow.pyfunc.html#mlflow.pyfunc.load_model)
     - 이번 챕터에서는 `sklearn` 의 모델을 불러오기 위해 `mlflow.sklean.load_model` 을 사용합니다.
-2. 불러온 모델을 이용하여 저장해두었던 학습 데이터의 결과를 추론합니다.
+2. 불러온 모델을 이용하여 <Chapter>2) Save Model to Registry</Chapter> 에서 저장해두었던 학습 데이터의 결과를 추론합니다.
 
 
 </CodeDescription>
@@ -64,7 +65,7 @@ ch3
 
 ### 1.1 환경 변수 설정
 
-<Chapter>2) Save Model to Registry</Chapter> 챕터과 같이 MLflow 서버에 접근하기 위한 환경 변수를 설정합니다.
+<Chapter>2) Save Model to Registry</Chapter> 챕터와 같이 MLflow 서버에 접근하기 위한 환경 변수를 설정합니다.
 
 ```python
 import os
@@ -79,8 +80,8 @@ os.environ["AWS_SECRET_ACCESS_KEY"] = "miniostorage"
 
 #### 1.2.1 `sklearn` 모델 불러오기
 
-<Chapter>2) Save Model to Registry</Chapter> 챕터에서 저장했던 모델을 불러오기 위해, `mlflow.sklearn.load_model` 함수를 사용하여 저장된 모델을 불러옵니다. 
-모델을 포함하고 있는 `run_id` 와 모델을 저장할 때 설정했던 모델 이름을 받을 수 있도록 외부 변수를 설정합니다.
+<Chapter>2) Save Model to Registry</Chapter> 챕터에서 저장했던 모델을 불러오기 위해, <code>mlflow.sklearn.load_model</code> 함수를 사용하여 저장된 모델을 불러옵니다. 
+모델을 포함하고 있는 run_id 와 모델을 저장할 때 설정했던 모델 이름을 받을 수 있도록 외부 변수를 설정합니다.
 
 ```python
 parser = ArgumentParser()
@@ -89,7 +90,8 @@ parser.add_argument("--model-name", dest="model_name", type=str, default="sk_mod
 args = parser.parse_args()
 ```
 
-앞서 받은 두 가지 변수를 `mlflow.sklearn.load_model` 의 인자에 설정하여 모델을 불러옵니다.
+앞서 받은 두 가지 변수를 이용해 `runs:/run_id/model_name` 의 형식으로 문자열을 만들어 줍니다.  
+만들어진 문자열을 `mlflow.sklearn.load_model` 의 입력으로 넣고 모델을 불러옵니다.
 
 ```python
 model_pipeline = mlflow.sklearn.load_model(f"runs:/{args.run_id}/{args.model_name}")
@@ -106,7 +108,7 @@ print(model_pipeline)
 
 **이 부분 sklearn 으로 변경되어서 글을 바꿔야할 것 같습니다.**
 
-MLflow 에서는 지정한 방식 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는 종류에 관계없이 `mlflow.pyfunc.load_model` 을 이용해 쉽게 모델을 불러올 수 있습니다.
+MLflow 에서는 지정한 방식 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는 종류에 관계없이 `mlflow.pyfunc.load_model` 을 이용하여 쉽게 모델을 불러올 수 있습니다.
 
 이 때 로드된 모델은 기존의 클래스가 아닌 `mlflow.pyfunc.PyFuncModel` 클래스로 불러와집니다. `PyFuncModel` 이란 `mlflow` 에서 정의된 새로운 클래스로, 결과 추론을 위해 학습한 모델의 `predict` method 를 호출하도록 wrapping 된 클래스입니다.
 
@@ -114,13 +116,13 @@ MLflow 에서는 지정한 방식 [[MLFlow Storage Format](https://www.mlflow.or
 model_pipeline = mlflow.sklearn.load_model(f"runs:/{args.run_id}/{args.model_name}")
 ```
 
-마찬가지로 앞서 받은 두 가지 변수를 `mlflow.sklearn.load_model` 의 인자에 매핑하여 모델을 로드합니다.
+마찬가지로 앞서 받은 두 가지 변수를 형식에 맞춰 `mlflow.pyfunc.load_model` 의 입력으로 넣어 모델을 로드합니다.
 
 불러와진 모델을 확인하면 아래와 같습니다.
 
 ```python
 print(model_pipeline)
-# mlflow.sklearn.load_model:
+# mlflow.pyfunc.load_model:
 #   artifact_path: sk_model
 #   flavor: mlflow.sklearn
 #   run_id: `RUN_ID`
@@ -130,13 +132,13 @@ print(model_pipeline)
 
 ### 1.3 추론 코드 작성하기
 
-<Chapter>2) Save Model to Registry</Chapter> 챕터에서 저장했던 데이터인 `data.csv` 파일로부터 데이터를 불러옵니다.
+<Chapter>2) Save Model to Registry</Chapter> 챕터에서 저장했던 데이터인 <code>data.csv</code> 파일로부터 데이터를 불러옵니다.
 
 ```python
 df = pd.read_csv("data.csv")
 ```
 
-학습 조건과 같도록 데이터를 할당하고, 학습 데이터와 평가 데이터로 분리합니다.
+학습 조건과 같도록 불필요한 columns 를 제거하고, 학습 데이터와 평가 데이터로 분리합니다.
 
 ```python
 X = df.drop(["id", "timestamp", "target"], axis="columns")
@@ -209,17 +211,17 @@ print("Valid Accuracy :", valid_acc)
 
 ### 2.2 실행 및 결과 확인
 
-1. [localhost:5001](http://localhost:5001) 에 접속하여 저장된 모델의 `run` 을 클릭하여 `run_id` 와 `model_name` 를 확인합니다.
+1. [localhost:5001](http://localhost:5001) 에 접속하여 저장된 모델의 run 을 클릭하여 run_id 와 model_name 를 확인합니다.
     <div style={{textAlign: 'center'}}>
 
     ![Model Download diagram](./img/model-registry-10.png)
-    [그림 3-10] `run-id` 및 `model-name` 확인
+    [그림 3-10] run-id 및 model-name 확인
     </div>    
 2. 아래 코드의 `--model-name` , `--run-id` 뒤에 해당 값을 사용하여 실행합니다.
     
     ```bash
     # terminal-command
-    python load_model_from_registry.py --model-name sk_model --run-id `RUN_ID`
+    python load_model_from_registry.py --model-name "sk_model" --run-id "RUN_ID"
     ```
     
 3. MLflow 서버의 metrics 를 확인하여 학습했던 결과와 같은지 확인합니다.
