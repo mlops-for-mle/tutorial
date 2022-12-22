@@ -18,14 +18,14 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 
 ### 스펙 명세서
-
 1. Create API 에서 입력으로 받아야 하는 값들을 `pydantic.BaseModel` 을 이용하여 수정합니다. [[Request Body](https://fastapi.tiangolo.com/tutorial/body/)]
     - `Class CreateIn(BaseModel)` 을 이용
-2. Create 의 operation function 을 수정합니다. [[Use the model](https://fastapi.tiangolo.com/tutorial/body/#use-the-model)]
-3. Create 후 return 하는 값을 Response Model 을 이용하여 수정합니다. [[Response Model](https://fastapi.tiangolo.com/tutorial/response-model/)]
+        - `CreateIn` 에서는 이름과 별명을 입력받을 수 있도록 `name` 과 `nickname` 변수를 만듭니다.
     - `Class CreateOut(BaseModel)` 을 이용
-    - `CreateOut` 에는 `status` 와 `id` 변수를 만들어 Create 의 operation function 에서 두 변수의 값을 return 하도록 합니다.
+        - `CreateOut` 에는 `status` 와 `id` 변수를 만들어 Create 의 operation function 에서 두 변수의 값을 return 하도록 합니다.
         - `id` 는 create 되는 시점의 memory 에 존재하는 데이터의 개수로 정의하여 작성합니다.
+2. Create 후 return 하는 값을 Response Model 을 이용하여 수정합니다. [[Response Model](https://fastapi.tiangolo.com/tutorial/response-model/)]
+3. Pydantic Model 을 사용하기 전과 후에 API 가 어떻게 달라지는지 비교해 봅니다.
 
 </CodeDescription>
 </details>
@@ -57,8 +57,7 @@ ch5
 Request Body 는 Client 에서 API 로 전송하는 데이터를 의미합니다.
 반대로 Response Body 는 API 가 Client 로 전송하는 데이터를 의미합니다.
 
-이렇게 client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해 Pydantic Model 을 사용할 수 있습니다.
-
+이렇게 Client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해 Pydantic Model 을 사용할 수 있습니다.
 
 ### 1.1 Base Setting
 
