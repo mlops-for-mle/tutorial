@@ -104,16 +104,14 @@ print(model_pipeline)
 # Pipeline(steps=[('scaler', StandardScaler()), ('svc', SVC())])
 ```
 
-#### 1.2.2 `sklearn` 모델 불러오기
-
-**이 부분 sklearn 으로 변경되어서 글을 바꿔야할 것 같습니다.**
+#### 1.2.2 `pyfunc` 모델 불러오기
 
 MLflow 에서는 지정한 방식 [[MLFlow Storage Format](https://www.mlflow.org/docs/latest/models.html#storage-format)]에 따라 저장 되어있는 모델에 대해서는 종류에 관계없이 `mlflow.pyfunc.load_model` 을 이용하여 쉽게 모델을 불러올 수 있습니다.
 
 이 때 로드된 모델은 기존의 클래스가 아닌 `mlflow.pyfunc.PyFuncModel` 클래스로 불러와집니다. `PyFuncModel` 이란 `mlflow` 에서 정의된 새로운 클래스로, 결과 추론을 위해 학습한 모델의 `predict` method 를 호출하도록 wrapping 된 클래스입니다.
 
 ```python
-model_pipeline = mlflow.sklearn.load_model(f"runs:/{args.run_id}/{args.model_name}")
+model_pipeline = mlflow.pyfunc.load_model(f"runs:/{args.run_id}/{args.model_name}")
 ```
 
 마찬가지로 앞서 받은 두 가지 변수를 형식에 맞춰 `mlflow.pyfunc.load_model` 의 입력으로 넣어 모델을 로드합니다.
@@ -127,8 +125,6 @@ print(model_pipeline)
 #   flavor: mlflow.sklearn
 #   run_id: `RUN_ID`
 ```
-
-**여기까지**
 
 ### 1.3 추론 코드 작성하기
 
