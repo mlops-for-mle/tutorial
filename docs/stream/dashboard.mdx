@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-description: 📌 모델 추론 결과를 모니터링 하는 대시보드를 구현 합니다.
+description: 📌 Grafana 대시보드를 통해 실시간으로 데이터를 모니터링하는 대시보드를 작성합니다.
 ---
 
 # 2) Dashboard
@@ -10,8 +10,8 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. Grafana dashboard 를 통해 실시간으로 데이터를 모니터링 하는 대시보드를 작성합니다.
-2. Grafana 에 원본 데이터와 추론 결과 값을 시각화 하며 사용 방법을 이해합니다.
+1. Grafana 대시보드를 통해 실시간으로 데이터를 모니터링하는 대시보드를 작성합니다.
+2. Grafana 에 원본 데이터와 예측값을 시각화하는 방법을 이해합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -19,21 +19,22 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 스펙 명세서
 
-1. 실시간 모니터링 대시보드인 Grafana 를 실행할 수 있는 스펙을 정의합니다.
+1. Docker Compose 를 이용하여 실시간 모니터링 대시보드인 Grafana 를 생성합니다.
+
     - <var>GF_SECURITY_ADMIN_USER</var> : <code>dashboarduser</code>
     - <var>GF_SECURITY_ADMIN_PASSWORD</var> : <code>dashboardpassword</code>
-    - <var>Port forwarding</var>
+    - <var>Port forwarding</var> : <code>3000:3000</code>
+2. <Part>01. Database</Part> 파트에서 띄웠던 DB 를 확인하고 Grafana 에서 시각화합니다.
 
-        - 3000:3000
-2. <Part>01. Database</Part> 에서 띄웠던 DB 를 확인하고 Grafana 에서 시각화 합니다.
-
-    - <var>host</var> : <code>postgres-server:5432</code>
+    - <var>host</var> : <code>postgres-server</code>
+    - <var>port</var> : <code>5432</code>
     - <var>user</var> : <code>myuser</code>
     - <var>password</var> : <code>mypassword</code>
     - <var>database</var> : <code>mydatabase</code>
-3. <Part>07. Kafka</Part> 에서 띄웠던 Target DB 를 확인하고 Grafana 에서 시각화 합니다.
+3. <Part>07. Kafka</Part> 에서 띄웠던 Target DB 를 확인하고 Grafana 에서 시각화합니다.
 
-    - <var>host</var> : <code>target-postgres-server:5432</code>
+    - <var>host</var> : <code>target-postgres-server</code>
+    - <var>port</var> : <code>5432</code>
     - <var>user</var> : <code>targetuser</code>
     - <var>password</var> : <code>targetpassword</code>
     - <var>database</var> : <code>targetdatabase</code>
@@ -60,11 +61,13 @@ ch8
 
 </BrowserWindow>
 
-## 1. Grafana dashboard
+## 1. Grafana
 
-Grafana 는 멀티플랫폼 오픈 소스 애널리틱스 및 인터랙티브 시각화 웹 애플리케이션입니다. 지원되는 데이터 소스에 연결될 때 웹의 차트, 그래프, 알람을 제공합니다.
+Grafana 는 멀티플랫폼 오픈 소스 애널리틱스 및 인터랙티브 시각화 웹 애플리케이션입니다. 지원되는 데이터 소스에 연결할 때 웹의 차트, 그래프, 알람을 제공합니다.
 
-Grafana 의 다양한 종류의 차트를 활용해 상황에 맞는 대시보드를 구현 할 수 있습니다. 또한 오픈소스이기 때문에 자체적인 Grafana 커뮤니티도 활성화 되어 필요한 정보나, 만들어진 대시보드를 활용 할 수도 있습니다. 또한 여러가지 데이터 소스로 부터 데이터를 받아 시각화 할 수 있습니다.
+Grafana 의 다양한 종류의 차트를 활용해 상황에 맞는 대시보드를 구현할 수 있습니다. 
+또한 오픈소스이기 때문에 자체적인 Grafana 커뮤니티도 활성화되어 필요한 정보나 만들어진 대시보드를 활용할 수 있습니다. 
+또한 여러가지 데이터 소스로부터 데이터를 받아 시각화 할 수 있습니다.
 
 Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
 
@@ -74,110 +77,139 @@ Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
   [그림 8-3] Grafana 대시보드 구성도
 </div>
 
-- `dashboard` : 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화 할 기간 등을 정할 수 있습니다.
-- `panel` : `dashboard` 안에 포함되어있는 차트를 의미합니다. 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
+- <var>dashboard</var> : 
 
-### 1.1 Grafana Server setup
+    - 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화 할 기간 등을 정할 수 있습니다.
+- <var>panel</var> : 
 
-Grafana 의 스펙을 `grafana-docker-compose.yaml` 에 정의 합니다.
+    - <var>dashboard</var> 안에 포함되어있는 차트를 의미합니다. 
+    - 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
 
-- 서비스의 이름은 `grafana-dashboard` 로 합니다.
-- Grafana 에 로그인 하기위한 접속 정보를 환경 변수를 통해 설정 합니다.
-- Grafana 의 dashboard panel 을 새로고침 하는 최소주기를 환경 변수를 통해 설정 합니다.
+## 2. Grafana Setup
 
-Grafana 는 메타 데이터를 관리하기 위한 Database 를 정의해서 사용 할 수 있습니다. 정의 되지 않은 경우 기본값으로 서버에 포함되어있는 SQLite3 를 사용 합니다. 이번에는 별도의 설정없이, 기본적으로 제공되는 SQLite3 를 사용 하겠습니다.
+### 2.1 Docker Compose
+
+Grafana 를 생성할 Docker Compose 파일을 작성합니다.
 
 <CodeDescription>
 
-```yaml
+```yaml title="grafana-docker-compose.yaml"
+# grafana-docker-compose.yaml
 version: "3"
 
 services:
-	grafana-dashboard:
-		image: grafana/grafana
-	  ports:
-	   - 3000:3000
-	  environment:
-	    GF_SECURITY_ADMIN_USER: dashboarduser
-	    GF_SECURITY_ADMIN_PASSWORD: dashboardpassword
-	    GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 500ms
+  grafana-dashboard:
+    image: grafana/grafana
+    ports:
+     - 3000:3000
+    environment:
+      GF_SECURITY_ADMIN_USER: dashboarduser
+      GF_SECURITY_ADMIN_PASSWORD: dashboardpassword
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 500ms
 ```
 
+- <var>service</var> :
+
+    - 서비스의 이름은 <code>grafana-dashboard</code> 로 합니다.
 - <var>image</var> : 
 
-    - grafana 를 띄울 때 쓰이는 image 를 명시합니다. 여기서는 `grafana/grafana` 를 이용합니다.
+    - 사용할 이미지는 <code>grafana/grafana</code> 입니다.
 - <var>ports</var> : 
 
-    - grafana 의 port 를 지정합니다. 따로 정하지 않는 경우 내부적으로 3000 포트를 활용하기 때문에 외부 포트와의 연결에도 동일하게 `3000:3000` 으로 설정합니다.
-- <var>environment</var> : grafana 에 들어갈 환경 변수를 설정합니다. 
+    - Grafana 의 포트를 지정합니다. 
+    - 따로 정하지 않는 경우 내부적으로 3000 포트를 이용하기 때문에 외부 포트와의 연결에도 동일하게 <code>3000:3000</code> 으로 설정합니다.
+- <var>environment</var> :
 
-    - grafana 는 [config 파일](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/)로 `grafana.ini` 를 사용합니다. 
-    해당 config 파일을 설정하거나 규칙에 맞춰 환경 변수를 활용하여 grafana 를 설정 할 수 있습니다. 
-    [환경변수를 활용 할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
-    이번 챕터에서는 환경변수를 사용해 접속 정보와 최소 새로고침 주기를 커스터마이징 해보겠습니다.
     - <var>GF_SECURITY_ADMIN_USER</var> : 
 
-        - grafana 에 접속하기 위한 admin 유저의 접속 아이디 입니다.
-        - 설정하지 않는 경우 기본값은 `admin` 입니다.
-        - 이번 챕터에서는 `dashboarduser` 로 설정 하겠습니다.
+        - Grafana 에 접속하기 위한 admin 유저의 접속 아이디입니다.
+        - 설정하지 않는 경우 기본값은 <code>admin</code> 입니다.
+        - 이번 챕터에서는 <code>dashboarduser</code> 로 설정하겠습니다.
     - <var>GF_SECURITY_ADMIN_PASSWORD</var> : 
 
-        - grafana 에 접속하기 위한 admin 유저의 접속 패스워드 입니다.
-        - 설정하지 않는 경우 기본값은 `admin` 입니다.
-        - 이번 챕터에서는 `dashboardpassword` 로 설정 하겠습니다.
+        - Grafana 에 접속하기 위한 admin 유저의 접속 비밀번호입니다.
+        - 설정하지 않는 경우 기본값은 <code>admin</code> 입니다.
+        - 이번 챕터에서는 <code>dashboardpassword</code> 로 설정하겠습니다.
     - <var>GF_DASHBOARDS_MIN_REFRESH_INTERVAL</var> : 
 
-        - grafana 에서 대시보드를 만들 때 실시간으로 패널들을 그리기 위한 새로고침이 필요하게 되는데, 해당 주기의 최소값을 변경합니다.
-        - 설정하지 않는 경우 `5s` 의 값을 가지며, 5초 이하의 주기로 새로고침 하도록 설정을 할 수 없습니다.
-
-```yaml
-networks:
-  default:
-    name: mlops-network
-    external: true
-```
-- <var>networks</var> :
-
-  - 서비스들을 연결할 도커 네트워크를 <Part>01. Database 파트</Part> 에서 생성한 `mlops-network` 로 사용합니다.
-  - `external: true` 옵션은 `docker compose down -v` 로 이번 파트에서 생성되는 서비스를 종료하더라도 생성되어있는 `mlops-network` 를 삭제하지 않을 수 있게 됩니다.
+        - Grafana 에서 대시보드를 만들 때 실시간으로 패널들을 그리기 위한 새로고침이 필요하며, 해당 옵션은 새로고침 주기의 최소값을 변경합니다.
+        - 설정하지 않는 경우 기본값은 <code>5s</code> 입니다.
+        - 이번 챕터에서는 <code>500ms</code> 로 설정하겠습니다.
 
 </CodeDescription>
 
-### 1.2 Grafana docker compose
+:::info
 
-- 위에서 작성한 내용을 하나로 모으면 다음과 같습니다.
+Grafana 는 [config 파일](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/)로 <code>grafana.ini</code> 를 사용합니다. 
+해당 config 파일을 설정하거나 규칙에 맞춰 환경 변수를 설정하여 Grafana 를 이용할 수 있습니다. 
+[환경변수를 활용 할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
+
+Grafana 는 메타 데이터를 관리하기 위한 DB 를 정의해서 사용할 수 있습니다. 
+정의되지 않은 경우, 기본값으로 서버에 포함되어 있는 SQLite3 를 사용합니다. 
+
+:::
+
+모든 서비스를 띄우는 코드는 아래와 같습니다.
 
 ```yaml title="grafana-docker-compose.yaml"
+# grafana-docker-compose.yaml
 version: "3"
 
 services:
-	grafana-dashboard:
-		image: grafana/grafana
-	  ports:
-	   - 3000:3000
-	  environment:
-	    GF_SECURITY_ADMIN_USER: dashboarduser
-	    GF_SECURITY_ADMIN_PASSWORD: dashboardpassword
-	    GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 500ms
+  grafana-dashboard:
+    image: grafana/grafana
+    ports:
+     - 3000:3000
+    environment:
+      GF_SECURITY_ADMIN_USER: dashboarduser
+      GF_SECURITY_ADMIN_PASSWORD: dashboardpassword
+      GF_DASHBOARDS_MIN_REFRESH_INTERVAL: 500ms
 
 networks:
   default:
     name: mlops-network
     external: true
+
 ```
 
-- 완성된 파일을 통해 Grafana server 를 띄웁니다.
-- <Chapter>Stream serving</Chapter> 의 data-subscriber 와는 독립적인 서비스이기 때문에 `-p` 옵션으로 프로젝트 이름을, `-f` 옵션으로 사용하고자 하는 파일을 명시해 줍니다.
-- `project_name` 은 `ch8-dashboard`, `file` 은 `grafana-docker-compose.yaml` 으로 지정합니다.
+### 2.2 실행 및 확인
+
+#### 2.2.1 실행
+
+`docker compose` 명령어를 이용하여 Grafana 서비스를 생성합니다.
+
+<CodeDescription>
 
 ```bash
 # terminal-command
 docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
 ```
 
-### 1.3 Grafana Dashboard 만들기
-#### 1.3.1 Login
-서비스가 띄워졌다면, [localhost:3000](http://localhost:3000) 을 통해 grafana에 접속하여 설정했던 아이디와 패스워드로 접속합니다.
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch8-dashboard</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>grafana-docker-compose.yaml</code> 을 적어줍니다.
+
+</CodeDescription>
+
+#### 2.2.1 서비스 확인
+
+`docker ps` 명령어를 이용하여 Grafana 서비스가 잘 띄워졌는지 확인합니다.
+
+```bash
+# terminal-command
+docker ps
+CONTAINER ID   IMAGE             COMMAND     CREATED         STATUS         PORTS                    NAMES
+f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.0.0:3000->3000/tcp   ch8-dashboard-grafana-dashboard-1
+```
+
+## 3 Grafana Dashboard 만들기
+
+### 3.1 Login
+
+서비스가 띄워졌다면, [localhost:3000](http://localhost:3000) 을 통해 Grafana 에 접속하여 설정했던 아이디와 비밀번호로 접속합니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -190,8 +222,9 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
 [그림 8-5] Grafana 로그인 후 화면
 </div>
 
-#### 1.3.2 New Dashbaord
-접속이 잘 되었다면 왼쪽 사이드바의 `네모 모양 > New dashboard` 버튼을 클릭합니다.
+### 3.2 New Dashbaord
+
+로그인이 잘 되었다면 왼쪽 사이드바의 `네모 모양 > New dashboard` 버튼을 클릭합니다.
 <div style={{textAlign: 'center'}}>
 
 ![gf_img_6](./img/grafana-click-new.png)  
@@ -203,7 +236,8 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
 [그림 8-7] Grafana 대시보드 초기 화면
 </div>
 
-#### 1.3.3 New Dashboard Setting
+### 3.3 New Dashboard Setting
+
 먼저 Dashboard 에 대한 설정을 해보겠습니다.
 
 1. 오른쪽 위의 톱니바퀴 ⚙️ 버튼을 클릭합니다.
@@ -216,11 +250,11 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
 2. 대시보드의 정보들을 설정합니다.
     - <var>General</var>
 
-        - 대시보드의 이름은 `Iris classification` 으로 합니다.
+        - 대시보드의 이름은 <code>Iris classification</code> 으로 합니다.
     - <var>Time options</var>
 
-        - `Auto refresh` 영역에 `1s,` 를 추가하여 [그림 8-9]와 같이 만들어 줍니다.
-        - `Refresh live dashboards` 토글을 클릭해 실시간으로 패널의 시간 축이 업데이트 되도록 해줍니다.
+        - <code>Auto refresh</code> 영역에 <code>1s,</code> 를 추가하여 [그림 8-9]와 같이 만들어 줍니다.
+        - <code>Refresh live dashboards</code> 토글을 클릭해 실시간으로 패널의 시간 축이 업데이트 되도록 해줍니다.
 
     <div style={{textAlign: 'center'}}>
 
@@ -229,8 +263,9 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     </div>
 
 3. 오른쪽 위의 `Save dashboard` 버튼을 클릭하고, `General` 폴더에 저장합니다.
+
     <div style={{textAlign: 'center'}}>
-        
+
     ![gf_img_10](./img/grafana-save-dashboard.png)  
     [그림 8-10] Grafana 대시보드 저장
     </div>
@@ -241,9 +276,9 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-11] Grafana 대시보드 저장 후
     </div>
 
-## 2. Source database 그리기
+## 4. Source database 그리기
 
-### 2.1 Data source 연결하기
+### 4.1 Data Source 연결하기
 
 1. 왼쪽 아래 톱니바퀴 `⚙️ 버튼 > Data sources` 를 클릭합니다.
 
@@ -273,7 +308,8 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-15] Grafana 데이터 소스 검색 2
     </div>
 
-3. 데이터 소스의 이름, `01. Database` 에서 띄워 두었던 원본 데이터 베이스의 정보를 입력합니다. `Default` 로 체크되어있는 토글은 해제해 줍니다. 작성이 끝나고 `Save & test` 버튼을 누릅니다.
+3. <Part>01. Database</Part> 파트에서 생성했던 Source DB 의 정보를 입력합니다. <code>Default</code> 로 체크되어 있는 토글은 해제해 줍니다. 작성이 끝나면 <code>Save & test</code> 버튼을 누릅니다.
+    
     - <var>Name</var> : <code>Source-database</code>
     - <var>Host</var> : <code>postgres-server:5432</code>
     - <var>Database</var> : <code>mydatabase</code>
@@ -285,18 +321,18 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     <div style={{textAlign: 'center'}}>
 
     ![gf_img_16](./img/grafana-data-source-5.png)  
-    [그림 8-16] Grafana 데이터 소스 설정
+    [그림 8-16] Grafana Source DB 연결 설정
     </div>
 
-4. 데이터 소스 연결이 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
+4. Source DB 연결에 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
 
     <div style={{textAlign: 'center'}}>
 
     ![gf_img_17](./img/grafana-data-source-6.png)  
-    [그림 8-17] Grafana 데이터 소스 연결 확인
+    [그림 8-17] Grafana Source DB 연결 확인
     </div>
 
-### 2.2 Panel 만들기
+### 4.2 Panel 만들기
 
 1. `네모 모양 > Browse` 를 클릭하여 다음 화면으로 이동합니다.
 
@@ -306,7 +342,7 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-18] Grafana 대시보드로 이동 1
     </div>
 
-2. 그러면 아까 만들어 두었던 `Iris classification` dashboard 를 확인 할 수 있습니다. 클릭하여 이동합니다.
+2. 그러면 앞서 만들어 두었던 `Iris classification` 대시보드를 확인할 수 있습니다. 클릭하여 이동합니다.
 
     <div style={{textAlign: 'center'}}>
 
@@ -334,10 +370,11 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     </div>
 
 4. 패널의 정보를 설정합니다.
-    - **우측 탭** - 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정 합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
-        - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 여기서는, `Iris source data` 라고 설정하겠습니다.
-    - **하단 탭** - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+        - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 
+        - 이번 챕터에서는 `Iris source data` 로 설정합니다.
+    - 하단 탭 : DB 에서 시각화 할 테이블 및 column 정보를 설정합니다.
         - <var>Data source</var> : <code>Source-database</code>
         - <var>Table</var> : <code>iris_data</code>
         - <var>Column</var> : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
@@ -382,8 +419,8 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-26] Grafana 새로고침 주기 설정
     </div>
 
-8. 실시간 모니터링을 확인하고 수정된 dashboard 를 오른쪽 위의 💾 버튼을 클릭하여 저장합니다.
-    - 저장시에 **`save current time range as dashboard default`** 를 체크 합니다.
+8. 실시간 모니터링을 확인하고 수정된 대시보드를 오른쪽 위의 💾 버튼을 클릭하여 저장합니다.
+    - 저장시에 `save current time range as dashboard default` 를 체크 합니다.
 
     <div style={{textAlign: 'center'}}>
 
@@ -391,13 +428,14 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-27] Grafana 대시보드 저장
     </div>
 
-## 3. Inference database 그리기
+## 5. Inference database 그리기
 
-2. Source database 그리기 에서 했던 내용을 반복합니다.
+앞서 Source Database 그리기에서 했던 내용을 반복합니다.
 
-### 3.1 Data source 연결하기
+### 5.1 Data Source 연결하기
 
 1. 왼쪽 아래 톱니바퀴 `⚙️ 버튼 > Data sources` 를 클릭합니다.
+
 2. `Add data source` 버튼을 클릭하고, PostgreSQL 을 검색하여 클릭합니다.
 
     <div style={{textAlign: 'center'}}>
@@ -406,7 +444,7 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-28] Grafana 추론 결과 데이터 소스 이동
     </div>
 
-3. 데이터 소스의 이름, <Part>01. Database</Part> 에서 띄워 두었던 원본 데이터 베이스의 정보를 입력합니다. `Default` 로 체크되어있는 토글은 해제해 줍니다. 작성이 끝나고 `Save & test` 버튼을 누릅니다.
+3. <Part>01. Database</Part> 파트에서 생성했던 Target DB 의 정보를 입력합니다. <code>Default</code> 로 체크되어 있는 토글은 해제해 줍니다. 작성이 끝나면 <code>Save & test</code> 버튼을 누릅니다.
 
     - <var>Name</var> : <code>Inference-database</code>
     - <var>Host</var> : <code>target-postgres-server:5432</code>
@@ -419,20 +457,21 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     <div style={{textAlign: 'center'}}>
 
     ![gf_img_29](./img/grafana-data-source2-2.png)  
-    [그림 8-29] Grafana 추론 결과 데이터 소스 설정
+    [그림 8-29] Grafana Target DB 연결 설정
     </div>
 
-4. 마찬가지로 데이터 소스 연결이 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
+4. 마찬가지로 Target DB 연결에 성공하면 `Database Connection OK` 라는 문구가 나타납니다.
 
     <div style={{textAlign: 'center'}}>
 
     ![gf_img_30](./img/grafana-data-source-6.png)  
-    [그림 8-30] Grafana 추론 결과 데이터 소스 연결 확인
+    [그림 8-30] Grafana Target DB 연결 확인
     </div>
 
-### 2.1 Panel 만들기
+### 5.2 Panel 만들기
 
 1. `네모 모양 > Browse` 를 클릭하여 다음 화면으로 이동합니다.
+
 2. `Iris classification` dashboard 클릭하여 이동합니다.
 
     <div style={{textAlign: 'center'}}>
@@ -447,7 +486,7 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     [그림 8-32] Grafana 대시 보드로 이동 2
     </div>
 
-3. 완성해 두었던 `Iris source data` 패널을 확인하고, 오른쪽 상단의 차트 📊 버튼을 클릭하여 패널을 생성 합니다. 생성된 패널에서 `Add a new panel` 옵션을 선택합니다.
+3. 완성해두었던 `Iris source data` 패널을 확인하고, 오른쪽 상단의 차트 📊 버튼을 클릭하여 패널을 생성 합니다. 생성된 패널에서 `Add a new panel` 옵션을 선택합니다.
 
     <div style={{textAlign: 'center'}}>
 
@@ -456,10 +495,11 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     </div>
 
 5. 패널의 정보를 설정합니다.
-    - 우측 탭 - 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정 합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
-        - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 여기서는, `Iris inference result` 라고 설정하겠습니다.
-    - 하단 탭 - 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+        - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 
+        - 이번 챕터에서는 `Iris inference result` 로 설정하겠습니다.
+    - 하단 탭 : 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
         - <var>Data source</var> : <code>Inference-database</code>
         - <var>Table</var> : <code>iris_prediction</code>
         - <var>Column</var> : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
@@ -484,8 +524,9 @@ docker compose -p ch8-dashboard -f grafana-docker-compose.yaml up -d
     </div>
 
 
-## 4. 완성 된 대시보드 확인
-앞서 설정해둔 대시보드의 시각화 기간과 새로고침 주기는 다시 설정 하지 않아도 전체 패널에 적용 됩니다. 최종 시각화 결과를 확인 합니다.
+## 6. 완성된 대시보드 확인
+
+앞서 설정해둔 대시보드의 시각화 기간과 새로고침 주기는 다시 설정하지 않아도 전체 패널에 적용됩니다. 최종 시각화 결과를 확인합니다.
 
 <div style={{textAlign: 'center'}}>
 
