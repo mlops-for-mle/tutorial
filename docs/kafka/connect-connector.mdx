@@ -45,8 +45,6 @@ Kafka 는 <Chapter>2) Producer & Consumer</Chapter> 챕터처럼 Producer 와 Co
 하지만 실제 시스템에서는 어떨까요? 아래의 예제를 살펴보겠습니다.  
 [그림 7-5] 처럼 어떠한 DB server 1에서 DB server 2로 데이터를 전달하는 시스템을 가정해보겠습니다.
 
-**그림 Kafka Cluster -> Broker 로 변경**
-
 <div style={{textAlign: 'center'}}>
 
 ![Single Kafka System](./img/kafka-5.png)  
@@ -57,8 +55,6 @@ Kafka 는 <Chapter>2) Producer & Consumer</Chapter> 챕터처럼 Producer 와 Co
 DB server 1로부터 데이터를 가져오는 Producer 가 있고, 데이터를 브로커의 어떤 토픽으로 보낸 뒤, Consumer 가 DB server 2에 데이터를 전달하는 과정입니다.
 
 그렇다면 이렇게 전달할 DB 들이 100개, 1000개, 10000개가 있다면 어떨까요? 아마도 아래의 과정처럼 Producer 와 Consumer 를 100개, 1000개, 10000개로 만들어야 할 것입니다.
-
-**그림 Kafka Cluster -> Broker 로 변경**
 
 <div style={{textAlign: 'center'}}>
 
