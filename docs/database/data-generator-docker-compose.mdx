@@ -129,11 +129,15 @@ services:
     ...
 ```
 
-- `version` : Compose 파일의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
-  이번 챕터에서는 작성일 기준 최신 버전인 3을 사용하겠습니다.
-- `services` : Compose 에 묶일 서비스들을 의미합니다. 하나의 서비스는 하나의 컨테이너를 의미합니다.
-  - `postgres-server` : <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 DB 서버를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
-  - `data-generator` : <Chapter>05) Data Generator on Docker</Chapter> 챕터에서 사용한 data generator 를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
+- <var>version</var> : 
+
+  - Compose 파일의 버전을 의미합니다. 최신 버전은 [공식 홈페이지](https://docs.docker.com/compose/compose-file/compose-versioning/)에서 확인하실 수 있습니다.
+  - 이번 챕터에서는 작성일 기준 최신 버전인 <code>3</code> 을 사용하겠습니다.
+- <var>services</var> : 
+
+  - Compose 에 묶일 서비스들을 의미합니다. 하나의 서비스는 하나의 컨테이너를 의미합니다.
+  - <var>postgres-server</var> : <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 DB 서버를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
+  - <var>data-generator</var> : <Chapter>05) Data Generator on Docker</Chapter> 챕터에서 사용한 data generator 를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
 
 </CodeDescription>
 
@@ -161,16 +165,20 @@ services:
       POSTGRES_DB: mydatabase
 ```
 
-- `postgres-server` :
+- <var>postgres-server</var> :
+  
   - 서비스의 이름입니다.
   - 입력한 이름은 실행되는 컨테이너의 호스트 이름이 됩니다.
-- `image` :
+- <var>image</var> :
+  
   - 사용할 컨테이너의 이미지를 입력합니다.
-- `ports` : 
+- <var>ports</var> : 
+  
   - 컨테이너에서 외부로 노출할 포트 포워딩을 설정합니다.  
-  - 형식은 `host:container` 으로 사용되며 여러 개를 지정할 수 있습니다.
-- `environment` :
-  - 컨테이너를 실행할 때 사용한 `-e` 옵션과 같은 역할을 합니다.
+  - 형식은 <code>host:container</code> 로 사용되며 여러 개를 지정할 수 있습니다.
+- <var>environment</var> :
+
+  - 컨테이너를 실행할 때 사용한 <code>-e</code> 옵션과 같은 역할을 합니다.
 
 </CodeDescription>
 
@@ -192,14 +200,17 @@ services:
     command: ["postgres-server"]
 ```
 
-- `build` :
-  - `context` : 이미지를 build 하기 위해 Dockerfile 이 있는 절대경로 또는 상대경로를 설정합니다.
-  - `dockerfile` : `context` 에서 설정한 경로에 있는 Dockerfile 의 파일명을 입력합니다.
-- `depends_on` :
+- <var>build</var> :
+
+  - <var>context</var> : 이미지를 build 하기 위해 Dockerfile 이 있는 절대경로 또는 상대경로를 설정합니다.
+  - <var>dockerfile</var> : <var>context</var> 에서 설정한 경로에 있는 Dockerfile 의 파일명을 입력합니다.
+- <var>depends_on</var> :
+  
   - Compose 로 띄워지는 서비스 간의 종속성 순서대로 서비스를 시작할 때 사용합니다.
   - 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator 를 실행해야 하기 때문에 postgres server 의 서비스 이름인 `postgres-server` 를 입력합니다.
-- `command` :
-  - Dockerfile에 작성되어 있는 `CMD` 를 덮어씁니다.
+- <var>command</var> :
+  
+  - Dockerfile에 작성되어 있는 <code>CMD</code> 를 덮어씁니다.
   - <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 data generator 를 사용하기 위해서는 postgres server 의 호스트를 변경해야 합니다.
   - 호스트 이름은 위에서 언급한 것처럼 컨테이너의 이름으로 주어야 하기 때문에 `["postgres-server"]` 로 덮어씁니다.
 
@@ -242,7 +253,9 @@ Compose 파일은 `up` 명령어와 `down` 명령어를 통해 실행과 종료�
 # terminal-command
 docker compose up -d
 ```
-- `-d` : Detached 모드로 실행합니다. Detached 모드란, 백그라운드에서 컨테이너를 실행 후 유지시키는 모드를 의미합니다.
+- <var>-d</var> : 
+
+  - Detached 모드로 실행합니다. Detached 모드란, 백그라운드에서 컨테이너를 실행 후 유지시키는 모드를 의미합니다.
 
 </CodeDescription>
 
@@ -312,20 +325,25 @@ services:
     command: ["postgres-server"]
 ```
 
-- `test` : 
-  - 테스트 할 command 를 설정합니다.
-  - 이번 챕터에서는 `pg_isready` 를 이용하여 DB 가 준비상태인지 테스트를 진행하기 때문에 `["CMD", "pg_isready", "-q", "-U", "myuser", "-d", "mydatabase"]` 를 입력합니다.
-- `interval` : 
+- <var>test</var> : 
+  
+  - 테스트 할 명령어를 설정합니다.
+  - 이번 챕터에서는 `pg_isready` 를 이용하여 DB 가 준비상태인지 테스트를 진행하기 때문에 <code>["CMD", "pg_isready", "-q", "-U", "myuser", "-d", "mydatabase"]</code> 를 입력합니다.
+- <var>interval</var> : 
+  
   - Healthcheck 간격을 설정합니다.
   - 이번 챕터에서는 10초로 설정합니다.
-- `timeout` : 
+- <var>timeout</var> : 
+  
   - Healthcheck 의 timeout 을 설정합니다.
   - 이번 챕터에서는 5초로 설정합니다.
-- `retries` : 
+- <var>retries</var> : 
+  
   - Timeout 의 횟수를 설정합니다.
   - 이번 챕터에서는 5번으로 설정합니다.
-- `condition` : 
-  - Healthcheck 기능을 사용하기 위해 `depends_on` 의 parameter 로 `condition: service_healthy` 를 넣어줍니다.
+- <var>condition</var> : 
+  
+  - Healthcheck 기능을 사용하기 위해 <var>depends_on</var> 의 parameter 로 <code>condition: service_healthy</code> 를 넣어줍니다.
   - Postgres server 의 healthcheck 를 data generator 에서 적용시키기 위해 `postgres-server` 밑에 condition 을 추가하였습니다.
 
 </CodeDescription>
@@ -405,7 +423,9 @@ docker network inspect ch1_default
 ```bash
 docker compose down -v
 ```
-- `-v` : 생성된 볼륨까지 삭제합니다.
+- <var>-v</var> : 
+
+  - 생성된 볼륨까지 삭제합니다.
 
 </CodeDescription>
 
@@ -418,8 +438,9 @@ networks:
   default:
     name: mlops-network
 ```
-- `default` : 서비스 전체의 기본 네트워크를 수정할 수 있습니다.
-  - `name` : 네트워크의 이름을 작성합니다. 앞으로 이어지는 파트에서도 사용할 수 있도록 `mlops-network` 로 작성하겠습니다.
+- <var>default</var> : 서비스 전체의 기본 네트워크를 수정할 수 있습니다.
+
+  - <var>name</var> : 네트워크의 이름을 작성합니다. 앞으로 이어지는 파트에서도 사용할 수 있도록 <code>mlops-network</code> 로 작성하겠습니다.
 
 </CodeDescription>
 
@@ -490,7 +511,7 @@ e9671c141955   mlops-network   bridge    local
 
 ### 3.1 In Local
 
-`psql` 을 이용하여 DB 에 접속하여 계속해서 데이터가 삽입되고 있는지 확인합니다.
+`psql` 을 이용하여 DB 에 접속하고, 계속해서 데이터가 삽입되고 있는지 확인합니다.
 
 ```bash
 # terminal-command
