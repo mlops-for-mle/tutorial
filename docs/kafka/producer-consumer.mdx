@@ -1,6 +1,6 @@
 ---
 sidebar_position: 2
-description: 📌 Docker Compose 를 이용해 zookeeper 와 Kafka broker 를 띄워봅니다.
+description: 📌 Docker Compose 를 이용하여 주키퍼와 브로커를 생성합니다.
 ---
 
 # 2) Producer & Consumer
@@ -10,9 +10,9 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ### 목표
 
-1. Docker Compose 를 이용해 zookeeper 와 Kafka broker 를 띄워봅니다.
-2. Producer 와 consumer 를 실행합니다.
-3. Producer 에서 메시지를 생성하고, consumer 에서 메시지를 확인합니다.
+1. Docker Compose 를 이용하여 주키퍼와 브로커를 생성합니다.
+2. Producer 와 Consumer 를 실행합니다.
+3. Producer 에서 메시지를 생성하고, Consumer 에서 메시지를 확인합니다.
 
 <details>
 <summary>스펙 명세서</summary>
@@ -20,40 +20,42 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 ### 스펙 명세서
 
-1. Zookeeper 와 kafka broker 를 띄우는 `naive-docker-compose.yaml` 파일을 작성합니다.
+1. 주키퍼와 브로커를 띄우는 Docker Compose 파일을 작성합니다.
     - Zookeeper
-        - Service name : `zookeeper`
-        - Image : `confluentinc/cp-zookeeper:7.3.0`
-        - Container name : `zookeeper`
-        - Port : `2181:2181`
-        - Environment
-            - `ZOOKEEPER_SERVER_ID` : `1`
-            - `ZOOKEEPER_CLIENT_PORT` : `2181`
+      - <var>Service name</var> : <code>zookeeper</code>
+      - <var>Image</var> : <code>confluentinc/cp-zookeeper:7.3.0</code>
+      - <var>Container name</var> : <code>zookeeper</code>
+      - <var>Port</var> : <code>2181:2181</code>
+      - <var>Environment</var>
+
+        - <var>ZOOKEEPER_SERVER_ID</var> : <code>1</code>
+        - <var>ZOOKEEPER_CLIENT_PORT</var> : <code>2181</code>
     - Broker
-        - Service name : `broker`
-        - Image : `confluentinc/cp-kafka:7.3.0`
-        - Container name : `broker`
-        - Port : `9092:9092`
-        - Environment
-            - `KAFKA_BROKER_ID` : `1`
-            - `KAFKA_ZOOKEEPER_CONNECT` : `zookeeper:2181`
-            - `KAFKA_ADVERTISED_LISTENERS` : `PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092`
-            - `KAFKA_LISTENER_SECURITY_PROTOCOL_MAP` : `PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT`
-            - `KAFKA_INTER_BROKER_LISTENER_NAME` : `PLAINTEXT`
-            - `KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR` : `1`
-            - `KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS` : `0`
-2. `naive-docker-compose.yaml` 을 실행합니다.
-3. `docker compose exec` 명령어를 이용하여 topic 을 생성합니다.
-    - Topic name : `topic-test`
-    - Partition count : 1
-    - Replication factor count : 1
-4. 터미널에서 `docker compose exec` 명령어를 이용하여 broker 에 접속한 뒤, `kafka-console-consumer` 명령어를 이용하여 consumer 를 실행합니다.
-    - Topic name : `topic-test`
-    - Bootstrap server : `broker:29092`
-5. 다른 터미널에서 `docker compose exec` 명령어를 이용하여 broker 에 접속한 뒤, `kafka-console-producer` 명령어를 이용하여 producer 를 실행합니다.
-    - Topic name : `topic-test`
-    - Broker list : `broker:29092`
-6. Producer 에서 메시지를 생성하고, consumer 에서 메시지를 확인합니다.
+      - <var>Service name</var> : <code>broker</code>
+      - <var>Image</var> : <code>confluentinc/cp-kafka:7.3.0</code>
+      - <var>Container name</var> : <code>broker</code>
+      - <var>Port</var> : <code>9092:9092</code>
+      - <var>Environment</var>
+
+          - <var>KAFKA_BROKER_ID</var> : <code>1</code>
+          - <var>KAFKA_ZOOKEEPER_CONNECT</var> : <code>zookeeper:2181</code>
+          - <var>KAFKA_ADVERTISED_LISTENERS</var> : <code>PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092</code>
+          - <var>KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</var> : <code>PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</code>
+          - <var>KAFKA_INTER_BROKER_LISTENER_NAME</var> : <code>PLAINTEXT</code>
+          - <var>KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</var> : <code>1</code>
+          - <var>KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS</var> : <code>0</code>
+2. Docker Compose 파일을 실행합니다.
+3. `docker compose exec` 명령어를 이용하여 토픽을 생성합니다.
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Partition count</var> : <code>1</code>
+    - <var>Replication Factor count</var> : <code>1</code>
+4. 터미널에서 `docker compose exec` 명령어를 이용하여 브로커에 접속한 뒤, `kafka-console-consumer` 명령어를 이용하여 Consumer 를 실행합니다.
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Bootstrap server</var> : <code>broker:29092</code>
+5. 다른 터미널에서 `docker compose exec` 명령어를 이용하여 브로커에 접속한 뒤, `kafka-console-producer` 명령어를 이용하여 Producer 를 실행합니다.
+    - <var>Topic name</var> : <code>topic-test</code>
+    - <var>Broker list</var> : <code>broker:29092</code>
+6. Producer 에서 메시지를 생성하고, Consumer 에서 메시지를 확인합니다.
 
 </CodeDescription>
 </details>
@@ -81,13 +83,13 @@ ch7
 
 </BrowserWindow>
 
-## 1. Zookeeper & Kafka Broker setup
+## 1. Zookeeper & Broker Setup
 
-Zookeeper 와 Kafka Broker 를 띄우는 `naive-docker-compose.yaml` 파일을 작성해보도록 하겠습니다.
+주키퍼와 브로커를 띄우는 Docker Compose 파일을 작성해보도록 하겠습니다.
 
-### 1.1 Zookeeper service
+### 1.1 Zookeeper Service
 
-먼저, Zookeeper service 를 띄울 때 쓰이는 요소들에 대해 알아보도록 하겠습니다.
+먼저, 주키퍼 서비스를 띄울 때 쓰이는 요소들에 대해 알아보도록 하겠습니다.
 
 <CodeDescription>
 
@@ -104,33 +106,44 @@ services:
       ZOOKEEPER_SERVER_ID: 1
       ZOOKEEPER_CLIENT_PORT: 2181
 ```
-- `image` : zookeeper 의 image로 `confluentinc/cp-zookeeper:7.3.0` 를 이용하도록 하겠습니다.
-- `container_name` : container 의 이름은 `zookeeper` 로 사용하겠습니다.
-- `ports` : zookeeper의 port 인 `2181:2181` 를 포트포워딩합니다.
+- <var>image</var> : 
 
-zookeeper 의 환경 변수는 다음과 같습니다.
+  - 주키퍼의 이미지로 <code>confluentinc/cp-zookeeper:7.3.0</code> 를 이용하도록 하겠습니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름은 <code>zookeeper</code> 로 사용하겠습니다.
+- <var>ports</var> : 
+
+  - 주키퍼의 포트인 <code>2181:2181</code> 를 포트 포워딩합니다.
+
+주키퍼의 환경 변수는 다음과 같습니다.
 
 <CodeDescription>
 
-- **ZOOKEEPER_SERVER_ID**
-  - zookeeper cluster 에서 해당 zookeeper 를 식별할 ID 를 지정합니다.
-  - 이번 챕터에서는 ID 를 1로 지정하겠습니다.
-- **ZOOKEEPER_CLIENT_PORT**
-  - zookeeper client 의 port 를 지정합니다. container 내부에서 zookeeper 는 지정된 port 로 실행됩니다.
-  - 이번 챕터에서는 기본 zookeeper 의 port 인 `2181` 로 지정하겠습니다.
+- <var>ZOOKEEPER_SERVER_ID</var>
+
+  - 주키퍼 클러스터에서 해당 주키퍼를 식별할 ID 를 지정합니다.
+  - 이번 챕터에서는 ID 를 <code>1</code>로 지정하겠습니다.
+- <var>ZOOKEEPER_CLIENT_PORT</var>
+
+  - 주키퍼 client 의 포트를 지정합니다.
+  - 이번 챕터에서는 기본 주키퍼의 포트인 <code>2181</code> 로 지정하겠습니다.
 
 </CodeDescription>
 
 </CodeDescription>
 
-### 1.2 Kafka Broker service
+### 1.2 Broker Service
 
-다음으로 Kafka Broker service 를 띄울 때 쓰이는 요소들에 대해 알아보도록 하겠습니다. 이번 챕터에서는 single broker 를 가정하고 작성해보겠습니다.
+다음으로 브로커 서비스를 띄울 때 쓰이는 요소들에 대해 알아보도록 하겠습니다. 이번 챕터에서는 단일 브로커를 가정하고 작성해보겠습니다.
 
 <CodeDescription>
 
 ```yaml  title="naive-docker-compose.yaml"
-broker:
+version: "3"
+
+services:
+  broker:
     image: confluentinc/cp-kafka:7.3.0
     container_name: broker
     depends_on:
@@ -147,41 +160,56 @@ broker:
       KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
 ```
 
-- `image` : broker 의 image로 `confluentinc/cp-kafka:7.3.0` 를 이용하도록 하겠습니다.
-- `container_name` : container 의 이름은 `broker` 로 사용하겠습니다.
-- `depends_on` : `zookeeper` 가 먼저 실행된 후 다음에 broker 가 실행되어야 합니다.
-- `ports` : broker 의 port 인 `9092:9092` 를 포트포워딩합니다.
+- <var>image</var> : 
 
-Broker 의 환경 변수는 다음과 같습니다.
+  - 브로커의 이미지로 <code>confluentinc/cp-kafka:7.3.0</code> 를 이용하도록 하겠습니다.
+- <var>container_name</var> : 
+
+  - 컨테이너의 이름은 <code>broker</code> 로 사용하겠습니다.
+- <var>depends_on</var> : 
+
+  - 주키퍼가 먼저 실행된 후 다음에 브로커가 실행되어야 합니다.
+- <var>ports</var> : 
+
+  - 브로커의 포트인 <code>9092:9092</code> 를 포트 포워딩합니다.
+
+브로커의 환경 변수는 다음과 같습니다.
 
 <CodeDescription>
 
-- **KAFKA_SERVER_ID**
-  - broker 의 ID 를 지정합니다.
-  - Single broker 에서는 없어도 무방하나 이번 챕터에서는 1로 지정하겠습니다.
-- **KAFKA_ZOOKEEPER_CONNECT**
-  - Broker 가 zookeeper 에 connection 하기 위한 주소를 지정합니다.
-  - 일반적으로 `<zookeeper service name>:<zookeeper service port>` 형식으로 작성합니다.
-  - 앞서 띄운 zookeeper의 name과 port인 `zookeeper:2181` 를 입력합니다.
-- **KAFKA_ADVERTISED_LISTENERS**
+- <var>KAFKA_SERVER_ID</var>
+
+  - 브로커의 ID 를 지정합니다.
+  - 단일 브로커에서는 없어도 무방하나 이번 챕터에서는 <code>1</code> 로 지정하겠습니다.
+- <var>KAFKA_ZOOKEEPER_CONNECT</var>
+
+  - 브로커가 주키퍼에 연결하기 위한 주소를 지정합니다.
+  - 일반적으로 <code>주키퍼 서비스 이름 : 주피커 서비스 포트</code> 형식으로 작성합니다.
+  - 앞서 띄운 주키퍼의 이름과 포트인 <code>zookeeper:2181</code> 를 입력합니다.
+- <var>KAFKA_ADVERTISED_LISTENERS</var>
+
   - 내부와 외부에서 접속하기 위한 리스너를 설정합니다.
-  - 일반적으로 internal 과 external 를 같이 설정하며 `,` 로 연결해서 작성합니다.
-  - 이번 챕터에서는 internal 로 `PLAINTEXT://broker:29092` 로 설정하고, external 로 `PLAINTEXT_HOST://localhost:9092` 으로 설정하겠습니다.
-    - 최종적으로 `PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092` 를 입력합니다.
-- **KAFKA_LISTENER_SECURITY_PROTOCOL_MAP**
-  - 보안을 위한 protocol mapping을 설정합니다.
-  - 이 설정값은 `KAFKA_ADVERTISED_LISTENERS` 과 함께 key/value 로 매핑됩니다.
-  - 이번 챕터에서는 `PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT` 로 설정하겠습니다.
-- **KAFKA_INTER_BROKER_LISTENER_NAME**
-  - container 내부에서 사용할 리스너 이름을 지정합니다.
-  - 이번 챕터에서는 앞서 internal 로 설정했던 `PLAINTEXT` 를 입력합니다.
-- **KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR**
-  - topic 을 분산하여 저장할 replication factor 를 설정합니다.
-  - 기본값은 3으로 설정하지 않으면 자동으로 multi broker를 구성합니다.
-  - 이번 챕터에서는 single broker 를 사용하기 때문에 `1`로 지정하겠습니다.
-- **KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS**
-  - kafka cluster 에서 초기에 rebalancing 할 때 consumer 들이 consumer group 에 조인할 때 대기하는 시간입니다.
-  - 이번 챕터에서는 `0`으로 설정해줍니다.
+  - 일반적으로 internal 과 external 를 같이 설정하며, <code>,</code> 로 연결해서 작성합니다.
+  - 이번 챕터에서는 internal 로 `PLAINTEXT://broker:29092` 로 설정하고, external 로 <code>PLAINTEXT_HOST://localhost:9092</code> 으로 설정하겠습니다.
+  - 최종적으로 <code>PLAINTEXT://broker:29092,PLAINTEXT_HOST://localhost:9092</code> 를 입력합니다.
+- <var>KAFKA_LISTENER_SECURITY_PROTOCOL_MAP</var>
+
+  - 보안을 위한 protocol mapping 을 설정합니다.
+  - 이 설정값은 <var>KAFKA_ADVERTISED_LISTENERS</var> 과 함께 key/value 로 매핑됩니다.
+  - 이번 챕터에서는 <code>PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT</code> 로 설정하겠습니다.
+- <var>KAFKA_INTER_BROKER_LISTENER_NAME</var>
+
+  - 컨테이너 내부에서 사용할 리스너 이름을 지정합니다.
+  - 이번 챕터에서는 앞서 internal 로 설정했던 <code>PLAINTEXT</code> 를 입력합니다.
+- <var>KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</var>
+
+  - 토픽을 분산하여 저장할 Replication Factor 를 설정합니다.
+  - 기본값은 3이며 설정하지 않으면 자동으로 다중 브로커를 구성합니다.
+  - 이번 챕터에서는 단일 브로커를 사용하기 때문에 <code>1</code> 로 지정하겠습니다.
+- <var>KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS</var>
+
+  - 카프카 클러스터에서 초기에 rebalancing 할 때 Consumer 들이 Consumer group 에 조인할 때 대기하는 시간입니다.
+  - 이번 챕터에서는 <code>0</code> 으로 설정해줍니다.
 
 </CodeDescription>
 
@@ -190,9 +218,10 @@ Broker 의 환경 변수는 다음과 같습니다.
 
 ### 1.3 전체 코드
 
-최종적인 `naive-docker-compose.yaml` 구성은 아래와 같습니다.
+최종적인 Docker Compose 구성은 아래와 같습니다.
 
 ```yaml  title="naive-docker-compose.yaml"
+# naive-docker-compose.yaml
 version: "3"
 
 services:
@@ -225,10 +254,21 @@ services:
 
 아래 명령어를 활용해 정의된 서비스를 백그라운드 프로세스로 띄웁니다.
 
+<CodeDescription>
+
 ```bash
 # terminal-command
 docker compose -p ch7-naive -f naive-docker-compose.yaml up -d
 ```
+
+- <var>-p</var> : 
+
+  - Project name 은 <code>ch7-naive</code> 로 사용합니다.
+- <var>-f</var> :
+
+  - File name 은 위에서 작성한 파일 이름인 <code>naive-docker-compose.yaml</code> 을 적어줍니다.
+
+</CodeDescription>
 
 `docker ps` 를 입력하여 잘 띄워졌는지 확인합니다.
 
@@ -240,15 +280,15 @@ CONTAINER ID   IMAGE                             COMMAND                  CREATE
 35cdc624ac34   confluentinc/cp-zookeeper:7.3.0   "/etc/confluent/dock…"   28 seconds ago   Up 27 seconds   2888/tcp, 0.0.0.0:2181->2181/tcp, 3888/tcp   zookeeper
 ```
 
-## 2. Producer & Consumer setup
+## 2. Producer & Consumer Setup
 
-이번에는 topic 을 생성해보고, 이어서 producer 와 consumer 를 생성해보도록 하겠습니다.
+이번에는 토픽을 생성해보고, 이어서 Producer 와 Consumer 를 생성해보도록 하겠습니다.
 
 ### 2.1 Topic
 
 #### 2.1.1 Topic 생성
 
-이제 Topic 을 생성해보겠습니다.
+이제 토픽을 생성해보겠습니다.
 
 <CodeDescription>
 
@@ -257,19 +297,39 @@ CONTAINER ID   IMAGE                             COMMAND                  CREATE
 docker compose exec broker kafka-topics --create --topic topic-test --bootstrap-server broker:29092 --partitions 1 --replication-factor 1
 ```
 
-- `docker compose exec` : container 내에 명령어를 수행합니다.
-- `broker` : 생성된 broker service 의 이름을 적습니다.
-- `kafka-topics` : kafka topic 에 대한 명령을 실행합니다.
-- `--create` : topic 을 생성합니다.
-- `--topic` : 생성할 topic 의 이름을 지정합니다. 이번 챕터에서는 `topic-test` 라는 이름으로 생성해보겠습니다.
-- `--bootstrap-server` : broker service 에 대한 hostname 와 port 를  지정합니다. 이번 챕터에서는 앞서 docker-compose 로 띄웠던 broker 의 환경 변수를 참고하여 `broker:29092` 로 설정합니다.
-- `--partition` : topic 내에 partition 개수를 설정합니다. 이번 챕터에서는 1로 설정하겠습니다.
-- `--replication-factor` : replication factor 를 지정합니다. 이번 챕터에서는 1로 설정하겠습니다.
+- <var>docker compose exec</var> : 
+
+  - 컨테이너 내에 명령어를 수행합니다.
+- <var>broker</var> : 
+
+  - 생성된 브로커 서비스의 이름을 적습니다.
+- <var>kafka-topics</var> : 
+
+  - 토픽에 대한 명령을 실행합니다.
+- <var>--create</var> : 
+
+  - 토픽을 생성합니다.
+- <var>--topic</var> : 
+  
+  - 생성할 토픽의 이름을 지정합니다. 
+  - 이번 챕터에서는 `topic-test` 라는 이름으로 생성해보겠습니다.
+- <var>--bootstrap-server</var> : 
+
+  - 브로커 서비스에 대한 호스트 이름과 포트를 지정합니다. 
+  - 이번 챕터에서는 앞서 Docker Compose 로 띄웠던 브로커의 환경 변수를 참고하여 <code>broker:29092</code> 로 설정합니다.
+- <var>--partition</var> : 
+  
+  - 토픽 내에 파티션 개수를 설정합니다. 
+  - 이번 챕터에서는 <code>1</code> 로 설정하겠습니다.
+- <var>--replication-factor</var> : 
+
+  - Replication Factor 를 지정합니다. 
+  - 이번 챕터에서는 <code>1</code> 로 설정하겠습니다.
 
 </CodeDescription>
 
 #### 2.1.1 Topic 생성 확인
-이어서 topic 이 잘 생성되었는지 확인해보도록 하겠습니다.
+이어서 토픽이 잘 생성되었는지 확인해보도록 하겠습니다.
 
 <CodeDescription>
 
@@ -278,7 +338,9 @@ docker compose exec broker kafka-topics --create --topic topic-test --bootstrap-
 docker compose exec broker kafka-topics --describe --topic topic-test --bootstrap-server broker:29092
 ```
 
-- `--describe` :  생성된 topic 에 대한 상세 설명을 보여줍니다.
+- <var>--describe</var> :  
+
+  - 생성된 토픽에 대한 상세 설명을 보여줍니다.
 
 </CodeDescription>
 
@@ -289,14 +351,14 @@ Topic: topic-test       TopicId: pcR8cByuSVG1p1guQ3MFRg PartitionCount: 1       
         Topic: topic-test       Partition: 0    Leader: 1       Replicas: 1     Isr: 1
 ```
 
-위에서 입력한 `topic-test` 가 생성된 것을 확인할 수 있습니다.
+위에서 입력한 `topic-test` 토픽이 생성된 것을 확인할 수 있습니다.
 
 ### 2.2 Consumer
 
-이제 topic 을 생성했으니 생성한 topic 을 사용할 consumer 를 만들어 보겠습니다.  
-Consumer 를 먼저 실행하는 이유는 일반적으로 consumer 가 메시지를 subscribe 하려고 대기하는 상태에서 producer 가 메시지를 생성해서 보내기 때문입니다.
+이제 토픽을 생성했으니 생성한 토픽을 사용할 Consumer 를 만들어 보겠습니다.  
+Consumer 를 먼저 실행하는 이유는 일반적으로 Consumer 가 메시지를 subscribe 하려고 대기하는 상태에서 Producer 가 메시지를 생성해서 보내기 때문입니다.
 
-#### 2.2.1 Kafka Container 접속
+#### 2.2.1 Broker Container 접속
 먼저 `docker compose exec` 명령어를 통해 컨테이너 내부로 접속합니다.
 
 ```bash
@@ -313,7 +375,7 @@ docker compose -p ch7-naive exec broker /bin/bash
 ```
 
 #### 2.2.2 Counsumer 실행
-이후에 `kafka-console-consumer` 를 이용하여 `topic-test` topic 을 subscribe 합니다.
+이후에 `kafka-console-consumer` 를 이용하여 `topic-test` 토픽을 subscribe 합니다.
 
 <CodeDescription>
 
@@ -321,7 +383,7 @@ docker compose -p ch7-naive exec broker /bin/bash
 # terminal-command
 kafka-console-consumer --topic topic-test --bootstrap-server broker:29092
 ```
-- Topic 을 생성했던 것처럼 bootstrap-server 를 `broker:29092` 로 설정합니다.
+- 토픽을 생성했던 것처럼 bootstrap-server 를 `broker:29092` 로 설정합니다.
 
 </CodeDescription>
 
@@ -333,15 +395,15 @@ kafka-console-consumer --topic topic-test --bootstrap-server broker:29092
 ```
 
 ### 2.3 Producer
-마지막으로 producer 를 만들어서 메시지를 보낼 준비를 하겠습니다.
+마지막으로 Producer 를 만들어서 메시지를 보낼 준비를 하겠습니다.
 
-#### 2.3.1 Kafka Container 접속
+#### 2.3.1 Broker Container 접속
 
-Consumer 와 똑같이, `docker compose exec` 명령어를 통해 container 내부로 접속합니다. 
+Consumer 와 똑같이, `docker compose exec` 명령어를 통해 컨테이너 내부로 접속합니다. 
 
 :::caution
 
-이 때 consumer 를 실행했던 terminal 이 아닌 새로운 terminal 로 띄웁니다.
+이 때 Consumer 를 실행했던 터미널이 아닌 새로운 터미널로 띄웁니다.
 
 :::
 
@@ -361,7 +423,7 @@ docker compose -p ch7-naive exec broker /bin/bash
 
 #### 2.3.2 Producer 실행
 
-이후에 `kafka-console-producer` 를 이용하여 `topic-test` topic 에 접근하여 publish 할 준비를 합니다.
+이후에 `kafka-console-producer` 를 이용하여 `topic-test` 토픽에 접근하여 publish 할 준비를 합니다.
 
 ```bash  title="[appuser@0a0599db4d96 ~]$ "
 # terminal-command
@@ -380,7 +442,7 @@ kafka-console-producer --topic topic-test --broker-list broker:29092
 ![communicate](./img/kafka-gif-1.gif)
 #### 2.4.1 Producer 에 메시지 입력하기
 
-Producer 가 열려 있는 두 번째 터미널에서 아래와 같이 `hello`, `this is mlops for mle` 를 입력해봅니다.
+Producer 가 열려 있는 두 번째 터미널에서 아래와 같이 `hello` , `this is mlops for mle` 를 입력해봅니다.
 
 ```bash
 [appuser@0a0599db4d96 ~]$ kafka-console-producer --topic topic-test --broker-list broker:29092
@@ -398,7 +460,7 @@ this is mlops for mle
 ```
 
 ### 2.5 종료
-모든 과정이 종료되었으면 zookeeper 와 broker 를 종료합니다.
+모든 과정이 종료되었으면 주키퍼와 브로커를 종료합니다.
 
 ```bash
 # terminal-command
