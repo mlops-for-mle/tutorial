@@ -131,7 +131,7 @@ Producer 와 Consumer 가 존재하고, 서로 의존적이지 않고 완벽하�
 <div style={{textAlign: 'center'}}>
 
 ![Consume Fail](./img/kafka-9.png)  
-[그림7-9] Consume Fail
+[그림7-9] Consume Fail (출처: https://always-kimkim.tistory.com/entry/kafka101-schema-registry)
 
 </div>
 
@@ -141,7 +141,7 @@ Producer 와 Consumer 가 존재하고, 서로 의존적이지 않고 완벽하�
 3. 이때, Producer 2가 schema 를 변경하여 메시지 (4번)를 발행합니다.
 4. 하지만 Consumer 는 이 상황을 알지 못하기 때문에, 4번 메시지를 구독하여 처리하는 과정에서 메시지를 읽어드리지 못하고 장애가 발생합니다.
 
-위와 같은 상황 처럼 결국 구조적인 결합도는 낮췄지만 내부적인 결합도는 여전히 가지고 있게 됩니다.
+위와 같은 상황 처럼 결국 구조적인 결합도는 낮췄지만 내부적인 결합도 문제는 여전히 가지고 있게 됩니다.
 
 이러한 문제에 더하여 동일한 schema 의 메시지가 계속 들어오는 경우, 같은 schema 를 계속해서 저장해야하기 때문에 메시지의 크기가 커지며, schema 가 중복이 되어 불필요한 데이터 용량을 차지하게 됩니다.
 
@@ -153,7 +153,7 @@ Schema Registry 란 메시지의 Schema 를 저장해주는 일종의 저장소�
 <div style={{textAlign: 'center'}}>
 
 ![Connector](./img/kafka-10.png)  
-[그림7-10] Connector
+[그림7-10] 메시지 구조 (출처: https://scorpio-mercury.tistory.com/30)
 
 </div>
 
@@ -166,7 +166,7 @@ payload 는 데이터 값이 저장되며, schema 에는 이 데이터 값의 �
 <div style={{textAlign: 'center'}}>
 
 ![Connector](./img/kafka-11.png)  
-[그림7-11] Schema Registry Architecture
+[그림7-11] Schema Registry Architecture (출처: https://scorpio-mercury.tistory.com/30)
 
 </div>
 
@@ -191,7 +191,7 @@ Schema 호환성 규칙 강제란 schema 를 등록하여 사용할 수 있지�
 <div style={{textAlign: 'center'}}>
 
 ![Forward](./img/kafka-12.png)  
-[그림7-12] Forward
+[그림7-12] Forward 호환성 (출처: https://always-kimkim.tistory.com/entry/kafka101-schema-registry)
 
 </div>
 

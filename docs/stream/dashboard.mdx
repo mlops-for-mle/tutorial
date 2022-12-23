@@ -69,7 +69,7 @@ Grafana 의 다양한 종류의 차트를 활용해 상황에 맞는 대시보�
 또한 오픈소스이기 때문에 자체적인 Grafana 커뮤니티도 활성화되어 필요한 정보나 만들어진 대시보드를 활용할 수 있습니다. 
 또한 여러가지 데이터 소스로부터 데이터를 받아 시각화 할 수 있습니다.
 
-Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
+Grafana 대시보드는 [그림 8-3] 의 형태로 존재합니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -77,12 +77,12 @@ Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
   [그림 8-3] Grafana 대시보드 구성도
 </div>
 
-- <var>dashboard</var> : 
+- <var>Dashboard</var> : 
 
     - 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화 할 기간 등을 정할 수 있습니다.
-- <var>panel</var> : 
+- <var>Panel</var> : 
 
-    - <var>dashboard</var> 안에 포함되어있는 차트를 의미합니다. 
+    - <var>Dashboard</var> 안에 포함되어있는 차트를 의미합니다. 
     - 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
 
 ## 2. Grafana Setup
@@ -142,7 +142,7 @@ services:
 
 Grafana 는 [config 파일](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/)로 <code>grafana.ini</code> 를 사용합니다. 
 해당 config 파일을 설정하거나 규칙에 맞춰 환경 변수를 설정하여 Grafana 를 이용할 수 있습니다. 
-[환경변수를 활용 할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
+[환경변수를 활용할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
 
 Grafana 는 메타 데이터를 관리하기 위한 DB 를 정의해서 사용할 수 있습니다. 
 정의되지 않은 경우, 기본값으로 서버에 포함되어 있는 SQLite3 를 사용합니다. 

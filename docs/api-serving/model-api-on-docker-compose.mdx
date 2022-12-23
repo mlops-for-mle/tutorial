@@ -24,13 +24,12 @@ import APIServingImage5 from './img/api-serving-5.png';
 1. 작성한 API 를 실행하는데 필요한 모델을 이미지에 복사하는 Dockerfile 을 작성합니다.
     - 이미지를 실행했을 때, 별도의 모델 정보를 필요로 하지 않습니다.
     - Base image 는 `amd64/python:3.9-slim` 을 사용합니다.
-    - 포트는 default 포트인 8000번 포트를 이용합니다.
-2. Docker Compose 파일을 작성합니다.
-    - Model API 서버
-        - <var>Service name</var>: <code>api-with-model</code>
-        - <var>Image</var>: <code>Dockerfile</code>
-        - <var>Container name</var>: <code>api-with-model</code>
-        - <var>Port</var>: <code>8000:8000</code>
+    - 포트는 기본 포트인 8000번 포트를 이용합니다.
+2. Model API 서버를 띄우기 위한 Docker Compose 파일을 작성합니다.
+    - <var>Service name</var>: <code>api-with-model</code>
+    - <var>Image</var>: <code>Dockerfile</code>
+    - <var>Container name</var>: <code>api-with-model</code>
+    - <var>Port</var>: <code>8000:8000</code>
 3. Docker Compose 파일을 실행하여 API 를 작동시키고 데이터를 전달하여 예측 결과를 제대로 반환하는지 확인합니다.
     - Swagger UI 를 통해 확인합니다.
     - `curl` 을 통해 확인합니다.
@@ -115,11 +114,11 @@ services:
       - 8000:8000
     healthcheck:
       test:
-      - curl -X POST http://localhost:8000/predict
-      - -H
-      - "Content-Type: application/json"
-      - -d
-      - '{"sepal_length": 6.7, "sepal_width": 3.3, "petal_length": 5.7, "petal_width": 2.1}'
+        - curl -X POST http://localhost:8000/predict
+        - -H
+        - "Content-Type: application/json"
+        - -d
+        - '{"sepal_length": 6.7, "sepal_width": 3.3, "petal_length": 5.7, "petal_width": 2.1}'
       interval: 10s
       timeout: 5s
       retries: 5
