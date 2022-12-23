@@ -59,12 +59,12 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 </PreviewDescription>
 
-<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part7">
 
-해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/part7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part7) 에서 확인할 수 있습니다.
 
 ```js
-ch7
+part7
 ├── Makefile
 ├── README.md
 ├── connect.Dockerfile
@@ -254,12 +254,12 @@ services:
 
 ```bash
 # terminal-command
-docker compose -p ch7-naive -f naive-docker-compose.yaml up -d
+docker compose -p part7-naive -f naive-docker-compose.yaml up -d
 ```
 
 - <var>-p</var> : 
 
-  - Project name 은 <code>ch7-naive</code> 로 사용합니다.
+  - Project name 은 <code>part7-naive</code> 로 사용합니다.
 - <var>-f</var> :
 
   - File name 은 위에서 작성한 파일 이름인 <code>naive-docker-compose.yaml</code> 을 적어줍니다.
@@ -360,7 +360,7 @@ Consumer 를 먼저 실행하는 이유는 일반적으로 Consumer 가 메시�
 ```bash
 # terminal 1
 # terminal-command
-docker compose -p ch7-naive exec broker /bin/bash
+docker compose -p part7-naive exec broker /bin/bash
 ```
 
 컨테이너에 접속하면 다음과 같이 터미널이 열립니다.
@@ -407,7 +407,7 @@ Consumer 와 똑같이, `docker compose exec` 명령어를 통해 컨테이너 �
 ```bash
 # terminal 2
 # terminal-command
-docker compose -p ch7-naive exec broker /bin/bash
+docker compose -p part7-naive exec broker /bin/bash
 ```
 
 접속되면 다음과 같이 터미널이 열립니다.
@@ -460,5 +460,5 @@ this is mlops for mle
 
 ```bash
 # terminal-command
-docker compose -p ch7-naive down -v
+docker compose -p part7-naive down -v
 ```

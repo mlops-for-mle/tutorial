@@ -53,12 +53,12 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 </PreviewDescription>
 
-<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part1">
 
-해당 파트의 전체 코드는 [mlops-for-mle/ch1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/part1/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part1) 에서 확인할 수 있습니다.
 
 ```js
-ch1
+part1
 // highlight-next-line
 ├── Dockerfile
 ├── Makefile
@@ -372,20 +372,20 @@ docker compose up -d
 docker network ls
 ```
 
-실행하면 다음과 같이 `ch1_default` 라는 이름의 네트워크가 생성된 것을 확인할 수 있습니다.
+실행하면 다음과 같이 `part1_default` 라는 이름의 네트워크가 생성된 것을 확인할 수 있습니다.
 
 ```
 NETWORK ID     NAME          DRIVER    SCOPE
 d2a7834f5caa   bridge        bridge    local
-d7d45bd4c3b7   ch1_default   bridge    local
+d7d45bd4c3b7   part1_default   bridge    local
 0d5dc37e7a9d   host          host      local
 703a7cd222a5   none          null      local
 ```
 
-`ch1_default` 를 확인해 보겠습니다.
+`part1_default` 를 확인해 보겠습니다.
 ```bash
 # terminal-command
-docker network inspect ch1_default
+docker network inspect part1_default
 ```
 
 네트워크에 자동으로 `postgres-server` 와 `data-generator` 컨테이너가 추가된 것을 볼 수 있습니다.
@@ -393,7 +393,7 @@ docker network inspect ch1_default
 ```bash
 [
     {
-        "Name": "ch1_default",
+        "Name": "part1_default",
         ...
         "ConfigOnly": false,
         "Containers": {

@@ -26,12 +26,12 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 
 </PreviewDescription>
 
-<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part5">
 
-해당 파트의 전체 코드는 [mlops-for-mle/ch5/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/part5/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part5) 에서 확인할 수 있습니다.
 
 ```js
-ch5
+part5
 // highlight-next-line
 ├── Dockerfile
 ├── Makefile
@@ -84,11 +84,11 @@ CMD ["uvicorn", "crud_pydantic:app", "--host", "0.0.0.0", "--reload"]
 
 작성한 Dockerfile 을 이용해 이미지를 build 합니다.
 
-이미지 이름은 `ch5-api-server` 로 하겠습니다.
+이미지 이름은 `part5-api-server` 로 하겠습니다.
 
 ```bash
 # terminal-command
-docker build -t ch5-api-server .
+docker build -t part5-api-server .
 ```
 
 이미지가 잘 생성되었는지 확인합니다.
@@ -98,13 +98,13 @@ docker build -t ch5-api-server .
 docker image ls
 ```
 
-다음과 같이 `ch5-api-server` 이미지가 잘 생성되었음을 확인할 수 있습니다.
+다음과 같이 `part5-api-server` 이미지가 잘 생성되었음을 확인할 수 있습니다.
 
 ```bash
 # terminal-command
 docker image ls
 REPOSITORY                  TAG       IMAGE ID       CREATED         SIZE
-ch5-api-server             latest    3dec4bf727fe   3 hours ago     249MB
+part5-api-server             latest    3dec4bf727fe   3 hours ago     249MB
 ```
 
 ### 1.3 Run
@@ -118,7 +118,7 @@ ch5-api-server             latest    3dec4bf727fe   3 hours ago     249MB
 docker run -d \
   --name api-server \
   -p 8000:8000 \
-  ch5-api-server
+  part5-api-server
 ```
 
 - <var>--name</var> : 
@@ -143,7 +143,7 @@ docker ps
 # terminal-command
 docker ps
 CONTAINER ID   IMAGE             COMMAND                  CREATED          STATUS          PORTS                    NAMES
-fb72ccf8fb47   ch5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 13 minutes   0.0.0.0:8000->8000/tcp   api-server
+fb72ccf8fb47   part5-api-server   "uvicorn crud_pydant…"   13 minutes ago   Up 13 minutes   0.0.0.0:8000->8000/tcp   api-server
 ```
 
 ## 2. API 서버 접속하여 작동 확인
