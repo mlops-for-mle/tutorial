@@ -24,17 +24,18 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - Postgres Server
         - <var>Service name</var> : <code>postgres-server</code>
         - <var>Image</var> : <code>postgres:14.0</code>
-        - Container name : `postgres-server`
-        - Environment
+        - <var>Container name</var> : <code>postgres-server</code>
+        - <var>Environment</var>
+        
             - <var>POSTGRES_USER</var> : <code>myuser</code>
             - <var>POSTGRES_PASSWORD</var> : <code>mypassword</code>
             - <var>POSTGRES_DB</var> : <code>mydatabase</code>
-        - Port forwarding : `5432:5432`
+        - <var>Port forwarding</var> : <code>5432:5432</code>
     - Data Generator
-        - Service name : `data-generator`
-        - Image : `Dockerfile`
-        - Container name : `data-generator`
-        - Command : `["postgres-server"]`
+        - <var>Service name</var> : <code>data-generator</code>
+        - <var>Image</var> : <code>Dockerfile</code>
+        - <var>Container name</var> : <code>data-generator</code>
+        - <var>Command</var> : <code>["postgres-server"]</code>
 
     :::info
 
