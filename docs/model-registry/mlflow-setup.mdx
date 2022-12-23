@@ -23,23 +23,28 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - <var>POSTGRES_USER</var> : <code>mlflowuser</code>
     - <var>POSTGRES_PASSWORD</var> : <code>mlflowpassword</code>
     - <var>POSTGRES_DB</var> : <code>mlflowdatabase</code>
-2. Docker Compose 파일에 학습된 모델을 저장할 물리적인 저장 공간인 MinIO 서버 스펙을 정의 합니다.
+2. Docker Compose 파일에 학습된 모델을 저장할 물리적인 저장 공간인 MinIO 서버 스펙을 정의합니다.
     - <var>MINIO_ROOT_USER</var> : <code>minio</code>
     - <var>MINO_ROOT_PASSWORD</var> : <code>miniostorage</code>
     - <var>Port forwarding</var> :
 
       - <var>api</var>: <code>9000:9000</code>
       - <var>console</var>: <code>9001:9001</code>
-3. Docker Compose 파일에 모델과 모델의 결과들을 관리할 MLFlow 서버를 정의 합니다.
+3. Docker Compose 파일에 모델과 모델의 결과들을 관리할 MLFlow 서버를 정의합니다.
     - 환경 변수를 이용하여 MLflow 서버에서 앞서 띄워둔 PostgreSQL DB 와 MinIO 두 가지 서버에 접근이 가능하도록 연결합니다.
+
     - Dockerfile
-        - MLflow 에 관련된 패키지가 설치된 이미지를 생성하기 위한 Dockerfile 을 정의합니다.
-        - MinIO 에 모델 저장을 위한 초기 버켓을 생성 하기 위해 MinIO Client 도 함께 설치되도록 합니다.
+
+      - MLflow 에 관련된 패키지가 설치된 이미지를 생성하기 위한 Dockerfile 을 정의합니다.
+      - MinIO 에 모델 저장을 위한 초기 버켓을 생성 하기 위해 MinIO Client 도 함께 설치되도록 합니다.
+
     - Docker Compose
+    
       - MinIO 의 접속 정보를 <var>AWS_ACCESS_KEY_ID</var> , <var>AWS_SECRET_ACCESS_KEY</var> 환경 변수를 통해 적절하게 설정합니다.
       - MinIO Client 를 설치하고, MinIO 의 초기 버켓을 생성하도록 명령어를 작성합니다.
       - MLflow 서버를 띄우는 명령어를 작성합니다.
-      - Port forwarding : <code>5001:5000</code>
+      - <var>Port forwarding</var> : <code>5001:5000</code>
+
         - MLflow 에서는 기본값으로 5000 포트를 사용합니다.
         - 하지만 실습에서 MacOS 를 사용하는 경우 AirPlay 기능이 5000번 포트를 사용하기 때문에 중복을 피하기 위해 5001번 포트를 사용합니다.
         - 일반적인 경우 5000번 포트를 사용하면 됩니다.
