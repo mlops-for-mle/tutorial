@@ -4,13 +4,13 @@
 
 ## How to start
 
+본 저장소는 [Docusaurus 2](https://docusaurus.io/) 로 build 되며, Backend 는 `npm` 을 사용합니다.
+
 ### Installation
 
-이 레포는 [Docusaurus 2](https://docusaurus.io/) 로 build 되며 백엔드는 npm을 사용합니다.
+MacOS 기준으로 설치는 다음과 같습니다.
 
-MacOS를 기준으로 설명하겠습니다.
-
-`npm`을 설치합니다.
+`npm` 을 설치합니다.
 ```bash
 $ brew install npm
 ```
@@ -33,7 +33,7 @@ $ npm run start
 pre-commit 을 통과하는지 확인합니다.
 
 ```bash
-$ pre-commit run --all-files
+$ pre-commit run --a
 ```
 
 ## How to Contribute?
