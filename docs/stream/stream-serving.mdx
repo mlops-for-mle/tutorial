@@ -5,18 +5,19 @@ description: 📌 Stream Serving 을 위한 Data Subscriber 코드를 작성합�
 
 # 1) Stream Serving
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
+<PreviewDescription>
+
+## Chapter Preview
+---
 ### 목표
 
 1. Stream Serving 을 위한 Data Subscriber 코드를 작성합니다.
 2. Docker Compose 를 이용하여 Data Subcriber 를 생성합니다.
 3. Target DB 에 접속하여 예측값이 잘 쌓이고 있는지 확인합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -29,15 +30,12 @@ import { Chapter, Part } from '@site/src/components/Highlight';
             - <var>auto_offset_reset</var> : <code>earliest</code>
             - <var>group_id</var> : <code>iris-data-consumer-group</code>
             - <var>value_deserializer</var> : <code>lambda x: loads(x)</code>
-    - 3. `requests` 패키지를 이용하여 REST API 에 모델의 예측을 요청하고 예측값을 받습니다.
+    - 3. `requests` 패키지를 이용하여 API 에 모델의 예측을 요청하고 예측값을 받습니다.
     - 4. 결과값을 `iris_prediction` 테이블에 삽입합니다.
 2. Docker Compose 를 이용하여 Data Subscriber 를 생성합니다.
 3. Target DB 에 접속하여 실제로 예측값이 잘 쌓이고 있는지 확인합니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8">
 
@@ -73,7 +71,7 @@ pip install kafka-python requests psycopg2-binary
 - <var>requests</var> : 
 
     - Python 으로 HTTP 통신이 필요한 프로그램을 작성할 때 가장 많이 사용되는 패키지입니다. 
-    - REST API 를 호출할 때 사용합니다.
+    - API 를 호출할 때 사용합니다.
 
 ## 1. Architecture
 
@@ -89,7 +87,7 @@ pip install kafka-python requests psycopg2-binary
 <Part>08. Stream</Part> 파트에서는 다시 Model Deployment 관점으로 돌아와서 Kafka 를 어떻게 쓸 지 살펴보겠습니다.<br></br>
 </p>
 <p>
-이번 파트에서는 <Part>07. Kafka</Part> 파트와 동일한 주키퍼, 브로커, Connect, Schema Registry 를 사용합니다.
+이번 파트에서는 <Part>07. Kafka</Part> 파트와 동일한 Zookeeper, Broker, Connect, Schema Registry 를 사용합니다.
 또한 Source Connector 를 사용하여 데이터를 가져오는 과정도 동일합니다.
 달라지는 점은 Sink Connector 를 대신해서 직접 Kafka Python SDK 를 이용하여 Consumer 를 구현하는 것입니다.
 </p>
@@ -103,7 +101,7 @@ pip install kafka-python requests psycopg2-binary
 따라서 Source DB 에서 데이터를 받아 API 서버로 요청을 보내고, 모델의 예측 값을 받고, 받은 결과를 Target DB 에 삽입하는 과정을 담당하는 코드가 필요합니다.
 </p>
 
-따라서 이번 챕터에서는 Sink Connector 없이 `kafka-python`, `requests`, `psycopg2` 패키지들을 이용하여 Data Subscriber 를 구축해보겠습니다. 
+이번 챕터에서는 Sink Connector 없이 `kafka-python`, `requests`, `psycopg2` 패키지들을 이용하여 Data Subscriber 를 구축해보겠습니다. 
 
 
 ## 2. Data Subscriber
@@ -198,7 +196,7 @@ consumer = KafkaConsumer(
     - Consumer 그룹을 식별하기 위해 그룹 ID 를 설정합니다.
 - <var>value_deserializer</var> :
 
-    - Source connector (또는 Produceer) 에서 serialization 된 value 값을 deserialization 할 때 사용할 deserializer 를 설정합니다.
+    - Source Connector (또는 Produceer) 에서 serialization 된 value 값을 deserialization 할 때 사용할 deserializer 를 설정합니다.
     - <Part>07. Kafka</Part>파트에서는 Connect 를 띄울 때 value converter 로서 Json Converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
     - 이번 챕터에서는 데이터를 읽어서 Json Deserializer 를 이용하여 deserialization 을 해야 하기 때문에 lambda function 과 json 의 <code>loads</code> 를 이용하여 <code>lambda x: loads(x)</code> 를 작성합니다.
 

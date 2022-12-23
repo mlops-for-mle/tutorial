@@ -5,16 +5,17 @@ description: 📌 앞서 작성한 API 에서 Create 부분을 Pydantic 을 이�
 
 # 3) FastAPI CRUD (Pydantic)
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
+<PreviewDescription>
+
+## Chapter Preview
+---
 ### 목표
 
 1. 앞서 작성한 API 에서 Create 부분을 Pydantic 을 이용하여 수정합니다.
 2. Pydantic 을 사용하기 전과 후에 어떠한 차이가 있는지 학습합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 
 ### 스펙 명세서
@@ -27,10 +28,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
 2. Create 후 return 하는 값을 Response Model 을 이용하여 수정합니다. [[Response Model](https://fastapi.tiangolo.com/tutorial/response-model/)]
 3. Pydantic Model 을 사용하기 전과 후에 API 가 어떻게 달라지는지 비교해 봅니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
 
@@ -54,10 +52,10 @@ ch5
 
 ## 1. Pydantic Model
 
-Request Body 는 Client 에서 API 로 전송하는 데이터를 의미합니다.
-반대로 Response Body 는 API 가 Client 로 전송하는 데이터를 의미합니다.
+Request Body 는 client 에서 API 로 전송하는 데이터를 의미합니다.
+반대로 Response Body 는 API 가 client 로 전송하는 데이터를 의미합니다.
 
-이렇게 Client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해 Pydantic Model 을 사용할 수 있습니다.
+이렇게 client 와 API 사이에 데이터를 주고 받을 때 데이터의 형식을 지정해 줄 수 있는데, 이를 위해 Pydantic Model 을 사용할 수 있습니다.
 
 ### 1.1 Base Setting
 
@@ -111,7 +109,7 @@ class CreateOut(BaseModel):
 ### 2.1 Response Model
 
 `@app.get()`, `@app.post()` 등 다양한 Path Operation 에 `response_model` 을 이용하여 Response Body 에 사용될 데이터 모델을 지정해줄 수 있습니다.
-또한, output data 의 type 을 체크하여 자동으로 변환시키고, type 이 유효한지 확인해주고, response 를 위해 자동으로 JSON Schema 를 추가해 주는 등의 역할을 할 수 있습니다.
+또한, output data 의 type 을 체크하여 자동으로 변환시키고, type 이 유효한지 확인해주고, response 를 위해 자동으로 JSON Schema 를 추가해주는 등의 역할을 할 수 있습니다.
 
 그 중에서도 `response_model` 의 가장 중요한 역할은 output data 의 형태를 제한해 줄 수 있다는 것입니다.
 예를 들면, `response_model=CreateOut` 과 같이 지정해주면 해당 Path Operation 이 실행되었을 때 `CreateOut` 에 존재하는 attribute 의 형태로 데이터를 반환하게 됩니다.
@@ -135,7 +133,7 @@ def create_user(user: CreateIn) -> CreateOut:
 Response Body 에 필요한 변수는 `response_model` 로 지정된 `CreateOut` 모델의 변수인 `status` 와 `id` 이기 때문에 이 변수들의 값을 저장해 주어야 합니다.
 `status` 와 `id` 값을 준 `CreateOut` 의 객체를 return 하면 됩니다.
 
-정리하면, `create_user` 함수는 입력으로 `CreateIn` 모델을 받고, `CreateOut` 모델을 반환함으로써 Request 할 때와 Response 할 때 주고받는 데이터에 다른 변수를 사용할 수 있는 것입니다.
+정리하면, `create_user` 함수는 입력으로 `CreateIn` 모델을 받고, `CreateOut` 모델을 반환함으로써 request 할 때와 response 할 때 주고받는 데이터에 다른 변수를 사용할 수 있는 것입니다.
 
 ### 2.3 `crud_pydantic.py`
 

@@ -5,16 +5,17 @@ description: 📌 DB 에서 데이터를 가져오는 파이프라인을 작성�
 
 # 3) Load Data from Database
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
+<PreviewDescription>
+
+## Chapter Preview
+---
 ### 목표
 
 1. DB 에서 데이터를 가져오는 파이프라인을 작성합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -23,14 +24,11 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - <code>id</code> column을 기준으로 최신 데이터 100개를 추출하는 쿼리문을 작성합니다.
     - <code>pandas.read_sql</code> 함수를 이용해 데이터를 추출합니다.
 2. 모델 파이프라인 수정
-    - <Chapter>1) Base Model Development </Chapter> 챕터에서 작성한 파이프라인 중 데이터를 불러오는 부분을 위에서 작성한 함수로 수정합니다.
+    - <Chapter>1) Base Model Development</Chapter> 챕터에서 작성한 파이프라인 중 데이터를 불러오는 부분을 위에서 작성한 함수로 수정합니다.
     - 모델을 학습하고 저장합니다.
     - 저장된 모델이 정상적으로 동작하는지 확인합니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2">
 
@@ -88,11 +86,11 @@ mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 (...)
 ```
 
-### 1.2 Python
+### 1.2 Pandas
 `pandas.read_sql` 는 입력 argument 로 query 와 DB connector 를 받습니다.
 
 PostgreSQL DB 에 연결할 수 있는 DB connector 를 생성 후 query 와 DB connector 를 이용하여 데이터를 불러옵니다.
-DB 에 연결하기 위한 정보는 <Part>01. Database</Part> 의 <Chapter>6) Data Generator on Docker Compose</Chapter> 챕터에서 DB 서버를 생성할 때 입력한 값입니다.
+DB 에 연결하기 위한 정보는 <Part>01. Database</Part> 파트의 <Chapter>6) Data Generator on Docker Compose</Chapter> 챕터에서 DB 서버를 생성할 때 입력한 값입니다.
 
 <CodeDescription>
 
@@ -124,7 +122,7 @@ print(df.head(5))
 # 4  3495          5.5           4.2          1.4           0.2       0
 ```
 
-<Chapter>2) Model Pipeline</Chapter> 에서 작성한 `base_train.py` 의 `# 1. get data` 부분을 위에서 작성한 코드로 수정합니다.
+<Chapter>2) Model Pipeline</Chapter> 챕터에서 작성한 <code>base_train.py</code> 의 <code># 1. get data</code> 부분을 위에서 작성한 코드로 수정합니다.
 
 ```python  title="db_train.py"
 # db_train.py
@@ -141,7 +139,7 @@ X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, rand
 ```
 
 ## 2. Save Data
-그리고 사용한 데이터를 저장하는 `# 4. save data` 부분을 추가합니다.
+이어서 사용한 데이터를 저장하는 `# 4. save data` 부분을 추가합니다.
 데이터를 저장하는 이유는 현재 DB 에 계속해서 데이터가 쌓이고 있기 때문에 매번 데이터를 불러올 때마다 데이터가 바뀝니다.
 데이터가 바뀌면 모델이 정상적으로 불러왔는지 확인할 수 없기 때문에 사용한 데이터를 저장하여 평가하는 부분에서 사용합니다.
 

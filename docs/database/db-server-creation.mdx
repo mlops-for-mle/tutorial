@@ -5,23 +5,23 @@ description: 📌 Docker 를 이용하여 DB 서버를 생성합니다.
 
 # 1) DB Server Creation
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
+<PreviewDescription>
 
+## Chapter Preview
+---
 ### 목표
 
 1. Docker 를 이용하여 DB 서버를 생성합니다.
 2. 생성된 DB 의 role name 과 attributes 를 확인합니다.
 
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
-
 ### 스펙 명세서
 
 1. Docker 를 설치합니다.
 2. PostgreSQL DB 서버를 생성합니다.
-    - <var>Image</var> : `postgres:14.0`
+    - <var>Image</var> : <code>postgres:14.0</code>
     - <var>Container name</var> : <code>postgres-server</code>
     - <var>POSTGRES_USER</var> : <code>myuser</code>
     - <var>POSTGRES_PASSWORD</var> : <code>mypassword</code>
@@ -31,10 +31,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
     - `psql` 로 DB 에 접근하여 role name 과 attributes 확인
 
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
 
@@ -114,7 +111,7 @@ CONTAINER ID   IMAGE           COMMAND                  CREATED          STATUS 
 ### 3.1 `psql` 설치
 
 PostgreSQL DB 서버를 확인할 때 사용하는 CLI 툴인 `psql` 설치합니다. 
-[공식 홈페이지](https://www.postgresql.org/download/)를 참고해 본인의 환경에 맞게 설치합니다.
+[공식 홈페이지](https://www.postgresql.org/download/)를 참고하여 본인의 환경에 맞게 설치합니다.
 
 ### 3.2 DB 서버 확인
 
@@ -128,7 +125,7 @@ PGPASSWORD=mypassword psql -h localhost -p 5432 -U myuser -d mydatabase
 ```
 - <var>PGPASSWORD=</var> : 
 
-    - 접속할 유저의 암호를 입력합니다. 
+    - 접속할 유저의 비밀번호를 입력합니다. 
 - <var>-h</var> : 
 
     - 호스트를 지정합니다. 
