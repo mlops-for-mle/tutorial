@@ -197,7 +197,7 @@ consumer = KafkaConsumer(
 - <var>value_deserializer</var> :
 
     - Source Connector (또는 Produceer) 에서 serialization 된 value 값을 deserialization 할 때 사용할 deserializer 를 설정합니다.
-    - <Part>07. Kafka</Part>파트에서는 Connect 를 띄울 때 value converter 로서 Json Converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
+    - <Part>07. Kafka</Part> 파트에서는 Connect 를 띄울 때 value converter 로써 Json Converter 를 사용하였습니다. 따라서 데이터는 json 으로 serialization 이 되어있습니다.
     - 이번 챕터에서는 데이터를 읽어서 Json Deserializer 를 이용하여 deserialization 을 해야 하기 때문에 lambda function 과 json 의 <code>loads</code> 를 이용하여 <code>lambda x: loads(x)</code> 를 작성합니다.
 
 </CodeDescription>
