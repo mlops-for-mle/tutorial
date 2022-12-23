@@ -7,7 +7,7 @@ const darkCodeTheme = require('prism-react-renderer/themes/dracula');
 /** @type {import('@docusaurus/types').Config} */
 const config = {
   title: 'ML Engineer를 위한 MLOps',
-  tagline: 'Journey to build my own MLOps',
+  tagline: 'Journey to build your own MLOps',
   url: 'https://mlops-for-mle.github.io/',
   baseUrl: '/tutorial/',
   trailingSlash: false,
@@ -123,7 +123,7 @@ const config = {
           src: '/img/makinarocks.png',
           href: 'https://makinarocks.ai',
         },
-        copyright: `Copyright © ${new Date().getFullYear()} MakinaRocks. Built with Docusaurus.`,
+        copyright: `Copyright © 2022-${new Date().getFullYear()} MakinaRocks. Built with Docusaurus.`,
       },
       prism: {
         theme: lightCodeTheme,
