@@ -6,7 +6,7 @@
  */
 
 .PreviewDescription {
-  border: 3px solid var(--ifm-color-emphasis-200);
+  border: 3px solid rgb(106, 176, 209);
   border-radius: var(--ifm-global-radius);
   box-shadow: var(--ifm-global-shadow-lw);
   margin-bottom: var(--ifm-leading);
@@ -35,7 +35,7 @@
 }
 
 [data-theme='light'] {
-  --ifm-background-color: rgb(55, 25, 155);
+  --prev-background-color: rgb(240, 249, 253);
 }
 
 .dot {
@@ -57,7 +57,7 @@
 }
 
 .PreviewDescriptionBody {
-  background-color: var(--ifm-background-color);
+  background-color: var(--prev-background-color);
   border-bottom-left-radius: inherit;
   border-bottom-right-radius: inherit;
   padding: 1rem;
