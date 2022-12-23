@@ -73,7 +73,7 @@ Python 언어를 이용하여 PostgreSQL DB 서버에 접근하는 코드를 구
 `psycopg2` 에 관한 자세한 내용은 [공식 문서](https://www.psycopg.org/docs/)를 참고해주세요.
 
 ### 1.1 DB Connection
-`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 <var>`db_connect`</var> 라는 connector 인스턴스를 생성합니다.
+`psycopg2` 를 이용하여 DB 에 접근하기 위해서는 `connect` 함수를 이용해야 합니다. `connect` 함수를 아래와 같이 작성하여 `db_connect` 라는 connector 인스턴스를 생성합니다.
 
 ```python
 import psycopg2
@@ -174,7 +174,7 @@ CREATE TABLE IF NOT EXISTS iris_data (
 
 이제 작성한 query 를 DB 에 전달해야 합니다. 전달을 위해서는 아래의 과정을 수행하면 됩니다.
 
-1. Connector 의 cursor 를 열고, cursor 에 query 를 전달합니다.
+1. Connector 에서 cursor 를 열고, cursor 에 query 를 전달합니다.
     
     ```python
     cur = db_connect.cursor()
@@ -223,8 +223,8 @@ def create_table(db_connect):
         db_connect.commit()
 ```
 
-`create_table` 함수의 입력값은 <var>db_connect</var> 입니다. DB 와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한 번만 연결 후 연결된 connector 를 재사용합니다.
-함수 내부에는 query 가 있고, 실행될 때 어떤 query 가 실행되었는지 확인하기 위해서 `print` 를 합니다. 마지막으로 query 를 DB 에 전달하는 `with` 문을 추가합니다.
+`create_table` 함수의 입력값은 `db_connect` 입니다. DB 와의 연결을 지속적으로 요구할 경우 부하가 갈 수 있기 때문에 최초에 한 번만 연결 후 연결된 connector 를 재사용합니다.
+함수 내부에는 query 가 있고, 실행될 때 어떤 query 가 실행되었는지 확인하기 위해서 출력을 합니다. 마지막으로 query 를 DB 에 전달하는 `with` 문을 추가합니다.
 
 ### 2.3 Query 실행
 
@@ -324,6 +324,6 @@ python table_creator.py
     (0 rows)
     ```
     
-    Column 들이 위의 python 스크립트에서 작성한 이름과 같은지 확인합니다.
+    Column 들이 위의 Python 스크립트에서 작성한 이름과 같은지 확인합니다.
     
     아직 삽입한 데이터가 없기 때문에 `(0 rows)` 로 나오는 걸 확인할 수 있습니다. 다음 챕터에서 데이터를 추가해보겠습니다.
