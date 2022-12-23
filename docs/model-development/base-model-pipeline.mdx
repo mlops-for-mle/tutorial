@@ -7,6 +7,7 @@ description: 📌 여러 개의 모델들을 하나의 파이프라인으로 작
 import CodeDescription from '@site/src/components/CodeDescription';
 import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
 
 <PreviewDescription>
 
@@ -48,8 +49,8 @@ ch2
 ## 1. Model Pipeline
 
 ### 1.1 Scaler & SVC
-이 전 장에서 예측을 위해 사용한 모델은 scaler 와 SVC 두 가지가 있었습니다.
-또한 SVC가 정상적으로 예측하기 위해서는 scaler가 필요하다는 것도 알아 보았습니다.
+<Chapter>1) Base Model Development</Chapter> 챕터에서 예측을 위해 사용한 모델은 scaler 와 SVC 두 가지가 있었습니다.
+또한 SVC 가 정상적으로 예측하기 위해서는 scaler 가 필요하다는 것도 알아 보았습니다.
 즉 SVC 모델을 사용하기 위해서는 아래와 같이 사용해야 합니다.
 
 ```python
@@ -57,9 +58,9 @@ scaled_X_train = scaler.transform(X_train)
 train_pred = classifier.predict(scaled_X_train)
 ```
 
-하지만 위 방법은 scaler 를 사용하지 않거나 다른 scaler를 사용하는 경우가 발생할 수 있습니다.
+하지만 위 방법은 scaler 를 사용하지 않거나 다른 scaler 를 사용하는 경우가 발생할 수 있습니다.
 이러한 실수를 막을 수 있는 방법이 모델들을 파이프라인화 시키는 것입니다.
-파이프라인화 된 모델은 아래 처럼 사용할 수 있습니다.
+파이프라인된 모델은 아래처럼 사용할 수 있습니다.
 
 ```python
 model_pipeline.predict(X_train)
@@ -70,7 +71,7 @@ model_pipeline.predict(X_train)
 물론 이 방법에도 단점이 있습니다. 한번 구축된 파이프라인은 수정하기 어렵다는 점과 scaler 처럼 한 모델에서만 쓰이는게 아니라 여러 모델에도 사용할 수 있는 것들을 중복적으로 학습해야 한다는 점이 있습니다.
 
 ### 1.2 Code
-그럼 한번 직접 모델들을 파이프라인으로 작성해 보겠습니다.
+직접 모델들을 파이프라인으로 작성해 보겠습니다.
 
 `sklearn.pipeline` 의 `Pipeline` 을 통해 파이프라인을 작성할 수 있습니다. 이 때 파이프라인 안에 들어가는 값은 리스트이며 리스트 안에는 `(모델 이름, 모델 객체)` 가 값으로 들어갑니다.
 
@@ -114,7 +115,7 @@ print("Valid Accuracy :", valid_acc)
 # Valid Accuracy : 0.9666666666666667
 ```
 
-마지막으로 모델을 저장합니다. <Chapter>1) Base Model Development </Chapter> 챕터처럼 따로 할 필요 없이 하나의 파일로 저장할 수 있습니다.
+마지막으로 모델을 저장합니다. <Chapter>1) Base Model Development</Chapter> 챕터처럼 따로 할 필요없이 하나의 파일로 저장할 수 있습니다.
 
 ```python  title="pipeline_train.py"
 import joblib
@@ -122,7 +123,7 @@ import joblib
 joblib.dump(model_pipeline, "model_pipeline.joblib")
 ```
 
-### 1.3 "pipeline_train.py"
+### 1.3 `pipeline_train.py`
 
 위에서 작성한 코드를 모아서 `pipeline_train.py` 로 작성합니다.
 
@@ -159,7 +160,7 @@ joblib.dump(model_pipeline, "model_pipeline.joblib")
 
 ## 2. `pipeline_validate_save_model.py`
 
-저장된 파이프라인이 정상적으로 동작하는 지 검증하기 위해 <Chapter>1) Base Model Development </Chapter> 챕터에서 작성한 `base_validate_save_model.py` 의 코드를 수정하여 `pipeline_validate_save_model.py` 로 작성합니다.
+저장된 파이프라인이 정상적으로 동작하는 지 검증하기 위해 <Chapter>1) Base Model Development</Chapter> 챕터에서 작성한 `base_validate_save_model.py` 의 코드를 수정하여 `pipeline_validate_save_model.py` 로 작성합니다.
 
 ```python  title="pipeline_validate_save_model.py"
 # pipeline_validate_save_model.py

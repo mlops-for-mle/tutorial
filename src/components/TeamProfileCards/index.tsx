@@ -127,6 +127,15 @@ export function ReviewersRow(): JSX.Element {
         Beta Tester
         </Translate>
       </TeamProfileCardCol>
+      <TeamProfileCardCol
+        name="Jonghyuk Lee"
+        githubUrl="https://github.com/jonhyuk0922"
+        linkedinUrl="https://www.linkedin.com/in/%EC%A2%85%ED%98%81-%EC%9D%B4-a79396208/"
+        >
+        <Translate id="team.profile.Jonghyuk Lee.body">
+        Beta Tester
+        </Translate>
+      </TeamProfileCardCol>
     </div>
   );
 }

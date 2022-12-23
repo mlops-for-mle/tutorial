@@ -1,6 +1,6 @@
 ---
 sidebar_position: 6
-description: 📌 DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
+description: 📌 DB 컨테이너와 Data Generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
 ---
 
 # 6) Data Generator on Docker Compose
@@ -16,7 +16,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 ### 목표
 
-1. DB 컨테이너와 data generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
+1. DB 컨테이너와 Data Generator 컨테이너를 함께 띄우기 위한 Docker Compose 파일을 작성합니다.
 2. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
 
 
@@ -24,31 +24,32 @@ import { Chapter, Part } from '@site/src/components/Highlight';
 
 1. Docker Compose 파일을 작성합니다.
 
-    - Postgres server service
-        - Service name : `postgres-server`
-        - Image : `postgres:14.0`
-        - Container name : `postgres-server`
-        - Environment
+    - Postgres Server
+        - <var>Service name</var> : <code>postgres-server</code>
+        - <var>Image</var> : <code>postgres:14.0</code>
+        - <var>Container name</var> : <code>postgres-server</code>
+        - <var>Environment</var>
+        
             - <var>POSTGRES_USER</var> : <code>myuser</code>
             - <var>POSTGRES_PASSWORD</var> : <code>mypassword</code>
             - <var>POSTGRES_DB</var> : <code>mydatabase</code>
-        - Port forwarding : `5432:5432`
-    - Data generator serivce
-        - Service name : `data-generator`
-        - Image : `Dockerfile`
-        - Container name : `data-generator`
-        - Command : `["postgres-server"]`
+        - <var>Port forwarding</var> : <code>5432:5432</code>
+    - Data Generator
+        - <var>Service name</var> : <code>data-generator</code>
+        - <var>Image</var> : <code>Dockerfile</code>
+        - <var>Container name</var> : <code>data-generator</code>
+        - <var>Command</var> : <code>["postgres-server"]</code>
 
     :::info
 
-    Postgres server 서비스와 data generator 서비스를 띄울 때 어떤 서비스가 먼저 띄워져야 하는지 생각해보고, 그 기능을 Compose 파일에 추가합니다.
+    Postgres Server 서비스와 Data Generator 서비스를 띄울 때 어떤 서비스가 먼저 띄워져야 하는지 생각해보고, 그 기능을 Compose 파일에 추가합니다.
 
     :::
 
 2. Docker Compose 파일을 실행합니다.
 3. `psql` 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
     - Local 에서 확인합니다.
-    - Data generator server 에서 확인합니다.
+    - Data Generator server 에서 확인합니다.
 
 </PreviewDescription>
 
@@ -81,7 +82,7 @@ ch1
 :::
  
 
-다음 명령어를 통해 실행중인 DB 서버와 data generator 를 종료시킵니다.
+다음 명령어를 통해 실행중인 DB 서버와 Data Generator 를 종료시킵니다.
 
 ```bash
 # terminal-command
@@ -137,11 +138,11 @@ services:
 
   - Compose 에 묶일 서비스들을 의미합니다. 하나의 서비스는 하나의 컨테이너를 의미합니다.
   - <var>postgres-server</var> : <Chapter>01) DB Server Creation</Chapter> 챕터에서 사용한 DB 서버를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
-  - <var>data-generator</var> : <Chapter>05) Data Generator on Docker</Chapter> 챕터에서 사용한 data generator 를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
+  - <var>data-generator</var> : <Chapter>05) Data Generator on Docker</Chapter> 챕터에서 사용한 Data Generator 를 실행시키기 위한 내용을 정의할 서비스 이름입니다.
 
 </CodeDescription>
 
-이제 데이터를 저장할 postgres server 서비스와 데이터를 생성할 data generator 서비스를 작성해 보겠습니다.
+이제 데이터를 저장할 postgres server 서비스와 데이터를 생성할 Data Generator 서비스를 작성해 보겠습니다.
 
 ### 2.1 Postgres Server Service
 
@@ -207,11 +208,11 @@ services:
 - <var>depends_on</var> :
   
   - Compose 로 띄워지는 서비스 간의 종속성 순서대로 서비스를 시작할 때 사용합니다.
-  - 여기서는 postgres server 가 먼저 실행되고 난 뒤에 data generator 를 실행해야 하기 때문에 postgres server 의 서비스 이름인 `postgres-server` 를 입력합니다.
+  - 여기서는 postgres server 가 먼저 실행되고 난 뒤에 Data Generator 를 실행해야 하기 때문에 postgres server 의 서비스 이름인 `postgres-server` 를 입력합니다.
 - <var>command</var> :
   
-  - Dockerfile에 작성되어 있는 <code>CMD</code> 를 덮어씁니다.
-  - <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 data generator 를 사용하기 위해서는 postgres server 의 호스트를 변경해야 합니다.
+  - Dockerfile 에 작성되어 있는 <code>CMD</code> 를 덮어씁니다.
+  - <Chapter>5) Data Generator on Docker</Chapter> 챕터에서 작성한 Data Generator 를 사용하기 위해서는 postgres server 의 호스트를 변경해야 합니다.
   - 호스트 이름은 위에서 언급한 것처럼 컨테이너의 이름으로 주어야 하기 때문에 `["postgres-server"]` 로 덮어씁니다.
 
 </CodeDescription>
@@ -285,10 +286,10 @@ Docker desktop 으로 봐도 동일한 현상입니다.
 
 왜 이럴까요?
 
-이유는 앞서 `depends_on` 으로 서비스 간의 종속성은 정했지만, 실제로 postgres server 가 띄워진 뒤에 곧바로 data generator 가 띄워집니다.
-Postgres server 는 아직 준비가 되어있지 않은데 data generator 가 띄워져서 DB connection 을 하려다보니 data generator 가 Exited 되는 문제가 발생한 것입니다.
+이유는 앞서 `depends_on` 으로 서비스 간의 종속성은 정했지만, 실제로 postgres server 가 띄워진 뒤에 곧바로 Data Generator 가 띄워집니다.
+Postgres server 는 아직 준비가 되어있지 않은데 Data Generator 가 띄워져서 DB 에 연결을 하려다보니 Data Generator 가 Exited 되는 문제가 발생한 것입니다.
 
-따라서 postgres server 가 사용 가능한 상태가 되어있는지 체크를 한 뒤에 data generator 를 띄워야 합니다.  
+따라서 postgres server 가 사용 가능한 상태가 되어있는지 체크를 한 뒤에 Data Generator 를 띄워야 합니다.  
 이를 해결하기 위한 방법으로 [Docker Compose Healthcheck](https://github.com/peter-evans/docker-compose-healthcheck) 가 있습니다.
 
 간단하게 아래와 같이 yaml 파일에 `healthcheck` 부분과 `condition` 을 추가하면 됩니다.
@@ -344,7 +345,7 @@ services:
 - <var>condition</var> : 
   
   - Healthcheck 기능을 사용하기 위해 <var>depends_on</var> 의 parameter 로 <code>condition: service_healthy</code> 를 넣어줍니다.
-  - Postgres server 의 healthcheck 를 data generator 에서 적용시키기 위해 `postgres-server` 밑에 condition 을 추가하였습니다.
+  - Postgres server 의 healthcheck 를 Data Generator 에서 적용시키기 위해 `postgres-server` 밑에 condition 을 추가하였습니다.
 
 </CodeDescription>
 
@@ -532,7 +533,7 @@ mydatabase=# select * from iris_data;
 
 ### 3.2 In Data Generator Container
 
-`docker exec` 를 이용하여 data generator 컨테이너 안으로 접속합니다.
+`docker exec` 를 이용하여 Data Generator 컨테이너 안으로 접속합니다.
 
 ```bash
 # terminal-command
@@ -540,7 +541,7 @@ docker exec -it data-generator /bin/bash
 ```
 
 그리고 `psql` 을 이용하여 DB 로 접속합니다.
-이 때 local 이 아닌 data generator 컨테이너에서 접속해야 하기 때문에 호스트를 `localhost` 에서 `postgres-server` 로 변경합니다.
+이 때 local 이 아닌 Data Generator 컨테이너에서 접속해야 하기 때문에 호스트를 `localhost` 에서 `postgres-server` 로 변경합니다.
 
 ```bash
 # terminal-command

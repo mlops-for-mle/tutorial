@@ -199,7 +199,7 @@ CMD ["localhost"]
 - <var>RUN</var> : 
 
     - 이미지를 만들 때 실행할 코드를 지정합니다.
-    - 첫 번째 `RUN` 에서는 해당 Dockerfile 을 이용하여 data generator 를 띄울 때, 컨테이너 안에 접근하여 `psql`을 사용하기 위해 `postgresql-client` 을 설치합니다.
+    - 첫 번째 `RUN` 에서는 해당 Dockerfile 을 이용하여 Data Generator 를 띄울 때, 컨테이너 안에 접근하여 `psql`을 사용하기 위해 `postgresql-client` 을 설치합니다.
 - <var>WORKDIR</var> : 
 
     - 작업 directory 를 지정합니다. 해당 directory 가 없으면 새로 생성합니다. 작업 directory 를 지정하면 그 이후 명령어는 해당 directory 를 기준으로 동작합니다. 
@@ -337,8 +337,8 @@ docker run -d \
 [그림 1-3] Container Networking Disconneted
 </div>
 
-[그림 1-3] 는 data generator 컨테이너를 실행시켰을 때의 도식입니다.
-이 때 data generator 컨테이너 입장에서 `localhost:5432` 는 아무것도 열려있지 않은 비어있는 포트입니다.
+[그림 1-3] 는 Data Generator 컨테이너를 실행시켰을 때의 도식입니다.
+이 때 Data Generator 컨테이너 입장에서 `localhost:5432` 는 아무것도 열려있지 않은 비어있는 포트입니다.
 그렇기 때문에 DB 를 찾지 못한다는 에러와 함께 종료되는 것입니다.
 
 <div style={{textAlign: 'center'}}>
@@ -426,6 +426,6 @@ docker run -d \
 그리고 서로 연결이 필요한 컨테이너에게 다른 컨테이너의 이름을 전달해주어야 합니다.
 이름을 지정해 어느정도 해소할 수 있으나 컨테이너가 예상하지 못한 이유로 종료될 경우, 사용된 이름을 점유하고 있어서 다시 실행하기 위해서는 종료된 컨테이너를 삭제해야 합니다.
 
-또한 컨테이너가 실행되는 순서를 보장할 수 없습니다. 예를 들어서 DB 서버가 실행되기 전에 data generator 서버에서 데이터 삽입을 시도하면 해당 컨테이너는 오류와 함께 실행이 종료됩니다.
+또한 컨테이너가 실행되는 순서를 보장할 수 없습니다. 예를 들어서 DB 서버가 실행되기 전에 Data Generator 서버에서 데이터 삽입을 시도하면 해당 컨테이너는 오류와 함께 실행이 종료됩니다.
 
 이처럼 여러 컨테이너 간의 작업을 조율하는 것을 Container Orchestration 이라고 하며 도커에서는 자체적인 해결법으로 [Docker Compose](https://docs.docker.com/compose/) 를 제공합니다.

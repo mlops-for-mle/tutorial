@@ -111,7 +111,7 @@ services:
   - 컨테이너의 이름은 <code>zookeeper</code> 로 사용하겠습니다.
 - <var>ports</var> : 
 
-  - 주키퍼의 포트인 <code>2181:2181</code> 를 포트 포워딩합니다.
+  - 주키퍼의 포트인 <code>2181:2181</code> 로 포트 포워딩합니다.
 
 주키퍼의 환경 변수는 다음과 같습니다.
 
@@ -168,7 +168,7 @@ services:
   - 주키퍼가 먼저 실행된 후 다음에 브로커가 실행되어야 합니다.
 - <var>ports</var> : 
 
-  - 브로커의 포트인 <code>9092:9092</code> 를 포트 포워딩합니다.
+  - 브로커의 포트인 <code>9092:9092</code> 로 포트 포워딩합니다.
 
 브로커의 환경 변수는 다음과 같습니다.
 
@@ -201,7 +201,6 @@ services:
 - <var>KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR</var>
 
   - 토픽을 분산하여 저장할 Replication Factor 를 설정합니다.
-  - 기본값은 3이며 설정하지 않으면 자동으로 다중 브로커를 구성합니다.
   - 이번 챕터에서는 단일 브로커를 사용하기 때문에 <code>1</code> 로 지정하겠습니다.
 - <var>KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS</var>
 

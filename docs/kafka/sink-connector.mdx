@@ -258,7 +258,7 @@ cat <<EOF > sink_connector.json
 EOF
 ```
 
-생성하는 Source Connector 에 대한 설정 파일은 다음과 같습니다.
+생성하는 Sink Connector 에 대한 설정 파일은 다음과 같습니다.
 
 <CodeDescription>
 
@@ -300,10 +300,10 @@ EOF
     - 이번 챕터에서는 앞서 띄워두었던 Target DB 서버의 URL 인 <code>jdbc:postgresql://target-postgres-server:5432/targetdatabase</code> 을 기입합니다.
   - <var>connection.user</var> : 
     
-    - Target DB 에 접속하기 위한 user 를 설정합니다.
+    - Target DB 에 접속하기 위한 유저의 이름을 설정합니다.
   - <var>connection.password</var> : 
     
-    - Target DB 에 접속하기 위한 password 를 설정합니다.
+    - Target DB 에 접속하기 위한 유저의 비밀번호를 설정합니다.
   - <var>table.name.format</var> : 
 
     - Target DB 에 전달할 테이블 이름의 format 을 설정합니다.
