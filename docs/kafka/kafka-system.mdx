@@ -90,12 +90,12 @@ import ArchitectureImage from './img/kafka-13.png';
 
 </PreviewDescription>
 
-<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
+<BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part7">
 
-해당 파트의 전체 코드는 [mlops-for-mle/ch7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7) 에서 확인할 수 있습니다.
+해당 파트의 전체 코드는 [mlops-for-mle/part7/](https://github.com/mlops-for-mle/mlops-for-mle/tree/main/part7) 에서 확인할 수 있습니다.
 
 ```js
-ch7
+part7
 ├── Makefile
 ├── README.md
 // highlight-next-line
@@ -122,7 +122,7 @@ ch7
 
 ```bash
 # terminal-command
-docker compose -p ch7-naive down -v
+docker compose -p part7-naive down -v
 ```
 
 ## 1. Architecture
@@ -458,12 +458,12 @@ networks:
 
 ```bash
 # terminal-command
-docker compose -p ch7-kafka -f kafka-docker-compose.yaml up -d
+docker compose -p part7-kafka -f kafka-docker-compose.yaml up -d
 ```
 
 - <var>-p</var> : 
 
-  - Project name 은 <code>ch7-kafka</code> 로 사용합니다.
+  - Project name 은 <code>part7-kafka</code> 로 사용합니다.
 - <var>-f</var> :
 
   - File name 은 위에서 작성한 파일 이름인 <code>kafka-docker-compose.yaml</code> 을 적어줍니다.
@@ -478,7 +478,7 @@ docker compose -p ch7-kafka -f kafka-docker-compose.yaml up -d
 # terminal-command
 docker ps
 CONTAINER ID   IMAGE                                   COMMAND                  CREATED          STATUS                             PORTS                                        NAMES
-2fe161195b13   ch7-kafka-connect                       "/etc/confluent/dock…"   41 seconds ago   Up 39 seconds (health: starting)   0.0.0.0:8083->8083/tcp, 9092/tcp             connect
+2fe161195b13   part7-kafka-connect                       "/etc/confluent/dock…"   41 seconds ago   Up 39 seconds (health: starting)   0.0.0.0:8083->8083/tcp, 9092/tcp             connect
 4b98228b7e77   confluentinc/cp-schema-registry:7.3.0   "/etc/confluent/dock…"   41 seconds ago   Up 39 seconds                      0.0.0.0:8081->8081/tcp                       schema-registry
 505d3a4d6fdb   confluentinc/cp-kafka:7.3.0             "/etc/confluent/dock…"   41 seconds ago   Up 40 seconds                      0.0.0.0:9092->9092/tcp                       broker
 7f4a6f51837c   confluentinc/cp-zookeeper:7.3.0         "/etc/confluent/dock…"   42 seconds ago   Up 40 seconds                      2888/tcp, 0.0.0.0:2181->2181/tcp, 3888/tcp   zookeeper
