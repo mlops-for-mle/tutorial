@@ -5,21 +5,22 @@ description: 📌 앞서 작성했던 코드를 Docker 컨테이너 안에서 �
 
 # 5) Data Generator on Docker
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 import DBImage2 from './img/db-2.png';
 import DBImage3 from './img/db-3.png';
 import DBImage4 from './img/db-4.png';
 
+<PreviewDescription>
+
+## Chapter Preview
+---
 ### 목표
 
 1. 앞서 작성했던 코드를 Docker 컨테이너 안에서 실행하기 위해 Dockerfile 을 작성합니다.
 2. Docker 컨테이너 간의 네트워크를 연결하여 DB 에 데이터를 계속해서 삽입합니다.
 3. DB 안에 데이터가 계속해서 삽입되고 있는지 확인합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -38,10 +39,7 @@ import DBImage4 from './img/db-4.png';
     - Build 된 이미지를 다시 실행합니다. 이때 <code>--network</code> 옵션을 이용하여 <code>my-network</code> 네트워크에 연결합니다.
 4. <code>psql</code> 을 이용하여 DB 에 데이터가 계속해서 쌓이고 있는지 확인합니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch1">
 
