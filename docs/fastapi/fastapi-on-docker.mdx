@@ -5,29 +5,26 @@ description: 📌 앞서 작성한 API 를 Docker 를 이용하여 실행합니�
 
 # 4) FastAPI on Docker
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
+<PreviewDescription>
 
+## Chapter Preview
+---
 ### 목표
 
 1. 앞서 작성한 API 를 Docker 를 이용하여 실행합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
 1. 앞서 Pydantic 을 이용하여 수정한 API 를 서버로 실행하기 위해 Dockerfile 을 작성합니다.
     - Base image는 `amd64/python:3.9-slim` 을 사용합니다.
     - `crud_pydantic.py` 를 이용합니다.
-    - 포트는 default 포트인 8000번 포트를 이용합니다.
-2. [`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하여 앞서 수행한 시나리오 등이 제대로 작동하는지 확인합니다.
+    - 포트는 기본 포트인 8000번 포트를 이용합니다.
+2. [`http://localhost:8000/docs`](http://localhost:8000/docs) 에 접속하여 앞서 수행한 시나리오가 제대로 작동하는지 확인합니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
 
@@ -124,9 +121,12 @@ docker run -d \
   ch5-api-server
 ```
 
-- `-d` : 컨테이너를 Detached Mode 로 실행합니다. Detached Mode 란 백그라운드에서 실행하는 것을 의미합니다.
-- `--name` : 컨테이너의 이름을 `api-server` 로 설정합니다.
-- `-p` : 포트 포워딩을 `8000:8000` 으로 설정합니다.
+- <var>--name</var> : 
+  
+  - 컨테이너의 이름을 <code>api-server</code> 로 설정합니다.
+- <var>-p</var> : 
+
+  - 포트 포워딩을 <code>8000:8000</code> 으로 설정합니다.
 
 </CodeDescription>
 

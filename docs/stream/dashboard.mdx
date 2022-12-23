@@ -5,17 +5,18 @@ description: 📌 Grafana 대시보드를 통해 실시간으로 데이터를 �
 
 # 2) Dashboard
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 
+<PreviewDescription>
+
+## Chapter Preview
+---
 ### 목표
 
 1. Grafana 대시보드를 통해 실시간으로 데이터를 모니터링하는 대시보드를 작성합니다.
 2. Grafana 에 원본 데이터와 예측값을 시각화하는 방법을 이해합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -31,7 +32,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - <var>user</var> : <code>myuser</code>
     - <var>password</var> : <code>mypassword</code>
     - <var>database</var> : <code>mydatabase</code>
-3. <Part>07. Kafka</Part> 에서 띄웠던 Target DB 를 확인하고 Grafana 에서 시각화합니다.
+3. <Part>07. Kafka</Part> 파트에서 띄웠던 Target DB 를 확인하고 Grafana 에서 시각화합니다.
 
     - <var>host</var> : <code>target-postgres-server</code>
     - <var>port</var> : <code>5432</code>
@@ -39,10 +40,7 @@ import { Chapter, Part } from '@site/src/components/Highlight';
     - <var>password</var> : <code>targetpassword</code>
     - <var>database</var> : <code>targetdatabase</code>
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch8">
 
@@ -67,9 +65,9 @@ Grafana 는 멀티플랫폼 오픈 소스 애널리틱스 및 인터랙티브 �
 
 Grafana 의 다양한 종류의 차트를 활용해 상황에 맞는 대시보드를 구현할 수 있습니다. 
 또한 오픈소스이기 때문에 자체적인 Grafana 커뮤니티도 활성화되어 필요한 정보나 만들어진 대시보드를 활용할 수 있습니다. 
-또한 여러가지 데이터 소스로부터 데이터를 받아 시각화 할 수 있습니다.
+또한 여러가지 데이터 소스로부터 데이터를 받아 시각화할 수 있습니다.
 
-Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
+Grafana 대시보드는 [그림 8-3] 의 형태로 존재합니다.
 
 <div style={{textAlign: 'center'}}>
 
@@ -77,13 +75,13 @@ Grafana dashboard 는 [그림 8-3] 의 형태로 존재합니다.
   [그림 8-3] Grafana 대시보드 구성도
 </div>
 
-- <var>dashboard</var> : 
+- <var>Dashboard</var> : 
 
-    - 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화 할 기간 등을 정할 수 있습니다.
-- <var>panel</var> : 
+    - 페이지 자체를 구성하고 전체 대시보드 제목, 새로고침 주기, 패널이 시각화할 기간 등을 정할 수 있습니다.
+- <var>Panel</var> : 
 
-    - <var>dashboard</var> 안에 포함되어있는 차트를 의미합니다. 
-    - 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정 할 수 있습니다.
+    - <var>Dashboard</var> 안에 포함되어있는 차트를 의미합니다. 
+    - 차트 제목, 차트 종류, 데이터 소스와 쿼리 등을 설정할 수 있습니다.
 
 ## 2. Grafana Setup
 
@@ -142,7 +140,7 @@ services:
 
 Grafana 는 [config 파일](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/)로 <code>grafana.ini</code> 를 사용합니다. 
 해당 config 파일을 설정하거나 규칙에 맞춰 환경 변수를 설정하여 Grafana 를 이용할 수 있습니다. 
-[환경변수를 활용 할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
+[환경변수를 활용할 경우 규칙](https://grafana.com/docs/grafana/latest/setup-grafana/configure-grafana/#override-configuration-with-environment-variables)은 `GF_<SectionName>_<KeyName>` 입니다. 
 
 Grafana 는 메타 데이터를 관리하기 위한 DB 를 정의해서 사용할 수 있습니다. 
 정의되지 않은 경우, 기본값으로 서버에 포함되어 있는 SQLite3 를 사용합니다. 
@@ -276,7 +274,7 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
     [그림 8-11] Grafana 대시보드 저장 후
     </div>
 
-## 4. Source database 그리기
+## 4. Source Database 그리기
 
 ### 4.1 Data Source 연결하기
 
@@ -370,11 +368,11 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
     </div>
 
 4. 패널의 정보를 설정합니다.
-    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
         - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 
         - 이번 챕터에서는 `Iris source data` 로 설정합니다.
-    - 하단 탭 : DB 에서 시각화 할 테이블 및 column 정보를 설정합니다.
+    - 하단 탭 : DB 에서 시각화할 테이블 및 column 정보를 설정합니다.
         - <var>Data source</var> : <code>Source-database</code>
         - <var>Table</var> : <code>iris_data</code>
         - <var>Column</var> : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
@@ -384,8 +382,8 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
             - `sepal_width`
             - `petal_length`
             - `petal_width`
-        - `Run query` 버튼 오른쪽의 `Code` 버튼을 클릭하고 `Limit` 부분을 지워줍니다.
-        - `Run query` 버튼을 클릭합니다.
+    - `Run query` 버튼 오른쪽의 `Code` 버튼을 클릭하고 `Limit` 부분을 지워줍니다.
+    - `Run query` 버튼을 클릭합니다.
 
     <div style={{textAlign: 'center'}}>
 
@@ -403,8 +401,8 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
 
 6. 저장이 완료되면 왼쪽 위의 화살표 ⬅️ 버튼을 눌러 뒤로 이동합니다.
 7. 이제 대시보드의 패널 새로고침 주기 및 패널 시각화 기간을 설정합니다.
-    - 오른쪽 위의 `🕙 Last 6 hours` 를 클릭하여 패널에 시각화 할 기간을 명세합니다.
-    - 1초 단위로 데이터가 생성 되기 때문에, 30초를 모니터링 하기 위해서 `From` 부분을 `now-30s` 로 바꿔주겠습니다. 바꾸고 난 다음 `Apply time range` 버튼을 클릭 합니다.
+    - 오른쪽 위의 `🕙 Last 6 hours` 를 클릭하여 패널에 시각화할 기간을 명세합니다.
+    - 1초 단위로 데이터가 생성 되기 때문에, 30초를 모니터링 하기 위해서 `From` 부분을 `now-30s` 로 바꿔주겠습니다. 바꾸고 난 다음 `Apply time range` 버튼을 클릭합니다.
     - 오른쪽 위의 🔄 버튼을 누르고 설정했던 `1s` 를 클릭합니다.
 
     <div style={{textAlign: 'center'}}>
@@ -428,7 +426,7 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
     [그림 8-27] Grafana 대시보드 저장
     </div>
 
-## 5. Inference database 그리기
+## 5. Inference Database 그리기
 
 앞서 Source Database 그리기에서 했던 내용을 반복합니다.
 
@@ -495,19 +493,19 @@ f56ea8f3f3bd   grafana/grafana   "/run.sh"   7 seconds ago   Up 6 seconds   0.0.
     </div>
 
 5. 패널의 정보를 설정합니다.
-    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정 합니다.
+    - 우측 탭 : 패널의 이름, 차트의 종류 등을 설정합니다.
         - 기본 값으로 `Time series` 차트가 설정되어 있습니다.
         - 오른쪽 탭의 `Title` 에 패널의 이름을 붙여줍니다. 
         - 이번 챕터에서는 `Iris inference result` 로 설정하겠습니다.
-    - 하단 탭 : 데이터 베이스에서 시각화 할 테이블 및 열 정보를 설정합니다.
+    - 하단 탭 : 데이터 베이스에서 시각화할 테이블 및 열 정보를 설정합니다.
         - <var>Data source</var> : <code>Inference-database</code>
         - <var>Table</var> : <code>iris_prediction</code>
         - <var>Column</var> : ➕ 버튼을 눌러 시각화 대상의 column 을 추가합니다.
 
             - `timestamp`
             - `iris_class`
-        - `Run query` 버튼 오른쪽의 `Code` 버튼을 클릭하고 `Limit` 부분을 지워줍니다.
-        - `Run query` 버튼을 클릭합니다.
+    - `Run query` 버튼 오른쪽의 `Code` 버튼을 클릭하고 `Limit` 부분을 지워줍니다.
+    - `Run query` 버튼을 클릭합니다.
 6. 작업이 마무리 되었으면 오른쪽 위의 `Save` 버튼을 통해 패널을 저장합니다.
 7. 저장이 완료되면 왼쪽 위의 화살표 ⬅️ 버튼을 눌러 뒤로 이동합니다.
 

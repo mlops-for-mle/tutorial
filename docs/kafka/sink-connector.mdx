@@ -5,19 +5,20 @@ description: 📌 Connect 에 Sink Connector 를 띄워봅니다.
 
 # 6) Sink Connector
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 import { Chapter, Part } from '@site/src/components/Highlight';
 import ArchitectureImage from './img/kafka-15.png';
 
-## 목표
+<PreviewDescription>
+
+## Chapter Preview
+---
+### 목표
 
 1. Docker Compose 를 이용하여 데이터를 전달받을 Target DB 서버와 Table Creator 를 구축합니다.
 2. Connect 에 Sink Connector 를 생성합니다.
 3. Target DB 서버에 데이터가 잘 전달되었는지 확인합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -62,11 +63,7 @@ import ArchitectureImage from './img/kafka-15.png';
     - <var>Header</var> : <code>Content-Type: application/json</code>
 3. Target DB 서버에 접속하여 저장된 데이터를 확인합니다.
 
-
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch7">
 
@@ -261,7 +258,7 @@ cat <<EOF > sink_connector.json
 EOF
 ```
 
-생성하는 Source Connector 에 대한 설정 파일은 다음과 같습니다.
+생성하는 Sink Connector 에 대한 설정 파일은 다음과 같습니다.
 
 <CodeDescription>
 
@@ -303,10 +300,10 @@ EOF
     - 이번 챕터에서는 앞서 띄워두었던 Target DB 서버의 URL 인 <code>jdbc:postgresql://target-postgres-server:5432/targetdatabase</code> 을 기입합니다.
   - <var>connection.user</var> : 
     
-    - Target DB 에 접속하기 위한 user 를 설정합니다.
+    - Target DB 에 접속하기 위한 유저의 이름을 설정합니다.
   - <var>connection.password</var> : 
     
-    - Target DB 에 접속하기 위한 password 를 설정합니다.
+    - Target DB 에 접속하기 위한 유저의 비밀번호를 설정합니다.
   - <var>table.name.format</var> : 
 
     - Target DB 에 전달할 테이블 이름의 format 을 설정합니다.

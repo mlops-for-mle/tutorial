@@ -5,16 +5,18 @@ description: 📌 모델을 학습하고 저장하는 기본적인 파이프라�
 
 # 1) Base Model Development
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
+import { Chapter, Part } from '@site/src/components/Highlight';
+import ModelDevelopmentImage1 from './img/model-development-1.png';
 
+<PreviewDescription>
 
+## Chapter Preview
+---
 ### 목표
 
 1. 모델을 학습하고 저장하는 기본적인 파이프라인을 작성합니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 ### 스펙 명세서
 
@@ -33,10 +35,7 @@ import BrowserWindow from '@site/src/components/BrowserWindow';
     - 불러온 모델로 학습 데이터와 평가 데이터의 정확도를 계산합니다.
     - `1. 학습 및 평가 데이터 선정` 에서 나눈 Validation 데이터를 이용하여 학습이 잘 되었는지 확인합니다.
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch2">
 
@@ -60,7 +59,8 @@ ch2
 
 <div style={{textAlign: 'center'}}>
 
-![basic workflow](./img/model-development-1.png)
+<img src={ModelDevelopmentImage1} style={{scale: '80%'}}/>
+
 [그림 2-3] Basic Workflow
 </div>
 
@@ -181,7 +181,7 @@ print("Valid Accuracy :", valid_acc)
 
 ## 3. 학습된 모델 저장
 
-sickit-learn 에서 공식적으로 권장하는 모델 저장 방법은 `joblib` 패키지를 이용하는 것입니다. [[Scikit-Learn Model Presistence](https://scikit-learn.org/stable/model_persistence.html)]
+scikit-learn 에서 공식적으로 권장하는 모델 저장 방법은 `joblib` 패키지를 이용하는 것입니다. [[Scikit-Learn Model Presistence](https://scikit-learn.org/stable/model_persistence.html)]
 
 ```python
 import joblib

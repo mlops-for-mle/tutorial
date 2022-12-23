@@ -5,17 +5,17 @@ description: 📌 FastAPI 의 공식 문서를 참고하여 간단한 API 를 �
 
 # 1) FastAPI Tutorial
 import CodeDescription from '@site/src/components/CodeDescription';
+import PreviewDescription from '@site/src/components/PreviewDescription';
 import BrowserWindow from '@site/src/components/BrowserWindow';
 
+<PreviewDescription>
 
+## Chapter Preview
+---
 ### 목표
 
 1. FastAPI 의 공식 문서를 참고하여 간단한 API 를 만들어봅니다.
 2. Path Parameter 와 Query Parameter 를 이해하고 이를 이용하여 API 를 만들어봅니다.
-
-<details>
-<summary>스펙 명세서</summary>
-<CodeDescription>
 
 
 ### 스펙 명세서
@@ -28,10 +28,7 @@ FastAPI 의 [공식 문서](https://fastapi.tiangolo.com/)를 참고하여 튜�
 4. [Query Parameter](https://fastapi.tiangolo.com/tutorial/query-params/) 에 대해 학습합니다.
 5. Path Parameter 와 Query Parameter 를 모두 사용하여 API 를 만들어봅니다. [[Multiple Path and Query Parameters](https://fastapi.tiangolo.com/tutorial/query-params/#multiple-path-and-query-parameters)]
 
-</CodeDescription>
-</details>
-
----
+</PreviewDescription>
 
 <BrowserWindow url="https://github.com/mlops-for-mle/mlops-for-mle/tree/main/ch5">
 
@@ -93,10 +90,18 @@ def read_root():
 uvicorn main:app --reload
 ```
 
-- `uvicorn` : FastAPI 를 실행하는 웹 서버 실행 Command Line Tool 입니다.
-- `main` : 위에서 작성한 Python 모듈 `main.py` 를 의미합니다.
-- `app` : `main.py` 에서 `app = FastAPI()` 를 통해 생성된 객체를 의미합니다.
-- `--reload` : 코드가 바뀌었을 때 서버가 재시작할 수 있도록 해주는 옵션입니다.
+- <var>uvicorn</var> : 
+
+    - FastAPI 를 실행하는 웹 서버 실행 Command Line Tool 입니다.
+- <var>main</var> : 
+
+    - 위에서 작성한 Python 모듈 <code>main.py</code> 를 의미합니다.
+- <var>app</var> : 
+
+    - <code>main.py</code> 에서 <code>app = FastAPI()</code> 를 통해 생성된 객체를 의미합니다.
+- <var>--reload</var> : 
+
+    - 코드가 바뀌었을 때 서버가 재시작할 수 있도록 해주는 옵션입니다.
 
 </CodeDescription>
 
@@ -122,7 +127,7 @@ uvicorn main:app --reload
 </div>
 
 이는 [Swagger UI](https://github.com/swagger-api/swagger-ui) 에 의해 제공되는 interactive API documentation 입니다.
-이를 통해 작성한 API 를 다양하게 실험을 해보면서 잘 작성 되었는지 테스트해 볼 수 있습니다.
+이를 통해 작성한 API 를 다양하게 실험을 해보면서 잘 작성되었는지 테스트해 볼 수 있습니다.
 
 ## 2. Step by Step 으로 이해하기
 
@@ -236,10 +241,10 @@ Path Parameter 와는 다르게, function 에 parameter 로 들어있는 `skip` 
 
 Query 는 URL 에서 `?` 뒤에 key-value 쌍의 형태로 나타나고, `&` 로 구분되어 사용됩니다.  
 예를 들면, 위와 같은 경우 `http://localhost:8000/items/?skip=0&limit=10` 과 같은 형태로 사용할 수 있습니다.  
-Query Parameter 는 path 의 고정된 부분이 아니기 때문에 optional 로 사용될 수 있고, 따라서 default 값을 가질 수 있습니다.   
-위의 예시에서는 `skip=0` 과 `limit=10` 의 default 값을 가지고 있습니다.
+Query Parameter 는 path 의 고정된 부분이 아니기 때문에 optional 로 사용될 수 있고, 따라서 기본값을 가질 수 있습니다.   
+위의 예시에서는 `skip=0` 과 `limit=10` 의 기본값을 가지고 있습니다.
 
-하지만 항상 default 값을 가지는 것은 아니고, 값을 입력받아야만 하는 Query Parameter 도 존재합니다.
+하지만 항상 기본값을 가지는 것은 아니고, 값을 입력받아야만 하는 Query Parameter 도 존재합니다.
 이를 Required Query Parameter 라고 하고 다음과 같은 형태로 사용할 수 있습니다.
 
 ```python
@@ -249,7 +254,7 @@ def read_user_item(item_id: str, needy: str):
 		return item
 ```
 
-위의 예시에서 `needy` 는 Path Operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 Query Parameter 이고, function `read_user_item()` 에서 default 값이 존재하지 않기 때문에 Required Query Parameter 임을 알 수 있습니다.  
+위의 예시에서 `needy` 는 Path Operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 Query Parameter 이고, function `read_user_item()` 에서 기본값이 존재하지 않기 때문에 Required Query Parameter 임을 알 수 있습니다.  
 이러한 경우 `http://localhost:8000/items/foo-item` 와 같이 `needy` 를 입력해주지 않으면 에러가 발생합니다.  
 따라서 `http://localhost:8000/items/foo-item?needy=someneedy` 와 같은 형태로 `?` 뒤에 입력을 해 주어야 에러가 발생하지 않고 함수가 제대로 동작합니다.
 
@@ -285,7 +290,7 @@ def read_user_item(user_id: int, item_id: str, q: Union[str, None] = None, short
 이를 통해 `user_id` 와 `item_id` 라는 Path Parameter 가 있음을 알 수 있습니다.
 
 이번에는 Path Operation Function 의 parameter 를 살펴 보면, `user_id`, `item_id`, `q`, `short` 가 있음을 알 수 있습니다.
-이 중 Path Parameter 가 아닌 `q` 와 `short` 는 Query Parameter 임을 알 수 있고, default 값이 각각 `None` 과 `False` 임을 알 수 있습니다.
+이 중 Path Parameter 가 아닌 `q` 와 `short` 는 Query Parameter 임을 알 수 있고, 기본값이 각각 `None` 과 `False` 임을 알 수 있습니다.
 
 다음과 같은 형태로 URL 을 줄 수 있을 것입니다.
 
