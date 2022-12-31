@@ -138,7 +138,7 @@ docker compose -p part7-naive down -v
 
 각각의 서비스에 대해 알아보겠습니다.
 
-- Zookeeper : 브로커 서버의의 상태 감지를 위해 사용되는 주키퍼 서버입니다.
+- Zookeeper : 브로커 서버의 상태 감지를 위해 사용되는 주키퍼 서버입니다.
 - Broker : Source Connector 에서 데이터를 받아 토픽에 저장하고, Sink Connector 로 데이터를 넘겨줄 브로커 서버입니다. 이번 챕터에서는 다중 브로커가 아닌 단일 브로커를 사용합니다.
 - Schema Registry : 메시지의 schema 를 저장하기 위한 Schema Registry 서버입니다.
 - Connect : Connector 를 띄우기 위한 Connect 서버입니다.
