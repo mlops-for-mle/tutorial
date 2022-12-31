@@ -173,7 +173,7 @@ from json import loads
 from kafka import KafkaConsumer
 
 consumer = KafkaConsumer(
-    "postgres-source-iris_data",
+    topics="postgres-source-iris_data",
     bootstrap_servers="broker:29092",
     auto_offset_reset="earliest",
     group_id="iris-data-consumer-group",
