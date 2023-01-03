@@ -290,7 +290,7 @@ CONTAINER ID   IMAGE                             COMMAND                  CREATE
 
 ```bash
 # terminal-command
-docker compose exec broker kafka-topics --create --topic topic-test --bootstrap-server broker:29092 --partitions 1 --replication-factor 1
+docker compose -p part7-naive exec broker kafka-topics --create --topic topic-test --bootstrap-server broker:29092 --partitions 1 --replication-factor 1
 ```
 
 - <var>docker compose exec</var> : 
@@ -331,7 +331,7 @@ docker compose exec broker kafka-topics --create --topic topic-test --bootstrap-
 
 ```bash
 # terminal-command
-docker compose exec broker kafka-topics --describe --topic topic-test --bootstrap-server broker:29092
+docker compose -p part7-naive exec broker kafka-topics --describe --topic topic-test --bootstrap-server broker:29092
 ```
 
 - <var>--describe</var> :  
@@ -370,7 +370,7 @@ docker compose -p part7-naive exec broker /bin/bash
 [appuser@0a0599db4d96 ~]$
 ```
 
-#### 2.2.2 Counsumer 실행
+#### 2.2.2 Consumer 실행
 이후에 `kafka-console-consumer` 를 이용하여 `topic-test` 토픽을 subscribe 합니다.
 
 <CodeDescription>
