@@ -19,23 +19,6 @@ jobs:
           max-num-of-reviewers: 4
           draft-keyword: WIP
 
-  size-label:
-    runs-on: ubuntu-latest
-    steps:
-      - name: size-label
-        uses: pascalgn/size-label-action@v0.4.3
-        with:
-          sizes: >
-            {
-              "0": "XS",
-              "8": "S",
-              "40": "M",
-              "110": "L",
-              "400": "XL",
-              "1000": "XXL",
-              "3000": "XXXL"
-            }
-
   pre-commit:
     runs-on: ubuntu-latest
     steps:
