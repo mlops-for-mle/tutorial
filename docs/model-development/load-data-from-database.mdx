@@ -76,13 +76,13 @@ SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
 
 ```sql
 mydatabase=# SELECT * FROM iris_data ORDER BY id DESC LIMIT 100;
-  id  | sepal_length | sepal_width | petal_length | petal_width | target
-------+--------------+-------------+--------------+-------------+--------
- 3499 |          5.4 |         3.9 |          1.7 |         0.4 |      0
- 3498 |          6.4 |         2.8 |          5.6 |         2.1 |      2
- 3497 |          6.3 |         2.3 |          4.4 |         1.3 |      1
- 3496 |          5.4 |         3.9 |          1.7 |         0.4 |      0
- 3495 |          5.5 |         4.2 |          1.4 |         0.2 |      0
+id  |         timestamp          | sepal_length | sepal_width | petal_length | petal_width | target
+-----+----------------------------+--------------+-------------+--------------+-------------+--------
+   1 | 2023-01-15 06:08:58.995035 |          6.8 |         2.8 |          4.8 |         1.4 |      1
+   2 | 2023-01-15 06:09:00.033342 |          6.3 |         2.5 |            5 |         1.9 |      2
+   3 | 2023-01-15 06:09:01.063739 |          6.3 |         3.3 |          4.7 |         1.6 |      1
+   4 | 2023-01-15 06:09:02.098688 |          6.3 |         3.3 |          4.7 |         1.6 |      1
+   5 | 2023-01-15 06:09:03.131971 |            5 |         3.2 |          1.2 |         0.2 |      0
 (...)
 ```
 
@@ -114,12 +114,12 @@ df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connec
 
 ```python
 print(df.head(5))
-#      id  sepal_length  sepal_width  petal_length  petal_width  target
-# 0  3499          5.4           3.9          1.7           0.4       0
-# 1  3498          6.4           2.8          5.6           2.1       2
-# 2  3497          6.3           2.3          4.4           1.3       1
-# 3  3496          5.4           3.9          1.7           0.4       0
-# 4  3495          5.5           4.2          1.4           0.2       0
+#      id                  timestamp  sepal_length  sepal_width  petal_length  petal_width  target
+# 0   1204 2023-01-15 06:29:35.214374           7.2          3.2           6.0          1.8       2
+# 1   1203 2023-01-15 06:29:34.196810           5.0          3.5           1.3          0.3       0
+# 2   1202 2023-01-15 06:29:33.184427           5.9          3.0           4.2          1.5       1
+# 3   1201 2023-01-15 06:29:32.163934           6.4          3.1           5.5          1.8       2
+# 4   1200 2023-01-15 06:29:31.138341           5.8          2.7           5.1          1.9       2
 ```
 
 <Chapter>2) Model Pipeline</Chapter> 챕터에서 작성한 <code>base_train.py</code> 의 <code># 1. get data</code> 부분을 위에서 작성한 코드로 수정합니다.
@@ -133,7 +133,7 @@ from sklearn.model_selection import train_test_split
 # 1. get data
 db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
 df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
-X = df.drop(["id", "target"], axis="columns")
+X = df.drop(["id", "timestamp", "target"], axis="columns")
 y = df["target"]
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 ```
@@ -168,7 +168,7 @@ from sklearn.svm import SVC
 # 1. get data
 db_connect = psycopg2.connect(host="localhost", database="mydatabase", user="myuser", password="mypassword")
 df = pd.read_sql("SELECT * FROM iris_data ORDER BY id DESC LIMIT 100", db_connect)
-X = df.drop(["id", "target"], axis="columns")
+X = df.drop(["id", "timestamp", "target"], axis="columns")
 y = df["target"]
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 
@@ -206,7 +206,7 @@ from sklearn.model_selection import train_test_split
 
 # 1. reproduce data
 df = pd.read_csv("data.csv")
-X = df.drop(["id", "target"], axis="columns")
+X = df.drop(["id", "timestamp", "target"], axis="columns")
 y = df["target"]
 X_train, X_valid, y_train, y_valid = train_test_split(X, y, train_size=0.8, random_state=2022)
 
