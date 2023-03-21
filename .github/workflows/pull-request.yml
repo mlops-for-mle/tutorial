@@ -9,16 +9,6 @@ jobs:
     steps:
       - uses: anencore94/labeler@v1.1.0
 
-  assign-reviewer:
-    runs-on: ubuntu-latest
-    steps:
-      - name: reviewers
-        uses: hkusu/review-assign-action@v1
-        with:
-          reviewers: Aiden-Jeon, dongminlee94, Kimdongui, datawhales
-          max-num-of-reviewers: 4
-          draft-keyword: WIP
-
   pre-commit:
     runs-on: ubuntu-latest
     steps:
