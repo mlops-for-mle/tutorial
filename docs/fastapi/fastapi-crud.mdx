@@ -92,79 +92,95 @@ part5
 
 ### 1.1 Path Parameter 이용
 
-Path Parameter 의 경우 각 API 에서 사용되는 파라미터를 Request Header 에 넣어 전달합니다.
+Path Parameter 의 경우 각 API 에서 사용되는 파라미터를 Path에 포함시켜 전달합니다.
 
 이를 고려하여 명세서를 작성하면 다음과 같습니다.
 
 1. Create
     
     이름과 별명을 입력하여 사용자를 생성합니다.
+
+    `POST /users/name/{name}/nickname/{nickname}`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | POST /users/name/{name}/nickname/{nickname} | {} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 2. Read
     
     이름을 입력하여 해당 이름을 가진 사용자의 별명을 반환합니다.
-    
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | GET /users/name/{name} | {} | {<br/>&emsp;“nickname”: “world”&emsp;<br/>} |
+
+    `GET /users/name/{name}`
+
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“nickname”: “world”&emsp;<br/>} |
 
 3. Update
     
     이름과 새로운 별명을 입력하여 해당 이름을 가진 사용자의 별명을 업데이트합니다.
+
+    `PUT /users/name/{name}/nickname/{nickname}`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | PUT /users/name/{name}/nickname/{nickname} | {} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    |{<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 4. Delete
     
     이름을 입력하여 해당 이름을 가진 사용자의 정보를 삭제합니다.
+
+    `DELETE /users/name/{name}`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | DELETE /users/name/{name} | {} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 ### 1.2 Query Parameter 이용
 
-Query Parameter 의 경우 각 API 에서 사용되는 파라미터를 Request Body 에 넣어 전달합니다.
+Query Parameter 의 경우 각 API 에서 사용되는 파라미터를 Query 형태로 전달합니다.
 
 이를 고려하여 명세서를 작성하면 다음과 같습니다.
 
 1. Create
     
     이름과 별명을 입력하여 사용자를 생성합니다.
+
+    `POST /users?name=hello&nickname=world`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | POST /users | {<br/>&emsp;”name”: “hello”,<br/>&emsp;“nickname”: “world”&emsp;<br/>} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 2. Read
     
     이름을 입력하여 해당 이름을 가진 사용자의 별명을 반환합니다.
+
+    `GET /users?name=hello`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | GET /users | {<br/>&emsp;”name”: “hello”&emsp;<br/>} | {<br/>&emsp;“nickname”: “world”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“nickname”: “world”&emsp;<br/>} |
 
 3. Update
     
     이름과 새로운 별명을 입력하여 해당 이름을 가진 사용자의 별명을 업데이트합니다.
-    
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | PUT /users | {<br/>&emsp;”name”: “hello”,<br/>&emsp;“nickname”: “world2”&emsp;<br/>} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+
+    `PUT /users?name=hello&nickname=world2`
+
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 4. Delete
     
     이름을 입력하여 해당 이름을 가진 사용자의 정보를 삭제합니다.
+
+    `DELETE /users?name=hello`
     
-    | Request Header | Request Body | Response Body |
-    | --- | --- | --- |
-    | DELETE /users | {<br/>&emsp;”name”: “hello”&emsp;<br/>} | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
+    | Response Body |
+    | --- |
+    | {<br/>&emsp;“status”: “success”&emsp;<br/>} |
 
 ## 2. API 구현
 
