@@ -314,10 +314,11 @@ EOF
 
     - 테이블을 자동으로 생성할 지의 여부를 설정합니다. 
     - 이미 테이블을 생성했기 때문에 <code>false</code> 로 설정합니다.
+    - 만약 생성된 테이블이 없고 해당 옵션을 <code>true</code> 로 설정한다면, 해당 DB에 자동으로 테이블이 생성되고 Sink Connector로 들어오는 데이터 스키마에 맞춰서 테이블 스키마가 만들어집니다.
   - <var>auto.evolve</var> : 
 
-    - 테이블에 자동으로 column 들을 생성할 지의 여부를 설정합니다. 
-    - 이미 테이블의 column 들을 생성했기 때문에 <code>false</code> 로 설정합니다.
+    - Sink Connector 로부터 들어오는 데이터의 스키마와 일치하도록 해당 DB에 있는 테이블의 스키마를 자동으로 변경시킬 지의 여부를 설정합니다.
+    - 자동으로 변경하지 않도록 <code>false</code> 로 설정합니다.
   - <var>tasks.max</var> : 
 
     - Connector 에서 task 의 수를 얼마나 가져갈 지를 설정합니다.
