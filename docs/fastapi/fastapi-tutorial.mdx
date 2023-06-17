@@ -250,8 +250,8 @@ Query Parameter 는 path 의 고정된 부분이 아니기 때문에 optional �
 ```python
 @app.get("/items/{item_id}")
 def read_user_item(item_id: str, needy: str):
-		item = {"item_id": item_id, "needy": needy}
-		return item
+    item = {"item_id": item_id, "needy": needy}
+    return item
 ```
 
 위의 예시에서 `needy` 는 Path Operation `@app.get("/items/{item_id}")` 에 포함되어 있지 않으므로 Query Parameter 이고, function `read_user_item()` 에서 기본값이 존재하지 않기 때문에 Required Query Parameter 임을 알 수 있습니다.  
