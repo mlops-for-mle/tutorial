@@ -1,0 +1,62 @@
+{
+  "version.label": {
+    "message": "Next",
+    "description": "The label for version current"
+  },
+  "sidebar.tutorialSidebar.category.01. Database": {
+    "message": "01. Database",
+    "description": "The label for category 01. Database in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.01. Database.link.generated-index.description": {
+    "message": "Database",
+    "description": "The generated-index page description for category 01. Database in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.02. Model Development": {
+    "message": "02. Model Development",
+    "description": "The label for category 02. Model Development in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.02. Model Development.link.generated-index.description": {
+    "message": "Model Development",
+    "description": "The generated-index page description for category 02. Model Development in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.03. Model Registry": {
+    "message": "03. Model Registry",
+    "description": "The label for category 03. Model Registry in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.03. Model Registry.link.generated-index.description": {
+    "message": "Model Registry",
+    "description": "The generated-index page description for category 03. Model Registry in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.05. FastAPI": {
+    "message": "05. FastAPI",
+    "description": "The label for category 05. FastAPI in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.05. FastAPI.link.generated-index.description": {
+    "message": "FastAPI",
+    "description": "The generated-index page description for category 05. FastAPI in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.06. API Serving": {
+    "message": "06. API Serving",
+    "description": "The label for category 06. API Serving in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.06. API Serving.link.generated-index.description": {
+    "message": "API Serving",
+    "description": "The generated-index page description for category 06. API Serving in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.07. Kafka": {
+    "message": "07. Kafka",
+    "description": "The label for category 07. Kafka in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.07. Kafka.link.generated-index.description": {
+    "message": "Kafka",
+    "description": "The generated-index page description for category 07. Kafka in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.08. Stream": {
+    "message": "08. Stream",
+    "description": "The label for category 08. Stream in sidebar tutorialSidebar"
+  },
+  "sidebar.tutorialSidebar.category.08. Stream.link.generated-index.description": {
+    "message": "Stream",
+    "description": "The generated-index page description for category 08. Stream in sidebar tutorialSidebar"
+  }
+}
