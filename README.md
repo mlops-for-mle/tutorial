@@ -38,3 +38,11 @@ $ pre-commit run --a
 
 ## How to Contribute?
 [How to contribute](community/how-to-contribute.md)
+
+# For English
+
+Run site with below code:
+
+```bash
+$ npm run start -- --locale en
+```

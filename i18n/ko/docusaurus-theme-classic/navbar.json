@@ -1,0 +1,22 @@
+{
+  "title": {
+    "message": "MLOps for MLE",
+    "description": "The title in the navbar"
+  },
+  "item.label.Documentation": {
+    "message": "Documentation",
+    "description": "Navbar item with label Documentation"
+  },
+  "item.label.Community": {
+    "message": "Community",
+    "description": "Navbar item with label Community"
+  },
+  "item.label.Code GitHub": {
+    "message": "Code GitHub",
+    "description": "Navbar item with label Code GitHub"
+  },
+  "item.label.Tutorial Github": {
+    "message": "Tutorial Github",
+    "description": "Navbar item with label Tutorial Github"
+  }
+}

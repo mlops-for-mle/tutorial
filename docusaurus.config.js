@@ -24,8 +24,8 @@ const config = {
   // metadata like html lang. For example, if your site is Chinese, you may want
   // to replace "en" with "zh-Hans".
   i18n: {
-    defaultLocale: 'kr',
-    locales: ['kr'],
+    defaultLocale: 'ko',
+    locales: ['ko', 'en'],
   },
   plugins: [
     [
@@ -102,6 +102,10 @@ const config = {
             to: '/community/contributors',
             position: 'left',
             label: 'Community',
+          },
+          {
+            type: 'localeDropdown',
+            position: 'right',
           },
           {
             href: 'https://github.com/mlops-for-mle/mlops-for-mle',
