@@ -157,28 +157,32 @@ Kafka 클러스터 (Cluster) 는 여러 개의 브로커로 이루어진 집합�
 
 ### 3.4 Partition
 
-토픽에는 파티션 (Partition) 이 존재하며 모든 파티션들은 Producer 로부터 전달된 데이터를 보관하는 역할을 합니다.
+토픽은 하나 이상의 파티션 (Partition) 으로 구성됩니다. 파티션은 토픽 데이터를 물리적으로 분할하여 저장하는 단위로 메시지는 특정 파티션에 순서대로 저장됩니다.
 
-파티션은 반드시 존재하는 리더 파티션 (Leader Partition) 과 존재할 수도 있는 팔로워 파티션 (Follower Partition) 으로 구분됩니다.
+파티션은 확장성과 병렬 처리를 가능하게 하며 각 파티션은 하나 이상의 Replica 를 가질 수 있습니다.
 
-#### 리더 파티션 : 
-- 리더 파티션은 Producer 또는 Consumer 와 직접 통신하는 파티션입니다. 
+파티션의 Replica 는 반드시 존재하는 리더 (Leader) Replica 와 존재할 수도 있는 팔로워 (Follower) Replica 로 구분됩니다.
+
+#### 리더 Replica :
+- 리더 Replica 는 Producer 또는 Consumer 와 직접 통신하는 Replica 입니다. 
 - Producer 또는 Consumer 와 직접 통신함으로써 read 와 write 연산을 담당합니다.
 
-#### 팔로워 파티션 : 
-- Producer 에 의해 리더 파티션으로 전달된 데이터를 복제하여 저장합니다. 
-- 팔로워 파티션의 가장 중요한 역할은 리더 파티션의 데이터를 복사하여 보관하는 역할을 하고 있다가 리더 파티션이 속해있는 브로커에 장애가 발생하면, 팔로워 파티션이 리더 파티션의 지위를 가지게 됩니다.
+#### 팔로워 Replica :
+- 리더 Replica 의 데이터를 복제하여 저장합니다.
+- 리더 Replica 가 장애가 발생하면, 리더와 정상적으로 데이터를 동기화하고 있는 팔로워 Replica 중 하나가 새로운 리더로 승격됩니다.
 
-그렇다면 리더 파티션과 팔로워 파티션의 개수는 어떻게 정해질까요?  
-바로 Replication Factor 의 수에 따라 달라집니다. 예를 들어서 브로커 A, B, C 가 있다고 가정해보겠습니다.
+그렇다면 리더 Replica 와 팔로워 Replica 의 개수는 어떻게 정해질까요?  
+바로 Replication Factor 의 수에 따라 달라집니다. Replication Factor 는 특정 파티션이 가질 수 있는 Replica 의 총 개수를 의미합니다.
+Replica 중 하나는 리더 Replica 로 지정되고, 나머지는 팔로워 Replica 로 동작합니다.
+예를 들어 브로커 A, B, C 가 있다고 가정해보겠습니다.
 
-#### 파티션의 Replication Factor 가 1인 경우 (복제 없음) : 
-- Replication Factor 가 1 이므로 브로커 A 의 리더 파티션의 데이터를 복제해서 가지고 있을 브로커 B, C 의 팔로워 파티션이 없습니다. 
-- 즉, 브로커 A 에만 리더 파티션이 존재합니다. 브로커 A 의 파티션이 3개였다면, 3개 모두 리더 파티션이 됩니다.
+#### Replication Factor 가 1인 경우 (복제 없음) : 
+- Replication Factor 가 1 이므로, 해당 파티션은 Replica 가 1개뿐이며 이 Replica 가 리더 역할을 합니다.
+- 브로커 A 의 파티션이 3개였다면, 3개의 파티션 모두 리더 Replica 이며 브로커 B와 C 에는 Replica 가 없습니다.
 
-#### 파티션의 Replication Factor 가 3인 경우 (복제 2개) : 
-- Replication Factor 가 3 이므로 브로커 A 의 리더 파티션의 데이터를 복제해서 가지고 있을 브로커 B, C 의 팔로워 파티션이 존재합니다. 
-- 브로커 A 의 파티션이 3개였다면, A, B, C 는 각각 하나의 리더 파티션과 두개의 팔로워 파티션을 가지게 됩니다.
+#### Replication Factor 가 3인 경우 (복제 2개) : 
+- Replication Factor 가 3 이므로, 각 파티션은 3개의 Replica (1개의 리더와 2개의 팔로워) 를 가지며 Kafka 클러스터 내 브로커에 고르게 분산 배치됩니다.
+- 브로커 A, B, C 가 각각 하나의 리더 Replica 와 두 개의 팔로워 Replica 를 가집니다.
 
 ### 3.5 Zookeeper
 
